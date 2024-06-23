@@ -8,19 +8,20 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
-I am a PhD candidate at the [Max Planck Research Group Vision and Computational Cognition](https://hebartlab.com/) supervised by [Martin Hebart](http://martin-hebart.de). I am also a guest researcher at the [Neural Coding Lab](https://neuralcoding.nl/) and co-supervised by [Umut Güçlü](https://www.ru.nl/en/people/guclu-u).
+I am a PhD Candidate at the [Max Planck Research Group Vision and Computational Cognition](https://hebartlab.com/) supervised by [Martin Hebart](http://martin-hebart.de). I am also a guest researcher at the [Neural Coding Lab](https://neuralcoding.nl/) and co-supervised by [Umut Güçlü](https://www.ru.nl/en/people/guclu-u).
 
 
 ## Research Interests
 
-Most of my work is on representation learning in humans and machines. I use a combination of computational modeling, machine learning, and insights from cognitive science to identify similaries and differences between human and artificial systems.
+
+My work primarily focuses on representation learning in humans and machines. I combine computational modeling and machine learning with insights from cognitive science to understand the similarities and differences between human and artificial systems. I mostly work on vision, but also use insights from language and other domains. I am particularly interested in interpretable alignment of representations and how to use insights from cognitive science to improve machine learning models and vice versa.
 
 
-
+I have a bunch of projects on the intersection of these fields. If you are interested in collaborating, feel free to reach out.
 
 
 ## Academic Background
-
+    
 **PhD in Machine Learning**, 2021-2025 <br>
 [Max Planck Research Group Vision and Computational Cognition](https://hebartlab.com/) <br>
 Supervisors: [Martin Hebart](http://martin-hebart.de), [Umut Güçlü](https://www.ru.nl/en/people/guclu-u)
