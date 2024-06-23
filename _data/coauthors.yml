@@ -7,7 +7,7 @@
     url: https://lukasmut.github.io/
 
 "guclu":
-  - firstname: ["Umut", "G{\"u}cl{\"u}"]
+  - firstname: ["Umut", 'G{"u}cl{"u}']
     url: https://www.ru.nl/en/people/guclu-u
 
 "seeliger":
