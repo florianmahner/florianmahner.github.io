@@ -8,7 +8,7 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
-I am a PhD Candidate at the [Max Planck Research Group Vision and Computational Cognition](https://hebartlab.com/) supervised by [Martin Hebart](http://martin-hebart.de). I am also a guest researcher at the [Neural Coding Lab](https://neuralcoding.nl/) and co-supervised by [Umut Güçlü](https://www.ru.nl/en/people/guclu-u).
+I am a PhD Candidate at the [Max Planck Research Group Vision and Computational Cognition](https://hebartlab.com/) supervised by [Martin Hebart](http://martin-hebart.de). I am also a guest researcher at the [Neural Coding Lab](https://neuralcod.ing/) and co-supervised by [Umut Güçlü](https://www.ru.nl/en/people/guclu-u).
 
 
 ## Research Interests
