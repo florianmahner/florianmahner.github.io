@@ -29,10 +29,10 @@ Supervisors: [Martin Hebart](http://martin-hebart.de), [Umut Güçlü](https://w
 **MSc in Artificial Intelligence**, 2018-2021 <br>
 [Radboud University](https://www.ru.nl/ai/)  
 Grade: *Excellent with distinction*, top 1% <br>
-Thesis: [Neural Decoding with Normalizing Flows](assets/pdf/thesis-master.pdf)
+Thesis: [Neural Decoding with Normalizing Flows](../assets/pdf/thesis-master.pdf)
 
 **BSc in Cognitive Science**, 2013-2017 <br>
 [Osnabrück University](https://www.ikw.uni-osnabrueck.de/en/home.html)  
 Grade: *Excellent*  <br>
-Thesis: [View-independent human motion analysis of eigensubspace and temporal self-similarity representations](assets/pdf/thesis-bachelor.pdf)
+Thesis: [View-independent human motion analysis of eigensubspace and temporal self-similarity representations](../assets/pdf/thesis-bachelor.pdf)
 

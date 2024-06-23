@@ -18,4 +18,4 @@ I use a bunch of tools and software to make my life easier. Here is a [not compl
 - [Notion](https://www.notion.so/),
 
 
-Some time ago I was also into [vim](https://www.vim.org/). Here is my [vimrc](assets/vimrc).
+Some time ago I was also into [vim](https://www.vim.org/). Here is my [vimrc](../assets/vimrc).
