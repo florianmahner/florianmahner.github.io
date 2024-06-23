@@ -7,9 +7,9 @@ first_name: Florian
 middle_name: P.
 last_name: Mahner
 email: mahner@cbs.mpg.de
-description: # the ">" symbol means to ignore newlines until "footer_text:"
+description: > # the ">" symbol means to ignore newlines until "footer_text:"
 footer_text: >
-  Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
+  Using a modified <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
 keywords: 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: ⚛️ # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
@@ -49,7 +49,7 @@ search_enabled: true
 socials_in_search: true
 
 # Dimensions
-max_width: 800px
+max_width: 700px
 
 # TODO: add layout settings (single page vs. multi-page)
 
@@ -90,7 +90,7 @@ pinterest_id: # your pinterest id
 publons_id: # your ID on Publons
 quora_username: # your Quora username
 research_gate_profile: # your profile on ResearchGate
-scholar_userid: qc6CJjYAAAAJ # your Google Scholar ID
+scholar_userid: ttyp21cAAAAJ&hl # your Google Scholar ID
 scopus_id: # your profile on Scopus
 semanticscholar_id: # your Semantic Scholar ID
 spotify_id: # your spotify id
@@ -156,7 +156,7 @@ giscus:
   lang: en
 
 # Disqus comments (DEPRECATED)
-disqus_shortname: al-folio # put your disqus shortname
+disqus_shortname:  # put your disqus shortname
 # https://help.disqus.com/en/articles/1717111-what-s-a-shortname
 
 # External sources.

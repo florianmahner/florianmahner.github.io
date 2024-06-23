@@ -3,8 +3,10 @@ layout: page
 permalink: /open_source/
 title: open source
 nav: true
-nav_order: 4
+nav_order: 2
 ---
+
+I try to make my code as open as possible and contribute to other open source projects. Here is a list of some of the projects I have worked on:
 
 {% if site.data.repositories.github_repos %}
 
