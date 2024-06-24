@@ -2,6 +2,7 @@ github_users:
   - florianmahner
 
 github_repos:
+  - florianmahner/object-dimensions
   - florianmahner/tomlparse
   - florianmahner/torch-multipletests
   - ViCCo-Group/thingsvision
