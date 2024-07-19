@@ -16,6 +16,6 @@ I use a bunch of tools and software to make my life easier. Here is a [not compl
 - [iTerm](https://iterm2.com/)
 - [Notion](https://www.notion.so/)
 - [Zotero](https://www.zotero.org/)
-- 
+-
 
 Some time ago I was also into [vim](https://www.vim.org/). Here is my [vimrc](../assets/vimrc).
