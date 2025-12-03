@@ -116,61 +116,88 @@ const footerLinks = [
       </header>
     )}
 
-    <!-- OPTION B: Floating Icon -->
+    <!-- OPTION B: Minimal Left Nav -->
     {navMode === 'floating-icon' && (
-      <div class="floating-icon-nav">
-        <button class="menu-trigger" aria-label="Open menu" aria-expanded="false">
+      <nav class="left-nav">
+        <ul class="left-nav-links">
+          {navItems.map(item => (
+            <li>
+              <a
+                href={item.href}
+                class:list={['left-nav-link', { active: Astro.url.pathname === item.href || (item.href !== '/' && Astro.url.pathname.startsWith(item.href)) }]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div class="left-nav-theme">
+          <ThemeToggle />
+        </div>
+      </nav>
+    )}
+
+    <!-- OPTION C: Minimal - Left Sidebar (desktop) / Hamburger (mobile) -->
+    {navMode === 'minimal' && (
+      <>
+        {/* Desktop: Left Sidebar */}
+        <aside class="sidebar">
+          <nav class="sidebar-nav">
+            <ul class="sidebar-links">
+              {navItems.map(item => (
+                <li>
+                  <a
+                    href={item.href}
+                    class:list={['sidebar-link', { active: Astro.url.pathname === item.href || (item.href !== '/' && Astro.url.pathname.startsWith(item.href)) }]}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div class="sidebar-footer">
+            <ThemeToggle />
+          </div>
+        </aside>
+
+        {/* Mobile: Hamburger at top-left */}
+        <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        <div class="menu-panel">
-          <button class="menu-close" aria-label="Close menu">
+
+        {/* Mobile menu overlay */}
+        <div class="mobile-menu-overlay"></div>
+
+        {/* Mobile menu panel */}
+        <div class="mobile-menu-panel">
+          <button class="mobile-menu-close" aria-label="Close menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <ul class="menu-links">
+          <ul class="mobile-menu-links">
             {navItems.map(item => (
               <li>
                 <a
                   href={item.href}
-                  class:list={['menu-link', { active: Astro.url.pathname === item.href }]}
+                  class:list={['mobile-menu-link', { active: Astro.url.pathname === item.href }]}
                 >
                   {item.label}
                 </a>
               </li>
             ))}
           </ul>
-          <div class="menu-theme">
+          <div class="mobile-menu-footer">
             <ThemeToggle />
           </div>
         </div>
-      </div>
-    )}
-
-    <!-- OPTION C: Minimal Top Bar -->
-    {navMode === 'minimal' && (
-      <header class="minimal-header">
-        <nav class="minimal-nav container">
-          <ul class="minimal-nav-links">
-            {navItems.map(item => (
-              <li>
-                <a
-                  href={item.href}
-                  class:list={['minimal-nav-link', { active: Astro.url.pathname === item.href }]}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <ThemeToggle />
-        </nav>
-      </header>
+      </>
     )}
 
     <main>
@@ -247,81 +274,102 @@ const footerLinks = [
       }
 
       /* ============================================
-         OPTION B: Floating Icon
+         OPTION B: Minimal Left Nav
          ============================================ */
-      .floating-icon-nav {
+      .left-nav {
         position: fixed;
-        bottom: var(--space-6);
-        right: var(--space-6);
-        z-index: var(--z-modal);
-      }
-
-      .menu-trigger {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background-color: var(--color-bg);
-        border: 1px solid var(--color-border);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
+        top: var(--space-8);
+        left: calc(50% - var(--content-max-width) / 2 - 140px);
         display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all var(--transition-fast);
+        flex-direction: column;
+        gap: var(--space-6);
       }
 
-      .menu-trigger:hover {
-        background-color: var(--color-bg-alt);
-        transform: scale(1.05);
+      .left-nav-links {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
       }
 
-      .menu-trigger svg {
-        color: var(--color-text);
-      }
-
-      .menu-panel {
-        position: absolute;
-        bottom: 60px;
-        right: 0;
-        background-color: var(--color-bg);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
-        padding: var(--space-4);
-        min-width: 180px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(10px) scale(0.95);
-        transition: all 0.2s ease;
-      }
-
-      .menu-panel.open {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0) scale(1);
-      }
-
-      [data-theme="dark"] .menu-panel {
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-      }
-
-      .menu-close {
-        position: absolute;
-        top: var(--space-2);
-        right: var(--space-2);
+      .left-nav-link {
+        font-family: var(--font-body);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+        text-decoration: none;
         background: none;
-        border: none;
-        cursor: pointer;
-        padding: var(--space-1);
-        color: var(--color-text-secondary);
         transition: color var(--transition-fast);
       }
 
-      .menu-close:hover {
+      .left-nav-link:hover {
         color: var(--color-text);
       }
 
-      .menu-links {
+      .left-nav-link.active {
+        color: var(--color-text);
+      }
+
+      .left-nav-theme {
+        margin-top: var(--space-2);
+      }
+
+      /* Tablet/mobile: move to top */
+      @media (max-width: 1200px) {
+        .left-nav {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: var(--space-3) var(--space-4);
+          background-color: var(--color-bg);
+          border-bottom: 1px solid var(--color-border);
+          gap: 0;
+        }
+
+        .left-nav-links {
+          flex-direction: row;
+          gap: var(--space-5);
+        }
+
+        .left-nav-link {
+          font-size: var(--font-size-xs);
+        }
+
+        .left-nav-theme {
+          margin-top: 0;
+        }
+      }
+
+      /* ============================================
+         OPTION C: Left Sidebar (desktop) + Hamburger (mobile)
+         ============================================ */
+
+      /* Desktop Sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 180px;
+        height: 100vh;
+        background-color: var(--color-bg);
+        border-right: 1px solid var(--color-border);
+        display: flex;
+        flex-direction: column;
+        padding: var(--space-6) var(--space-4);
+        z-index: var(--z-sticky);
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding-top: var(--space-4);
+      }
+
+      .sidebar-links {
         list-style: none;
         margin: 0;
         padding: 0;
@@ -330,7 +378,7 @@ const footerLinks = [
         gap: var(--space-1);
       }
 
-      .menu-link {
+      .sidebar-link {
         display: block;
         font-family: var(--font-ui);
         font-size: var(--font-size-sm);
@@ -342,80 +390,156 @@ const footerLinks = [
         transition: all var(--transition-fast);
       }
 
-      .menu-link:hover {
+      .sidebar-link:hover {
         color: var(--color-text);
         background-color: var(--color-bg-alt);
       }
 
-      .menu-link.active {
+      .sidebar-link.active {
         color: var(--color-accent);
-        background-color: rgba(196, 30, 58, 0.1);
+        background-color: rgba(196, 30, 58, 0.06);
       }
 
-      .menu-theme {
-        margin-top: var(--space-3);
-        padding-top: var(--space-3);
+      [data-theme="dark"] .sidebar-link.active {
+        background-color: rgba(255, 77, 106, 0.1);
+      }
+
+      .sidebar-footer {
+        margin-top: auto;
+        padding-top: var(--space-4);
         border-top: 1px solid var(--color-border);
-        display: flex;
-        justify-content: center;
       }
 
-      /* ============================================
-         OPTION C: Minimal Top Bar
-         ============================================ */
-      .minimal-header {
+      /* Hide sidebar on mobile */
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+      }
+
+      /* Mobile hamburger - top left */
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: var(--space-4);
+        left: var(--space-4);
+        z-index: var(--z-modal);
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        background-color: var(--color-bg);
+        border: 1px solid var(--color-border);
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .mobile-menu-toggle svg {
+        color: var(--color-text);
+      }
+
+      @media (max-width: 768px) {
+        .mobile-menu-toggle {
+          display: flex;
+        }
+      }
+
+      /* Mobile menu overlay */
+      .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: var(--z-modal);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-menu-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      @media (max-width: 768px) {
+        .mobile-menu-overlay {
+          display: block;
+        }
+      }
+
+      /* Mobile menu panel */
+      .mobile-menu-panel {
+        display: none;
         position: fixed;
         top: 0;
         left: 0;
-        right: 0;
-        z-index: var(--z-sticky);
+        width: 240px;
+        height: 100vh;
         background-color: var(--color-bg);
+        border-right: 1px solid var(--color-border);
+        z-index: calc(var(--z-modal) + 1);
+        transform: translateX(-100%);
         transition: transform 0.3s ease;
+        padding: var(--space-6);
+        flex-direction: column;
       }
 
-      .minimal-header.hidden {
-        transform: translateY(-100%);
+      .mobile-menu-panel.open {
+        transform: translateX(0);
       }
 
-      .minimal-nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 44px;
-      }
-
-      .minimal-nav-links {
-        display: flex;
-        align-items: center;
-        gap: var(--space-6);
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .minimal-nav-link {
-        font-family: var(--font-ui);
-        font-size: var(--font-size-xs);
-        color: var(--color-text-muted);
-        text-decoration: none;
-        background: none;
-        text-transform: lowercase;
-        letter-spacing: 0.02em;
-        transition: color var(--transition-fast);
-      }
-
-      .minimal-nav-link:hover {
-        color: var(--color-text);
-      }
-
-      .minimal-nav-link.active {
-        color: var(--color-text);
-      }
-
-      @media (max-width: 500px) {
-        .minimal-nav-links {
-          gap: var(--space-4);
+      @media (max-width: 768px) {
+        .mobile-menu-panel {
+          display: flex;
         }
+      }
+
+      .mobile-menu-close {
+        position: absolute;
+        top: var(--space-4);
+        right: var(--space-4);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: var(--space-2);
+        color: var(--color-text-secondary);
+      }
+
+      .mobile-menu-links {
+        list-style: none;
+        margin: var(--space-10) 0 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+
+      .mobile-menu-link {
+        display: block;
+        font-family: var(--font-ui);
+        font-size: var(--font-size-base);
+        color: var(--color-text-secondary);
+        text-decoration: none;
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+      }
+
+      .mobile-menu-link:hover {
+        color: var(--color-text);
+        background-color: var(--color-bg-alt);
+      }
+
+      .mobile-menu-link.active {
+        color: var(--color-accent);
+        background-color: rgba(196, 30, 58, 0.08);
+      }
+
+      .mobile-menu-footer {
+        margin-top: auto;
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-border);
       }
 
       /* ============================================
@@ -430,8 +554,31 @@ const footerLinks = [
         padding-top: 0;
       }
 
+      /* floating-icon is now left-nav */
+      @media (max-width: 1200px) {
+        [data-nav-mode="floating-icon"] main {
+          padding-top: calc(50px + var(--space-4));
+        }
+      }
+
       [data-nav-mode="minimal"] main {
-        padding-top: calc(44px + var(--space-8));
+        margin-left: 180px;
+        padding-top: var(--space-8);
+      }
+
+      [data-nav-mode="minimal"] .footer {
+        margin-left: 180px;
+      }
+
+      @media (max-width: 768px) {
+        [data-nav-mode="minimal"] main {
+          margin-left: 0;
+          padding-top: calc(60px + var(--space-4));
+        }
+
+        [data-nav-mode="minimal"] .footer {
+          margin-left: 0;
+        }
       }
 
       /* ============================================
@@ -549,11 +696,53 @@ const footerLinks = [
         }, { passive: true });
       }
 
+      // Mobile menu toggle
+      function initMobileMenu() {
+        const toggle = document.querySelector('.mobile-menu-toggle');
+        const panel = document.querySelector('.mobile-menu-panel');
+        const overlay = document.querySelector('.mobile-menu-overlay');
+        const close = document.querySelector('.mobile-menu-close');
+
+        if (!toggle || !panel) return;
+
+        function openMenu() {
+          panel.classList.add('open');
+          overlay?.classList.add('visible');
+          toggle.setAttribute('aria-expanded', 'true');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+          panel.classList.remove('open');
+          overlay?.classList.remove('visible');
+          toggle.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        }
+
+        toggle.addEventListener('click', openMenu);
+        close?.addEventListener('click', closeMenu);
+        overlay?.addEventListener('click', closeMenu);
+
+        // Close on link click
+        panel.querySelectorAll('.mobile-menu-link').forEach(link => {
+          link.addEventListener('click', closeMenu);
+        });
+
+        // Close on escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && panel.classList.contains('open')) {
+            closeMenu();
+          }
+        });
+      }
+
       initFloatingMenu();
       initMinimalHeader();
+      initMobileMenu();
       document.addEventListener('astro:after-swap', () => {
         initFloatingMenu();
         initMinimalHeader();
+        initMobileMenu();
       });
     </script>
 

@@ -46,7 +46,7 @@ export const config = {
   ],
 
   // Navigation style: "inline" | "floating-icon" | "minimal"
-  navigationMode: "minimal" as const,
+  navigationMode: "floating-icon" as const,
 
   // Theme customization
   theme: {

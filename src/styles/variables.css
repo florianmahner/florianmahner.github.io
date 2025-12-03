@@ -93,7 +93,7 @@
 
   /* Layout - CUSTOMIZE THESE FOR YOUR PREFERRED WIDTH */
   --content-width: 55%;
-  --content-max-width: 750px;        /* Main content max width - adjust this! */
+  --content-max-width: 850px;        /* Main content max width - adjust this! */
   --sidenote-width: 300px;
   --margin-width: 400px;
   --full-width: 1400px;

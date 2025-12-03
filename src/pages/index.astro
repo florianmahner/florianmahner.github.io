@@ -306,12 +306,19 @@ const displayName = config.name.middle
   @media (max-width: 600px) {
     .paper-card {
       grid-template-columns: 1fr;
-      gap: var(--space-4);
+      gap: var(--space-3);
     }
 
     .paper-preview {
       width: 100%;
-      height: 140px;
+      max-width: 280px;
+      height: auto;
+      aspect-ratio: 16/10;
+    }
+
+    .paper-preview img {
+      object-fit: contain;
+      background: var(--color-bg-alt);
     }
   }
 
