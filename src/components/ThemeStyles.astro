@@ -9,8 +9,9 @@ import { config } from '../config';
 const { theme } = config;
 
 // Generate Google Fonts URL from config
+// Include weights 300-700 for contrast (300 for light, 700 for bold)
 const fonts = Object.values(theme.fonts).filter((v, i, a) => a.indexOf(v) === i);
-const fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700`).join('&')}&display=swap`;
+const fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700`).join('&')}&display=swap`;
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />

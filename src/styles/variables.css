@@ -46,12 +46,13 @@
   --font-ui: 'Outfit', system-ui, sans-serif;
   */
 
-  /* OPTION 5: Crimson Pro (serif) - elegant, academic*/
+  /* OPTION 5: Crimson Pro (serif) - elegant, academic
+     Using Crimson Pro throughout for cohesive editorial feel */
   --font-body: 'Crimson Pro', Georgia, serif;
   --font-heading: 'Crimson Pro', Georgia, serif;
   --font-code: 'JetBrains Mono', Consolas, monospace;
-  --font-ui: 'Inter', system-ui, sans-serif;
-  
+  --font-ui: 'Crimson Pro', Georgia, serif;
+
 
   /* OPTION 6: Geist - original, sharp/modern (Vercel)
   --font-body: 'Geist', system-ui, sans-serif;
@@ -60,7 +61,8 @@
   --font-ui: 'Geist', system-ui, sans-serif;
   */
 
-  /* Font Weights */
+  /* Font Weights - using extremes for impact (300 vs 700) */
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

@@ -321,17 +321,18 @@ const footerLinks = [
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 24px;
+        gap: var(--space-8);
       }
 
       .top-nav-link {
         font-family: var(--font-ui);
-        font-size: 14px;
-        font-weight: 450;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-normal);
         color: var(--color-text-muted);
         text-decoration: none;
         background: none;
-        transition: color 0.15s ease;
+        transition: color var(--transition-fast);
+        letter-spacing: var(--letter-spacing-wide);
       }
 
       .top-nav-link:hover {
@@ -414,12 +415,14 @@ const footerLinks = [
 
       .mobile-nav-link {
         font-family: var(--font-ui);
-        font-size: 15px;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-normal);
         color: var(--color-text-secondary);
         text-decoration: none;
         background: none;
         padding: var(--space-2) 0;
         display: block;
+        letter-spacing: var(--letter-spacing-wide);
       }
 
       .mobile-nav-link.active {

@@ -56,13 +56,14 @@ export const config = {
     accentDark: "#ff4d6a",  // Color in dark mode
 
     // Font families (loaded from Google Fonts)
+    // Using Crimson Pro throughout for cohesive editorial feel
     fonts: {
       // Main text font
-      body: "Source Sans 3",
+      body: "Crimson Pro",
       // Headings font
-      heading: "Source Sans 3",
-      // UI elements (nav, buttons)
-      ui: "Inter",
+      heading: "Crimson Pro",
+      // UI elements (nav, buttons) - same for consistency
+      ui: "Crimson Pro",
       // Code/monospace
       mono: "JetBrains Mono",
     },
