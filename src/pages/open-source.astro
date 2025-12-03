@@ -46,6 +46,10 @@ const sortedRepos = [...repos.repositories].sort((a, b) => (b.stars || 0) - (a.s
     padding: var(--space-8) 0;
   }
 
+  .opensource-page .container {
+    max-width: var(--content-max-width, 750px);
+  }
+
   .repos-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
