@@ -8,7 +8,7 @@ const title = `Open Source | ${config.site.title}`;
 // Sort by stars (highest first)
 const sortedRepos = [...repos.repositories].sort((a, b) => (b.stars || 0) - (a.stars || 0));
 
-// Language colors for dots
+// Language colors
 const langColors: Record<string, string> = {
   python: '#3572A5',
   javascript: '#f1e05a',
@@ -32,37 +32,18 @@ const langColors: Record<string, string> = {
 
       <div class="repos-list" data-animate="stagger">
         {sortedRepos.map(repo => (
-          <a href={repo.url} class="repo-item" target="_blank" rel="noopener noreferrer">
-            <div class="repo-main">
-              <div class="repo-header">
-                <span class="repo-name">{repo.name}</span>
-                {repo.stars > 0 && (
-                  <span class="repo-stars">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z"/>
-                    </svg>
-                    {repo.stars}
-                  </span>
-                )}
-              </div>
-              <p class="repo-desc">{repo.description}</p>
-            </div>
-            <div class="repo-meta">
+          <a href={repo.url} class="repo-row" target="_blank" rel="noopener noreferrer">
+            <span class="repo-name">{repo.name}</span>
+            <span class="repo-desc">{repo.description}</span>
+            <span class="repo-meta">
               {repo.language && (
                 <span class="repo-lang">
-                  <span class="lang-dot" style={`background-color: ${langColors[repo.language.toLowerCase()] || '#666'}`}></span>
+                  <span class="lang-dot" style={`background: ${langColors[repo.language.toLowerCase()] || '#666'}`}></span>
                   {repo.language}
                 </span>
               )}
-              {repo.forks > 0 && (
-                <span class="repo-forks">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"/>
-                  </svg>
-                  {repo.forks}
-                </span>
-              )}
-            </div>
+              {repo.stars > 0 && <span class="repo-stat">{repo.stars}</span>}
+            </span>
           </a>
         ))}
       </div>
@@ -77,86 +58,56 @@ const langColors: Record<string, string> = {
 </BaseLayout>
 
 <style>
-  .opensource-page {
-    /* Vertical padding handled by article in global.css */
-  }
-
-  /* Vertical list layout - matches publication cards */
   .repos-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
   }
 
-  .repo-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-6);
-    padding: var(--space-4);
+  .repo-row {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    margin: 0 calc(-1 * var(--space-4));
     border-radius: var(--radius-md);
     text-decoration: none;
     background: none;
     transition: background-color var(--transition-fast);
   }
 
-  .repo-item:hover {
+  .repo-row:hover {
     background-color: var(--color-bg-alt);
-  }
-
-  .repo-main {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .repo-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    margin-bottom: var(--space-1);
   }
 
   .repo-name {
     font-family: var(--font-mono);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--color-text);
     transition: color var(--transition-fast);
+    white-space: nowrap;
   }
 
-  .repo-item:hover .repo-name {
+  .repo-row:hover .repo-name {
     color: var(--color-accent);
-  }
-
-  .repo-stars {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-family: var(--font-mono);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-  }
-
-  .repo-stars svg {
-    color: var(--color-accent);
-    opacity: 0.7;
   }
 
   .repo-desc {
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    line-height: var(--line-height-normal);
-    margin: 0;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .repo-meta {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: var(--space-1);
-    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-4);
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
+    white-space: nowrap;
   }
 
   .repo-lang {
@@ -166,32 +117,32 @@ const langColors: Record<string, string> = {
   }
 
   .lang-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
+    flex-shrink: 0;
   }
 
-  .repo-forks {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  .repo-stat {
     font-family: var(--font-mono);
+    min-width: 2ch;
+    text-align: right;
   }
 
-  .repo-forks svg {
-    opacity: 0.5;
-  }
+  @media (max-width: 640px) {
+    .repo-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+      padding: var(--space-4);
+    }
 
-  @media (max-width: 550px) {
-    .repo-item {
-      flex-direction: column;
-      gap: var(--space-3);
+    .repo-desc {
+      white-space: normal;
+      overflow: visible;
     }
 
     .repo-meta {
-      flex-direction: row;
-      align-items: center;
-      gap: var(--space-4);
+      margin-top: var(--space-2);
     }
   }
 </style>
