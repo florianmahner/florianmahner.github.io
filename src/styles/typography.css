@@ -20,35 +20,35 @@ body {
   background-color: var(--color-bg);
 }
 
-/* Headings - Tufte-style generous margins */
+/* Headings - compact margins */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-tight);
-  margin-top: 4rem;
-  margin-bottom: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
   color: var(--color-text);
 }
 
 h1 {
   font-size: var(--font-size-4xl);
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 h2 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-medium);
-  margin-top: 2.1rem;
-  margin-bottom: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 h3 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-medium);
-  margin-top: 2rem;
-  margin-bottom: 1.4rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 h4 {
@@ -62,10 +62,10 @@ h5, h6 {
   font-weight: var(--font-weight-medium);
 }
 
-/* Paragraphs - Tufte-style generous spacing */
+/* Paragraphs - compact spacing */
 p {
   margin-top: 0;
-  margin-bottom: 1.4rem;
+  margin-bottom: 1rem;
 }
 
 /* Lead paragraph */
