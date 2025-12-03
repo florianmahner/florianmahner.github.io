@@ -46,9 +46,9 @@ p, h1, h2, h3, h4, h5, h6 {
    Layout Utilities
    ========================================================================== */
 
-/* Tufte-style article layout */
+/* Tufte-style article layout - 5rem vertical padding */
 article {
-  padding: var(--space-8) var(--margin-left);
+  padding: 5rem var(--margin-left);
   max-width: var(--full-width);
   margin: 0 auto;
 }
@@ -86,9 +86,10 @@ article {
   font-weight: var(--font-weight-normal);
 }
 
-/* Section spacing - use for content sections */
+/* Section spacing - Tufte-style generous padding */
 .section {
-  margin-bottom: var(--space-10);
+  margin-bottom: var(--space-12);
+  padding: 1rem 0;
 }
 
 .section:last-child {
@@ -525,7 +526,7 @@ img:not([loading="lazy"]) {
 
   /* Reduce article padding on mobile */
   article {
-    padding: var(--space-4) var(--space-4);
+    padding: var(--space-8) var(--space-4);
   }
 
   /* Typography adjustments for mobile */
