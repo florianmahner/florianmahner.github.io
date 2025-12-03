@@ -1,24 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import publications from '../content/publications.json';
+import { loadPublications, groupByYear } from '../lib/bibtex';
+import { config } from '../config';
+import path from 'node:path';
 
-const title = "Publications | Florian Mahner";
+const title = `Publications | ${config.site.title}`;
 
-// Sort by year (newest first)
-const sortedPubs = [...publications.publications].sort((a, b) => b.year - a.year);
+// Load publications from BibTeX file
+const contentDir = path.join(process.cwd(), 'src', 'content');
+const publications = loadPublications(contentDir);
 
 // Group by year
-const pubsByYear = sortedPubs.reduce((acc, pub) => {
-  const year = pub.year;
-  if (!acc[year]) acc[year] = [];
-  acc[year].push(pub);
-  return acc;
-}, {} as Record<number, typeof sortedPubs>);
-
+const pubsByYear = groupByYear(publications);
 const years = Object.keys(pubsByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
-<BaseLayout title={title} description="Academic publications by Florian Mahner">
+<BaseLayout title={title} description={`Academic publications by ${config.name.first} ${config.name.last}`}>
   <article class="publications-page">
     <div class="container">
       <header class="page-header" data-animate="fade-up">

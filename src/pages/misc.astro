@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import misc from '../content/misc.json';
+import { config } from '../config';
 
-const title = "Misc | Florian Mahner";
+const title = `Misc | ${config.site.title}`;
 const tools = misc.tools;
 ---
 

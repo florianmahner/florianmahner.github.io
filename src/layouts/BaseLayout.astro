@@ -4,14 +4,14 @@
  * The main layout wrapper for all pages
  * Includes navigation, footer, and global styles
  *
- * Navigation mode is controlled by src/settings.json
- * Options: "inline" | "floating-icon" | "side-dots"
+ * All settings are controlled by src/config.ts
  */
 
 import ThemeToggle from '../components/ThemeToggle.astro';
+import ThemeStyles from '../components/ThemeStyles.astro';
 import AnimationInit from '../components/AnimationInit.astro';
 import StructuredData from '../components/StructuredData.astro';
-import settings from '../settings.json';
+import { config } from '../config';
 import '../styles/global.css';
 
 interface Props {
@@ -22,19 +22,29 @@ interface Props {
 
 const {
   title,
-  description = "Personal academic website of Florian Mahner - Research in computational neuroscience and machine learning",
+  description = config.site.description,
   image = "/img/og-image.jpg"
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const navMode = settings.navigation.mode;
+const navMode = config.navigationMode;
+const navItems = config.navigation;
 
-// Navigation items
-const navItems = [
-  { href: '/', label: 'About', short: 'A' },
-  { href: '/publications', label: 'Publications', short: 'P' },
-  { href: '/open-source', label: 'Open Source', short: 'O' },
-  { href: '/misc', label: 'Misc', short: 'M' },
+// Build full name from config
+const fullName = [config.name.first, config.name.middle, config.name.last].filter(Boolean).join(' ');
+
+// Build social links for footer
+const socialLinks = [
+  config.social.github && { label: 'GitHub', href: `https://github.com/${config.social.github}` },
+  config.social.scholar && { label: 'Scholar', href: `https://scholar.google.com/citations?user=${config.social.scholar}` },
+  config.social.linkedin && { label: 'LinkedIn', href: `https://www.linkedin.com/in/${config.social.linkedin}` },
+  config.social.twitter && { label: 'Twitter', href: `https://twitter.com/${config.social.twitter}` },
+  config.social.orcid && { label: 'ORCID', href: `https://orcid.org/${config.social.orcid}` },
+].filter(Boolean) as { label: string; href: string }[];
+
+const footerLinks = [
+  ...config.footer.links,
+  ...socialLinks,
 ];
 ---
 
@@ -72,13 +82,8 @@ const navItems = [
     <StructuredData type="WebSite" />
     <StructuredData type="Person" />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Theme & Fonts from config -->
+    <ThemeStyles />
 
     <!-- Prevent flash of wrong theme -->
     <script is:inline>
@@ -99,7 +104,7 @@ const navItems = [
               <li>
                 <a
                   href={item.href}
-                  class:list={['inline-nav-link', { active: Astro.url.pathname === item.href }]}
+                  class:list={['inline-nav-link', { active: Astro.url.pathname === item.href || (item.href !== '/' && Astro.url.pathname.startsWith(item.href)) }]}
                 >
                   {item.label}
                 </a>
@@ -174,12 +179,19 @@ const navItems = [
 
     <footer class="footer">
       <div class="container footer-content">
-        <span class="footer-copy">&copy; {new Date().getFullYear()} Florian Mahner</span>
+        {config.footer.copyright && (
+          <span class="footer-copy">&copy; {new Date().getFullYear()} {fullName}</span>
+        )}
         <div class="footer-links">
-          <a href="mailto:florian.mahner@gmail.com" aria-label="Email">Email</a>
-          <a href="https://github.com/florianmahner" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://scholar.google.com/citations?user=YOUR_ID" target="_blank" rel="noopener noreferrer">Scholar</a>
-          <a href="https://www.linkedin.com/in/florianmahner" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          {footerLinks.map(link => (
+            <a
+              href={link.href}
+              target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+              rel={link.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
       </div>
     </footer>

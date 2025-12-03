@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import repos from '../content/repositories.json';
+import { config } from '../config';
 
-const title = "Open Source | Florian Mahner";
+const title = `Open Source | ${config.site.title}`;
 
 // Sort by stars (highest first)
 const sortedRepos = [...repos.repositories].sort((a, b) => (b.stars || 0) - (a.stars || 0));
