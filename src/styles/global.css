@@ -43,34 +43,40 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   Layout Utilities
+   Layout Utilities - Unified Layout System
    ========================================================================== */
 
-/* Tufte-style article layout - 5rem vertical padding */
+/*
+ * Layout hierarchy: article > .container > content
+ * - article: full-width wrapper, handles vertical padding
+ * - .container: centers content, constrains max-width
+ */
+
+/* Article wrapper - vertical spacing only */
 article {
-  padding: 5rem var(--margin-left);
-  max-width: var(--full-width);
-  margin: 0 auto;
+  padding: 5rem 0;
 }
 
-/* Main content area */
-.content {
-  width: var(--content-width);
-  max-width: var(--content-max-width);
-}
-
-/* Full width content */
-.full-width {
-  width: 100%;
-  max-width: none;
-}
-
-/* Container */
+/* Container - the ONE source of truth for content width */
 .container {
   width: 100%;
   max-width: var(--content-max-width);
-  margin: 0 auto;
-  padding: 0 var(--container-padding);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Main content area (legacy support) */
+.content {
+  width: 100%;
+  max-width: var(--content-max-width);
+}
+
+/* Full width override */
+.full-width {
+  width: 100%;
+  max-width: none;
 }
 
 /* ==========================================================================

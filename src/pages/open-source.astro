@@ -43,11 +43,7 @@ const sortedRepos = [...repos.repositories].sort((a, b) => (b.stars || 0) - (a.s
 
 <style>
   .opensource-page {
-    padding: var(--space-8) 0;
-  }
-
-  .opensource-page .container {
-    max-width: var(--content-max-width, 750px);
+    /* Vertical padding handled by article in global.css */
   }
 
   .repos-grid {
