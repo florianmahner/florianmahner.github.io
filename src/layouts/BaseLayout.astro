@@ -13,8 +13,7 @@ import ThemeToggle from '../components/ThemeToggle.astro';
 import ThemeStyles from '../components/ThemeStyles.astro';
 import AnimationInit from '../components/AnimationInit.astro';
 import StructuredData from '../components/StructuredData.astro';
-import TypographySelector from '../components/TypographySelector.astro';
-import NavigationSelector from '../components/NavigationSelector.astro';
+import SettingsPanel from '../components/SettingsPanel.astro';
 import { config } from '../config';
 import '../styles/global.css';
 
@@ -720,8 +719,7 @@ const footerLinks = [...config.footer.links, ...socialLinks];
 
     <AnimationInit />
 
-    {/* Dev mode selectors */}
-    {isDev && <TypographySelector />}
-    {isDev && <NavigationSelector />}
+    {/* Dev mode settings panel */}
+    {isDev && <SettingsPanel />}
   </body>
 </html>
