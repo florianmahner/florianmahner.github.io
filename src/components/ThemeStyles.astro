@@ -1,33 +1,30 @@
 ---
 /**
  * Theme Styles Component
- * Generates CSS custom properties from config
+ * Generates CSS custom properties from typography presets
  * Include this in your <head> to apply theme customization
  *
  * In dev mode: loads ALL fonts for typography preset switching
- * In production: loads only the configured fonts
+ * In production: loads only the default preset fonts
  */
-import { config } from '../config';
-import { getAllFontsUrl, getPreset, DEFAULT_PRESET_ID } from '../lib/typography-presets';
+import { getAllFontsUrl, getFontUrl, getPreset, DEFAULT_PRESET_ID } from '../lib/typography-presets';
 
-const { theme } = config;
 const isDev = import.meta.env.DEV;
 
+// Get the default preset
+const defaultPreset = getPreset(DEFAULT_PRESET_ID);
+
 // In dev mode, load all fonts for preset switching
-// In production, load only the configured fonts
+// In production, load only the default preset fonts
 let fontsUrl: string;
 
 if (isDev) {
   // Load all fonts for all presets
   fontsUrl = getAllFontsUrl();
 } else {
-  // Production: only load configured fonts
-  const fonts = Object.values(theme.fonts).filter((v, i, a) => a.indexOf(v) === i);
-  fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700`).join('&')}&display=swap`;
+  // Production: only load default preset fonts
+  fontsUrl = getFontUrl(defaultPreset);
 }
-
-// Get default preset for initial styles
-const defaultPreset = getPreset(DEFAULT_PRESET_ID);
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,10 +32,13 @@ const defaultPreset = getPreset(DEFAULT_PRESET_ID);
 <link href={fontsUrl} rel="stylesheet" />
 
 <style define:vars={{
-  fontBody: theme.fonts.body,
-  fontHeading: theme.fonts.heading,
-  fontUi: theme.fonts.ui,
-  fontMono: theme.fonts.mono,
+  fontBody: defaultPreset.fonts.body,
+  fontHeading: defaultPreset.fonts.heading,
+  fontUi: defaultPreset.fonts.ui,
+  fontMono: defaultPreset.fonts.mono,
+  headingStyle: defaultPreset.styles.headingStyle,
+  headingWeight: defaultPreset.styles.headingWeight,
+  bodyWeight: defaultPreset.styles.bodyWeight,
 }}>
   :root {
     /* Fonts from config (can be overridden by theme selector) */
@@ -47,10 +47,10 @@ const defaultPreset = getPreset(DEFAULT_PRESET_ID);
     --font-ui: var(--fontUi), system-ui, sans-serif;
     --font-mono: var(--fontMono), 'SF Mono', monospace;
 
-    /* Typography style properties (for theme switching) */
-    --heading-style: normal;
-    --heading-weight: 400;
-    --body-weight: 400;
+    /* Typography style properties from default preset */
+    --heading-style: var(--headingStyle);
+    --heading-weight: var(--headingWeight);
+    --body-weight: var(--bodyWeight);
   }
 
   /* Apply heading style from theme */

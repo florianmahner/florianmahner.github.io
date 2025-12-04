@@ -231,7 +231,7 @@ th, td {
 }
 
 th {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   border-bottom: 2px solid var(--color-text);
 }
 

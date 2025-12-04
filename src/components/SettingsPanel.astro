@@ -359,7 +359,9 @@ const navModes = [
       html.style.setProperty('--body-weight', styles.bodyWeight);
 
       localStorage.setItem('typography-preset', presetId || '');
+      localStorage.setItem('typography-fonts', JSON.stringify(fonts));
       localStorage.setItem('typography-colors', JSON.stringify(colors));
+      localStorage.setItem('typography-styles', JSON.stringify(styles));
 
       typographyOptions.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');

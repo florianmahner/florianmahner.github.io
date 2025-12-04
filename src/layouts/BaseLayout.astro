@@ -87,15 +87,41 @@ const footerLinks = [...config.footer.links, ...socialLinks];
           html.setAttribute('data-nav-mode', navMode);
         }
 
-        // Apply stored theme colors immediately (prevents flash)
-        const colorsStr = localStorage.getItem('typography-colors');
-        if (colorsStr) {
-          try {
+        // Apply stored typography preset (fonts, colors, styles)
+        try {
+          // Restore fonts
+          const fontsStr = localStorage.getItem('typography-fonts');
+          if (fontsStr) {
+            const fonts = JSON.parse(fontsStr);
+            html.style.setProperty('--font-body', '"' + fonts.body + '", Georgia, serif');
+            html.style.setProperty('--font-heading', '"' + fonts.heading + '", Georgia, serif');
+            html.style.setProperty('--font-ui', '"' + fonts.ui + '", system-ui, sans-serif');
+            html.style.setProperty('--font-mono', '"' + fonts.mono + '", monospace');
+          }
+
+          // Restore colors
+          const colorsStr = localStorage.getItem('typography-colors');
+          if (colorsStr) {
             const colors = JSON.parse(colorsStr);
             html.style.setProperty('--color-accent-light', colors.accentLight);
             html.style.setProperty('--color-accent-dark', colors.accentDark);
-          } catch (e) {}
-        }
+          }
+
+          // Restore typography styles
+          const stylesStr = localStorage.getItem('typography-styles');
+          if (stylesStr) {
+            const styles = JSON.parse(stylesStr);
+            html.style.setProperty('--heading-style', styles.headingStyle);
+            html.style.setProperty('--heading-weight', styles.headingWeight);
+            html.style.setProperty('--body-weight', styles.bodyWeight);
+          }
+
+          // Set typography attribute
+          const presetId = localStorage.getItem('typography-preset');
+          if (presetId) {
+            html.setAttribute('data-typography', presetId);
+          }
+        } catch (e) {}
       })();
     </script>
   </head>
