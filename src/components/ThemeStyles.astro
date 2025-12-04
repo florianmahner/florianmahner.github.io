@@ -4,27 +4,15 @@
  * Generates CSS custom properties from typography presets
  * Include this in your <head> to apply theme customization
  *
- * In dev mode: loads ALL fonts for typography preset switching
- * In production: loads only the default preset fonts
+ * Loads ALL fonts for all presets so users can switch themes
  */
-import { getAllFontsUrl, getFontUrl, getPreset, DEFAULT_PRESET_ID } from '../lib/typography-presets';
+import { getAllFontsUrl, getPreset, DEFAULT_PRESET_ID } from '../lib/typography-presets';
 
-const isDev = import.meta.env.DEV;
-
-// Get the default preset
+// Get the default preset for initial CSS values
 const defaultPreset = getPreset(DEFAULT_PRESET_ID);
 
-// In dev mode, load all fonts for preset switching
-// In production, load only the default preset fonts
-let fontsUrl: string;
-
-if (isDev) {
-  // Load all fonts for all presets
-  fontsUrl = getAllFontsUrl();
-} else {
-  // Production: only load default preset fonts
-  fontsUrl = getFontUrl(defaultPreset);
-}
+// Load all fonts for all presets (enables theme switching)
+const fontsUrl = getAllFontsUrl();
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
