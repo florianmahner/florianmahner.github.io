@@ -1,8 +1,8 @@
 ---
 /**
- * Typography Selector Component (Development Only)
+ * Theme Selector Component (Development Only)
  *
- * Floating panel to switch between typography presets.
+ * Floating panel to switch between themes (fonts + colors).
  * Only visible in development mode.
  *
  * Usage: Include in BaseLayout when import.meta.env.DEV is true
@@ -11,7 +11,7 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
 ---
 
 <div id="typography-selector" class="typography-selector">
-  <button id="typography-toggle" class="toggle-btn" aria-label="Toggle typography selector">
+  <button id="typography-toggle" class="toggle-btn" aria-label="Toggle theme selector">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <polyline points="4 7 4 4 20 4 20 7"></polyline>
       <line x1="9" y1="20" x2="15" y2="20"></line>
@@ -21,7 +21,7 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
 
   <div id="typography-panel" class="panel" hidden>
     <div class="panel-header">
-      <span class="panel-title">Typography</span>
+      <span class="panel-title">Theme</span>
       <button id="typography-close" class="close-btn" aria-label="Close">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -39,7 +39,10 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
           data-colors={JSON.stringify(preset.colors)}
           data-styles={JSON.stringify(preset.styles)}
         >
-          <span class="preset-name">{preset.name}</span>
+          <div class="preset-header">
+            <span class="preset-name">{preset.name}</span>
+            <span class="color-swatch" style={`background: ${preset.colors.accentLight}`}></span>
+          </div>
           <span class="preset-desc">{preset.description}</span>
         </button>
       ))}
@@ -184,6 +187,13 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
     border-color: #71717a;
   }
 
+  .preset-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
   .preset-name {
     font-weight: 500;
     color: #18181b;
@@ -191,6 +201,14 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
 
   [data-theme="dark"] .preset-name {
     color: #fafafa;
+  }
+
+  .color-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
   }
 
   .preset-desc {
@@ -253,15 +271,14 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
       html.style.setProperty('--font-ui', `"${fonts.ui}", system-ui, sans-serif`);
       html.style.setProperty('--font-mono', `"${fonts.mono}", monospace`);
 
-      // Apply colors based on current theme
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      html.style.setProperty('--color-accent', isDark ? colors.accentDark : colors.accentLight);
+      // Apply accent colors (both light and dark so CSS handles mode switching)
+      html.style.setProperty('--color-accent-light', colors.accentLight);
+      html.style.setProperty('--color-accent-dark', colors.accentDark);
 
       // Apply styles
       html.style.setProperty('--heading-style', styles.headingStyle);
       html.style.setProperty('--heading-weight', styles.headingWeight);
       html.style.setProperty('--body-weight', styles.bodyWeight);
-      html.style.setProperty('--content-max-width', styles.contentWidth);
 
       // Store preference
       localStorage.setItem('typography-preset', presetId || '');
@@ -309,21 +326,6 @@ import { typographyPresets, DEFAULT_PRESET_ID } from '../lib/typography-presets'
         panel?.setAttribute('hidden', '');
       }
     });
-
-    // Re-apply colors when theme changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'data-theme') {
-          const colorsStr = localStorage.getItem('typography-colors');
-          if (colorsStr) {
-            const colors = JSON.parse(colorsStr);
-            const isDark = html.getAttribute('data-theme') === 'dark';
-            html.style.setProperty('--color-accent', isDark ? colors.accentDark : colors.accentLight);
-          }
-        }
-      });
-    });
-    observer.observe(html, { attributes: true });
   }
 
   // Initialize

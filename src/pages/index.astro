@@ -22,9 +22,8 @@ const displayName = config.name.middle
 <BaseLayout title={title}>
   <article class="about-page">
     <div class="container">
-      <!-- Profile Section -->
-      <section class="profile-section" data-animate="fade-up">
-        <h1>{displayName} <span class="accent">{config.name.last}</span></h1>
+      <!-- About Section -->
+      <section class="about-section" data-animate="fade-up">
         <p>
           I am a PhD Candidate at the <a href="https://hebartlab.com/">Max Planck Research Group Vision and Computational Cognition</a> supervised by <a href="http://martin-hebart.de">Martin Hebart</a>. I am also a guest researcher at the <a href="https://neuralcod.ing/">Neural Coding Lab</a> and co-supervised by <a href="https://www.ru.nl/en/people/guclu-u">Umut Güçlü</a>.
         </p>
@@ -146,24 +145,14 @@ const displayName = config.name.middle
     /* Vertical padding handled by article in global.css */
   }
 
-  /* Profile Section */
-  .profile-section {
+  /* About Section */
+  .about-section {
     margin-bottom: var(--space-8);
   }
 
-  .profile-section h1 {
-    margin-bottom: var(--space-3);
-  }
-
-  .accent {
-    color: var(--color-accent);
-  }
-
-  .lead {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
-    font-style: italic;
-    margin-bottom: var(--space-4);
+  .about-section p {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
   }
 
   /* Sections */
@@ -230,7 +219,7 @@ const displayName = config.name.middle
 
   .paper-venue {
     font-size: var(--font-size-xs);
-    font-family: var(--font-ui);
+    font-family: var(--font-body);
     color: var(--color-accent);
     font-weight: var(--font-weight-medium);
   }
@@ -242,11 +231,12 @@ const displayName = config.name.middle
   }
 
   .paper-title {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
     font-weight: var(--font-weight-medium);
     font-style: normal;
     margin: 0 0 var(--space-2);
-    line-height: var(--line-height-tight);
+    line-height: var(--line-height-normal);
   }
 
   .paper-title a {
@@ -260,7 +250,7 @@ const displayName = config.name.middle
   }
 
   .paper-authors {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
     margin: 0 0 var(--space-4);
     line-height: var(--line-height-relaxed);
@@ -276,8 +266,8 @@ const displayName = config.name.middle
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    font-size: var(--font-size-sm);
-    font-family: var(--font-ui);
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
     background: none;
@@ -290,11 +280,7 @@ const displayName = config.name.middle
   .paper-link:hover {
     color: var(--color-accent);
     border-color: var(--color-accent);
-    background-color: rgba(196, 30, 58, 0.05);
-  }
-
-  [data-theme="dark"] .paper-link:hover {
-    background-color: rgba(255, 77, 106, 0.1);
+    background-color: var(--color-bg-alt);
   }
 
   @media (max-width: 600px) {
@@ -336,7 +322,7 @@ const displayName = config.name.middle
   }
 
   .education-period {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     font-family: var(--font-mono);
     color: var(--color-text-muted);
     padding-top: 2px;
@@ -352,7 +338,7 @@ const displayName = config.name.middle
 
   .education-institution {
     margin: 0 0 var(--space-1);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
   }
 
   .education-institution a {
@@ -361,13 +347,13 @@ const displayName = config.name.middle
 
   .education-details {
     margin: 0 0 var(--space-2);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     color: var(--color-text-muted);
   }
 
   .thesis-link {
     display: inline-block;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     color: var(--color-accent);
     background: none;
   }

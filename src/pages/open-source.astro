@@ -26,10 +26,6 @@ const langColors: Record<string, string> = {
 <BaseLayout title={title} description="Open source tools and libraries">
   <article class="opensource-page">
     <div class="container">
-      <header class="page-header" data-animate="fade-up">
-        <h1>Open Source</h1>
-      </header>
-
       <div class="repos-grid" data-animate="stagger">
         {sortedRepos.map(repo => (
           <a href={repo.url} class="repo-card" target="_blank" rel="noopener noreferrer">
@@ -98,7 +94,7 @@ const langColors: Record<string, string> = {
   }
 
   .repo-name {
-    font-family: var(--font-ui);
+    font-family: var(--font-body);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
     color: var(--color-accent);
@@ -106,7 +102,8 @@ const langColors: Record<string, string> = {
   }
 
   .repo-desc {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
     color: var(--color-text-secondary);
     line-height: var(--line-height-normal);
     margin: 0;
@@ -118,7 +115,8 @@ const langColors: Record<string, string> = {
     align-items: center;
     gap: var(--space-4);
     margin-top: var(--space-4);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-body);
     color: var(--color-text-muted);
   }
 

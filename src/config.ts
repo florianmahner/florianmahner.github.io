@@ -67,9 +67,7 @@ export const config = {
       // Code/monospace
       mono: "JetBrains Mono",
     },
-
-    // Content width (max-width of main content)
-    contentWidth: "750px",
+    // Content width is now controlled in src/styles/variables.css
   },
 
   // Feature toggles - enable/disable sections

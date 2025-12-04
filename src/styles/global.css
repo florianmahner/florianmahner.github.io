@@ -102,7 +102,16 @@ article {
   margin-bottom: 0;
 }
 
-/* Section headers - small uppercase labels */
+/* Section headers (h2) - consistent across pages */
+.section h2 {
+  font-size: var(--font-size-lg);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+/* Section headers - small uppercase labels (legacy) */
 .section-label {
   font-size: var(--font-size-xs);
   font-family: var(--font-ui);
@@ -130,7 +139,7 @@ article {
 }
 
 .view-all a {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   transition: color var(--transition-fast);
 }
@@ -413,11 +422,11 @@ button:active:not(:disabled) {
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(196, 30, 58, 0.15);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(255, 77, 106, 0.2);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 /* Icon rotation on hover */

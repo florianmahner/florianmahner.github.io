@@ -1,13 +1,13 @@
 /* ==========================================================================
    Color System
-   Red + Black with Tufte-inspired cream background
+   Base colors for light/dark mode. Accent colors are set by themes.
    ========================================================================== */
 
 :root {
-  /* Primary Colors */
-  --color-accent: #c41e3a;
-  --color-accent-hover: #a01830;
-  --color-accent-light: #e8364f;
+  /* Accent colors - set by theme, fallback to crimson */
+  --color-accent-light: #c41e3a;
+  --color-accent-dark: #ff4d6a;
+  --color-accent: var(--color-accent-light);
 
   /* Background Colors */
   --color-bg: #fffff8;
@@ -23,10 +23,10 @@
   --color-border: #e0e0d8;
   --color-border-light: #eeeeee;
 
-  /* Semantic Colors */
+  /* Semantic Colors - all links use accent color */
   --color-link: var(--color-accent);
-  --color-link-hover: var(--color-accent-hover);
-  --color-link-visited: #8b1538;
+  --color-link-hover: var(--color-accent);
+  --color-link-visited: var(--color-accent);
 
   /* Code Colors */
   --color-code-bg: var(--color-bg-code);
@@ -40,9 +40,7 @@
 
 /* Dark Mode */
 [data-theme="dark"] {
-  --color-accent: #ff4d6a;
-  --color-accent-hover: #ff6b84;
-  --color-accent-light: #ff8fa3;
+  --color-accent: var(--color-accent-dark);
 
   --color-bg: #151515;
   --color-bg-alt: #1e1e1e;
@@ -55,10 +53,6 @@
   --color-border: #333333;
   --color-border-light: #2a2a2a;
 
-  --color-link: var(--color-accent);
-  --color-link-hover: var(--color-accent-hover);
-  --color-link-visited: #ff8fa3;
-
   --color-code-bg: var(--color-bg-code);
   --color-code-text: #e0e0e0;
 
@@ -70,9 +64,7 @@
 /* System preference detection (fallback) */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-accent: #ff4d6a;
-    --color-accent-hover: #ff6b84;
-    --color-accent-light: #ff8fa3;
+    --color-accent: var(--color-accent-dark);
 
     --color-bg: #151515;
     --color-bg-alt: #1e1e1e;
@@ -84,10 +76,6 @@
 
     --color-border: #333333;
     --color-border-light: #2a2a2a;
-
-    --color-link: var(--color-accent);
-    --color-link-hover: var(--color-accent-hover);
-    --color-link-visited: #ff8fa3;
 
     --color-code-bg: var(--color-bg-code);
     --color-code-text: #e0e0e0;

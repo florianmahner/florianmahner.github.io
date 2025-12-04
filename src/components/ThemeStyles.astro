@@ -35,53 +35,31 @@ const defaultPreset = getPreset(DEFAULT_PRESET_ID);
 <link href={fontsUrl} rel="stylesheet" />
 
 <style define:vars={{
-  accentLight: theme.accentLight,
-  accentDark: theme.accentDark,
   fontBody: theme.fonts.body,
   fontHeading: theme.fonts.heading,
   fontUi: theme.fonts.ui,
   fontMono: theme.fonts.mono,
-  contentWidth: theme.contentWidth,
 }}>
   :root {
-    /* Accent colors from config */
-    --color-accent: var(--accentLight);
-    --color-accent-hover: color-mix(in srgb, var(--accentLight) 85%, black);
-
-    /* Fonts from config (can be overridden by typography preset) */
+    /* Fonts from config (can be overridden by theme selector) */
     --font-body: var(--fontBody), Georgia, serif;
     --font-heading: var(--fontHeading), Georgia, serif;
     --font-ui: var(--fontUi), system-ui, sans-serif;
     --font-mono: var(--fontMono), 'SF Mono', monospace;
 
-    /* Content width from config */
-    --content-max-width: var(--contentWidth);
-
-    /* Typography style properties (for preset switching) */
+    /* Typography style properties (for theme switching) */
     --heading-style: normal;
     --heading-weight: 400;
     --body-weight: 400;
   }
 
-  [data-theme="dark"] {
-    --color-accent: var(--accentDark);
-    --color-accent-hover: color-mix(in srgb, var(--accentDark) 85%, white);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --color-accent: var(--accentDark);
-      --color-accent-hover: color-mix(in srgb, var(--accentDark) 85%, white);
-    }
-  }
-
-  /* Apply heading style from typography preset */
+  /* Apply heading style from theme */
   h1, h2, h3, h4, h5, h6 {
     font-style: var(--heading-style);
     font-weight: var(--heading-weight);
   }
 
-  /* Apply body weight from typography preset */
+  /* Apply body weight from theme */
   body {
     font-weight: var(--body-weight);
   }

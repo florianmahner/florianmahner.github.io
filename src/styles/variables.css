@@ -4,15 +4,15 @@
    ========================================================================== */
 
 :root {
-  /* Typography Scale (based on 1.25 ratio) */
-  --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-  --font-size-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-  --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
-  --font-size-lg: clamp(1.125rem, 1rem + 0.6vw, 1.25rem);
-  --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
-  --font-size-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
-  --font-size-3xl: clamp(2rem, 1.7rem + 1.5vw, 2.5rem);
-  --font-size-4xl: clamp(2.5rem, 2rem + 2.5vw, 3.5rem);
+  /* Typography Scale - optimized for 900px width with serif fonts */
+  --font-size-xs: clamp(0.8rem, 0.75rem + 0.25vw, 0.9rem);
+  --font-size-sm: clamp(0.95rem, 0.9rem + 0.3vw, 1.1rem);
+  --font-size-base: clamp(1.1rem, 1.05rem + 0.4vw, 1.25rem);
+  --font-size-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.4rem);
+  --font-size-xl: clamp(1.4rem, 1.25rem + 0.7vw, 1.65rem);
+  --font-size-2xl: clamp(1.65rem, 1.45rem + 1vw, 2.15rem);
+  --font-size-3xl: clamp(2.15rem, 1.85rem + 1.5vw, 2.75rem);
+  --font-size-4xl: clamp(2.75rem, 2.25rem + 2.5vw, 3.8rem);
 
   /* ============================================================
      FONT OPTIONS - Uncomment ONE set to try different fonts
@@ -94,12 +94,16 @@
   --space-24: 6rem;
 
   /* Layout - CUSTOMIZE THESE FOR YOUR PREFERRED WIDTH */
-  --content-width: 55%;
-  --content-max-width: 850px;        /* Main content max width - adjust this! */
+  --content-width: 70%;
+  --content-max-width: 900px;        /* Balanced width for readability */
+  --content-max-width-wide: 1050px;  /* For extra wide layouts */
   --sidenote-width: 300px;
   --margin-width: 400px;
   --full-width: 1400px;
   --container-padding: var(--space-6);
+
+  /* Mobile breakpoint */
+  --breakpoint-mobile: 768px;
 
   /* Tufte margins */
   --margin-left: 5%;

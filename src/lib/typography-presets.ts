@@ -31,7 +31,6 @@ export interface TypographyPreset {
     headingWeight: number;
     bodyWeight: number;
     letterSpacing: 'tight' | 'normal' | 'wide';
-    contentWidth: string;
   };
 }
 
@@ -58,7 +57,6 @@ export const typographyPresets: TypographyPreset[] = [
       headingWeight: 400,
       bodyWeight: 400,
       letterSpacing: 'normal',
-      contentWidth: '750px',
     },
   },
 
@@ -87,7 +85,6 @@ export const typographyPresets: TypographyPreset[] = [
       headingWeight: 400,
       bodyWeight: 400,
       letterSpacing: 'normal',
-      contentWidth: '720px',
     },
   },
 
@@ -113,7 +110,6 @@ export const typographyPresets: TypographyPreset[] = [
       headingWeight: 600,
       bodyWeight: 400,
       letterSpacing: 'tight',
-      contentWidth: '680px',
     },
   },
 
@@ -139,7 +135,6 @@ export const typographyPresets: TypographyPreset[] = [
       headingWeight: 500,
       bodyWeight: 400,
       letterSpacing: 'normal',
-      contentWidth: '750px',
     },
   },
 
@@ -165,7 +160,6 @@ export const typographyPresets: TypographyPreset[] = [
       headingWeight: 700,
       bodyWeight: 400,
       letterSpacing: 'wide',
-      contentWidth: '800px',
     },
   },
 
@@ -191,7 +185,6 @@ export const typographyPresets: TypographyPreset[] = [
       headingWeight: 600,
       bodyWeight: 400,
       letterSpacing: 'normal',
-      contentWidth: '720px',
     },
   },
 ];
