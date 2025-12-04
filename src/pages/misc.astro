@@ -47,7 +47,14 @@ const tools = misc.tools;
     /* Vertical padding handled by article in global.css */
   }
 
-  /* Use global .page-header and .section patterns */
+  /* First section alignment */
+  .misc-page .section:first-child {
+    margin-top: 0;
+  }
+
+  .misc-page .section:first-child h2:first-child {
+    margin-top: 0;
+  }
 
   /* Tools grid */
   .tools-grid {
@@ -122,7 +129,7 @@ const tools = misc.tools;
   }
 
   .config-name {
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     font-size: var(--font-size-base);
     color: var(--color-text);
   }

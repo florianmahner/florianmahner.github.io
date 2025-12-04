@@ -93,6 +93,9 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
+  /* Content Top Alignment - Single source of truth */
+  --content-top-padding: 5rem;
+
   /* Layout - CUSTOMIZE THESE FOR YOUR PREFERRED WIDTH */
   --content-width: 70%;
   --content-max-width: 900px;        /* Balanced width for readability */

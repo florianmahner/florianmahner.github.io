@@ -23,7 +23,7 @@ const years = Object.keys(pubsByYear).sort((a, b) => Number(b) - Number(a));
           <h2 class="year-label">{year}</h2>
           <div class="publications-list" data-animate="stagger">
             {pubsByYear[Number(year)].map(pub => (
-          <article class="paper-card">
+          <article class="paper-card paper-card--with-preview">
             {pub.preview && (
               <div class="paper-preview">
                 <img src={pub.preview} alt={pub.title} loading="lazy" />
@@ -93,150 +93,23 @@ const years = Object.keys(pubsByYear).sort((a, b) => Number(b) - Number(a));
     margin-bottom: var(--space-12);
   }
 
+  .year-section:first-child {
+    margin-top: 0;
+  }
+
   .year-label {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-muted);
+    margin-top: 0;
     margin-bottom: var(--space-4);
     font-family: var(--font-body);
   }
 
+  /* Publications list - uses global .paper-* classes from global.css */
   .publications-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-  }
-
-  /* Same card style as homepage selected papers */
-  .paper-card {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: var(--space-5);
-    padding: var(--space-4);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
-  }
-
-  .paper-card:hover {
-    background-color: var(--color-bg-alt);
-  }
-
-  .paper-preview {
-    flex-shrink: 0;
-    width: 140px;
-    height: 90px;
-    overflow: hidden;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-  }
-
-  .paper-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--transition-normal);
-  }
-
-  .paper-card:hover .paper-preview img {
-    transform: scale(1.05);
-  }
-
-  .paper-content {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-
-  .paper-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-
-  .paper-venue {
-    font-size: var(--font-size-xs);
-    font-family: var(--font-body);
-    color: var(--color-accent);
-    font-weight: var(--font-weight-medium);
-  }
-
-  .paper-title {
-    font-size: var(--font-size-base);
-    font-family: var(--font-body);
-    font-weight: var(--font-weight-medium);
-    font-style: normal;
-    margin: 0 0 var(--space-2);
-    line-height: var(--line-height-normal);
-  }
-
-  .paper-title a {
-    color: var(--color-text);
-    background: none;
-    transition: color var(--transition-fast);
-  }
-
-  .paper-title a:hover {
-    color: var(--color-accent);
-  }
-
-  .paper-authors {
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
-    margin: 0 0 var(--space-3);
-    line-height: var(--line-height-relaxed);
-  }
-
-  .highlight-author {
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text);
-  }
-
-  .paper-links {
-    display: flex;
-    gap: var(--space-3);
-    margin-top: auto;
-  }
-
-  .paper-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--font-size-base);
-    font-family: var(--font-body);
-    color: var(--color-text-secondary);
-    background: none;
-    transition: color var(--transition-fast);
-  }
-
-  .paper-link:hover {
-    color: var(--color-accent);
-  }
-
-  @media (max-width: 600px) {
-    .paper-card {
-      grid-template-columns: 1fr;
-      gap: var(--space-3);
-    }
-
-    .paper-preview {
-      width: 100%;
-      max-width: 240px;
-      height: auto;
-      aspect-ratio: 16/10;
-    }
-
-    .paper-preview img {
-      object-fit: contain;
-      background: var(--color-bg-alt);
-    }
-
-    .paper-title {
-      font-size: var(--font-size-sm);
-    }
-
-    .paper-authors {
-      font-size: var(--font-size-xs);
-    }
   }
 </style>

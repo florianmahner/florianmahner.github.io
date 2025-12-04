@@ -71,7 +71,7 @@ p {
 /* Lead paragraph */
 .lead, p.subtitle {
   font-size: var(--font-size-lg);
-  line-height: var(--line-height-relaxed);
+  line-height: var(--line-height-normal);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-8);
 }
@@ -96,11 +96,11 @@ a:visited {
   color: var(--color-link-visited);
 }
 
-/* Tufte-style new thought */
+/* Tufte-style new thought - using weight instead of small-caps */
 .newthought {
-  font-variant: small-caps;
-  font-size: 1.1em;
-  letter-spacing: var(--letter-spacing-wide);
+  font-weight: var(--font-weight-medium);
+  font-size: 1em;
+  letter-spacing: var(--letter-spacing-normal);
 }
 
 /* Lists */
@@ -189,9 +189,11 @@ hr {
   margin: var(--space-12) 0;
 }
 
-/* Small caps utility */
+/* Small caps utility - deprecated, using weight for emphasis instead */
 .smallcaps {
-  font-variant: small-caps;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  font-size: 0.85em;
   letter-spacing: var(--letter-spacing-wide);
 }
 

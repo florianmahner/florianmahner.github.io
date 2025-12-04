@@ -280,7 +280,7 @@ const footerLinks = [...config.footer.links, ...socialLinks];
         display: flex;
         align-items: center;
         gap: 0;
-        padding: 4px;
+        padding: 6px;
         background: var(--color-bg);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-full);
@@ -300,12 +300,23 @@ const footerLinks = [...config.footer.links, ...socialLinks];
         padding: 0;
       }
 
+      .floating-nav-links li {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+      }
+
       .floating-nav-link {
-        display: block;
-        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 32px;
+        padding: 0 16px;
         font-family: var(--font-body);
         font-size: var(--font-size-base);
         font-weight: var(--font-weight-medium);
+        line-height: 1;
         color: var(--color-text-muted);
         text-decoration: none;
         background: none;
@@ -319,14 +330,11 @@ const footerLinks = [...config.footer.links, ...socialLinks];
 
       .floating-nav-link.active {
         color: var(--color-text);
-        background: var(--color-bg-alt);
       }
 
       .floating-nav-actions {
         display: flex;
         align-items: center;
-        padding: 0 var(--space-2);
-        margin-left: var(--space-1);
       }
 
       /* No content offset needed - nav is at bottom */
@@ -358,8 +366,8 @@ const footerLinks = [...config.footer.links, ...socialLinks];
         position: sticky;
         top: var(--space-4);
         height: fit-content;
-        /* Match article padding (5rem) minus link padding for perfect alignment */
-        padding-top: calc(5rem - var(--space-2));
+        /* Exact alignment with content - no offset, first link aligns directly */
+        padding-top: var(--content-top-padding);
       }
 
       .sidebar-nav-inner {
@@ -376,11 +384,17 @@ const footerLinks = [...config.footer.links, ...socialLinks];
         gap: 2px;
       }
 
+      /* First link has no top padding for exact baseline alignment */
+      .sidebar-nav-links li:first-child .sidebar-nav-link {
+        padding-top: 0;
+      }
+
       .sidebar-nav-link {
         display: block;
         padding: var(--space-2) var(--space-3);
         font-family: var(--font-body);
         font-size: var(--font-size-base);
+        line-height: var(--line-height-normal);
         color: var(--color-text-muted);
         text-decoration: none;
         background: none;
