@@ -45,8 +45,8 @@ export const config = {
     // { id: "cv", label: "CV", href: "/cv" },
   ],
 
-  // Navigation style: "inline" | "floating-icon" | "minimal"
-  navigationMode: "floating-icon" as const,
+  // Navigation style: "sidebar" | "floating" | "inline"
+  navigationMode: "sidebar" as const,
 
   // Theme customization
   theme: {

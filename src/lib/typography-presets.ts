@@ -190,7 +190,7 @@ export const typographyPresets: TypographyPreset[] = [
 ];
 
 // Default preset ID
-export const DEFAULT_PRESET_ID = 'crimson-classic';
+export const DEFAULT_PRESET_ID = 'editorial-newsreader';
 
 // Get preset by ID
 export function getPreset(id: string): TypographyPreset {
