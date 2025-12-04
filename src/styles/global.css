@@ -113,6 +113,10 @@ article {
   padding: 1rem 0;
 }
 
+.section:first-child {
+  padding-top: 0;
+}
+
 .section:last-child {
   margin-bottom: 0;
 }
@@ -123,6 +127,7 @@ article {
   font-family: var(--font-body);
   font-weight: var(--font-weight-medium);
   color: var(--color-text);
+  margin-top: 0;
   margin-bottom: var(--space-4);
 }
 
