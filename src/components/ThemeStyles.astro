@@ -3,15 +3,31 @@
  * Theme Styles Component
  * Generates CSS custom properties from config
  * Include this in your <head> to apply theme customization
+ *
+ * In dev mode: loads ALL fonts for typography preset switching
+ * In production: loads only the configured fonts
  */
 import { config } from '../config';
+import { getAllFontsUrl, getPreset, DEFAULT_PRESET_ID } from '../lib/typography-presets';
 
 const { theme } = config;
+const isDev = import.meta.env.DEV;
 
-// Generate Google Fonts URL from config
-// Include weights 300-700 for contrast (300 for light, 700 for bold)
-const fonts = Object.values(theme.fonts).filter((v, i, a) => a.indexOf(v) === i);
-const fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700`).join('&')}&display=swap`;
+// In dev mode, load all fonts for preset switching
+// In production, load only the configured fonts
+let fontsUrl: string;
+
+if (isDev) {
+  // Load all fonts for all presets
+  fontsUrl = getAllFontsUrl();
+} else {
+  // Production: only load configured fonts
+  const fonts = Object.values(theme.fonts).filter((v, i, a) => a.indexOf(v) === i);
+  fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f.replace(/ /g, '+')}:wght@300;400;500;600;700`).join('&')}&display=swap`;
+}
+
+// Get default preset for initial styles
+const defaultPreset = getPreset(DEFAULT_PRESET_ID);
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,14 +48,19 @@ const fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f
     --color-accent: var(--accentLight);
     --color-accent-hover: color-mix(in srgb, var(--accentLight) 85%, black);
 
-    /* Fonts from config */
-    --font-body: var(--fontBody), system-ui, sans-serif;
-    --font-heading: var(--fontHeading), system-ui, sans-serif;
+    /* Fonts from config (can be overridden by typography preset) */
+    --font-body: var(--fontBody), Georgia, serif;
+    --font-heading: var(--fontHeading), Georgia, serif;
     --font-ui: var(--fontUi), system-ui, sans-serif;
     --font-mono: var(--fontMono), 'SF Mono', monospace;
 
     /* Content width from config */
     --content-max-width: var(--contentWidth);
+
+    /* Typography style properties (for preset switching) */
+    --heading-style: normal;
+    --heading-weight: 400;
+    --body-weight: 400;
   }
 
   [data-theme="dark"] {
@@ -52,5 +73,16 @@ const fontsUrl = `https://fonts.googleapis.com/css2?${fonts.map(f => `family=${f
       --color-accent: var(--accentDark);
       --color-accent-hover: color-mix(in srgb, var(--accentDark) 85%, white);
     }
+  }
+
+  /* Apply heading style from typography preset */
+  h1, h2, h3, h4, h5, h6 {
+    font-style: var(--heading-style);
+    font-weight: var(--heading-weight);
+  }
+
+  /* Apply body weight from typography preset */
+  body {
+    font-weight: var(--body-weight);
   }
 </style>

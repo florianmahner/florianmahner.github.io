@@ -5,14 +5,19 @@
  * Includes navigation, footer, and global styles
  *
  * All settings are controlled by src/config.ts
+ *
+ * Dev mode: includes TypographySelector for previewing typography presets
  */
 
 import ThemeToggle from '../components/ThemeToggle.astro';
 import ThemeStyles from '../components/ThemeStyles.astro';
 import AnimationInit from '../components/AnimationInit.astro';
 import StructuredData from '../components/StructuredData.astro';
+import TypographySelector from '../components/TypographySelector.astro';
 import { config } from '../config';
 import '../styles/global.css';
+
+const isDev = import.meta.env.DEV;
 
 interface Props {
   title: string;
@@ -887,5 +892,8 @@ const footerLinks = [
     </script>
 
     <AnimationInit />
+
+    {/* Typography Selector - only in development mode */}
+    {isDev && <TypographySelector />}
   </body>
 </html>
