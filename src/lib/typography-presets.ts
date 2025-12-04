@@ -7,7 +7,7 @@
  * Usage:
  * - Presets are applied via data-typography="preset-id" on <html>
  * - CSS custom properties are set based on the active preset
- * - Use TypographySelector component in dev mode to switch presets
+ * - Use SettingsPanel component to switch presets
  */
 
 export interface TypographyPreset {
