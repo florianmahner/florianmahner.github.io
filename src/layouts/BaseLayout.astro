@@ -363,9 +363,9 @@ const footerLinks = [...config.footer.links, ...socialLinks];
       .sidebar-nav {
         grid-area: sidebar;
         position: sticky;
-        top: var(--space-4);
+        top: 0;
         height: fit-content;
-        /* Exact alignment with content - no offset, first link aligns directly */
+        /* Match article padding exactly */
         padding-top: var(--content-top-padding);
       }
 
@@ -383,9 +383,10 @@ const footerLinks = [...config.footer.links, ...socialLinks];
         gap: 2px;
       }
 
-      /* First link has no top padding for exact baseline alignment */
+      /* First link - remove top padding and left padding for exact alignment */
       .sidebar-nav-links li:first-child .sidebar-nav-link {
         padding-top: 0;
+        padding-left: 0;
       }
 
       .sidebar-nav-link {
