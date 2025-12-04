@@ -7,7 +7,6 @@
 ---
 
 <button
-  id="theme-toggle"
   type="button"
   aria-label="Toggle dark mode"
   class="theme-toggle"
@@ -73,7 +72,7 @@
 
 <script>
   function initTheme() {
-    const toggle = document.getElementById('theme-toggle');
+    const toggles = document.querySelectorAll('.theme-toggle');
     const html = document.documentElement;
 
     // Get theme - prefer system, fallback to stored
@@ -98,10 +97,12 @@
     const initialTheme = getTheme();
     setTheme(initialTheme, !!localStorage.getItem('theme'));
 
-    // Toggle handler - this saves preference
-    toggle?.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme');
-      setTheme(current === 'dark' ? 'light' : 'dark', true);
+    // Toggle handler for ALL toggle buttons
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        setTheme(current === 'dark' ? 'light' : 'dark', true);
+      });
     });
 
     // Listen for system preference changes
