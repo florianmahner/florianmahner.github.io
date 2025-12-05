@@ -26,7 +26,8 @@ const years = Object.keys(pubsByYear).sort((a, b) => Number(b) - Number(a));
           <article class="paper-card paper-card--with-preview">
             {pub.preview && (
               <div class="paper-preview">
-                <img src={pub.preview} alt={pub.title} loading="lazy" />
+                <img src={pub.preview} alt={pub.title} loading="lazy" class="preview-light" />
+                <img src={pub.preview.replace('-light.gif', '-dark.gif')} alt={pub.title} loading="lazy" class="preview-dark" />
               </div>
             )}
             <div class="paper-content">

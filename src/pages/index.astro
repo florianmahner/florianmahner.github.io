@@ -50,7 +50,8 @@ const displayName = config.name.middle
               <article class="paper-card paper-card--with-preview-lg">
                 {paper.preview && (
                   <div class="paper-preview paper-preview--lg">
-                    <img src={paper.preview} alt={paper.title} loading="lazy" />
+                    <img src={paper.preview} alt={paper.title} loading="lazy" class="preview-light" />
+                    <img src={paper.preview.replace('-light.gif', '-dark.gif')} alt={paper.title} loading="lazy" class="preview-dark" />
                   </div>
                 )}
                 <div class="paper-content">
