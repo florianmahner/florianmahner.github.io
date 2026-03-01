@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F — Overlapping Planes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --black: #000; --white: #fff; --accent: #E63946;
+  --grey-mid: #888; --grey-rule: #d0d0d0; --grey-light: #f5f5f5; --off-white: #fafafa;
+  --font: 'Inter', sans-serif;
+  --pad: clamp(1.5rem, 5vw, 6rem);
+}
+html { font-size: 16px; }
+body { font-family: var(--font); color: var(--black); background: var(--white); line-height: 1.55; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--accent); color: var(--white); }
+a { color: inherit; text-decoration: none; }
+
+.variant-label {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  background: #1a1a1a; color: var(--accent); text-align: center;
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; padding: 0.4rem;
+}
+
+.contained { max-width: 1200px; margin: 0 auto; padding: 0 var(--pad); position: relative; }
+
+.section-label {
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--grey-mid); margin-bottom: 3rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.section-label::after { content: ''; flex: 1; border-top: 1px solid var(--grey-rule); }
+.section-num { font-weight: 300; margin-right: 0.25rem; opacity: 0.6; }
+
+/* HERO */
+.hero { padding: 10rem 0 6rem; border-bottom: 1px solid var(--black); }
+.hero-name { font-size: clamp(3.5rem, 10vw, 7.5rem); font-weight: 900; line-height: 0.92; letter-spacing: -0.035em; }
+.hero-name .dot { color: var(--accent); }
+.hero-meta { margin-top: 2.5rem; display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 2rem; max-width: 500px; }
+.hero-meta dt { font-weight: 300; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey-mid); }
+.hero-meta dd { font-weight: 500; font-size: 0.9375rem; }
+.hero-rule { display: block; width: 60px; height: 3px; background: var(--accent); margin-top: 2.5rem; border: none; }
+
+/* ABOUT */
+.about { padding: 5rem 0; border-bottom: 1px solid var(--black); }
+.about-text { font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-weight: 300; line-height: 1.5; max-width: 680px; }
+.about-text strong { font-weight: 700; }
+.about-text em { font-style: normal; color: var(--accent); font-weight: 500; }
+.affiliations { margin-top: 2.5rem; display: flex; gap: 2rem; flex-wrap: wrap; }
+.affiliation { border-left: 2px solid var(--black); padding-left: 1rem; }
+.affiliation-name { font-weight: 600; font-size: 0.875rem; }
+.affiliation-name a:hover { color: var(--accent); }
+.affiliation-role { font-weight: 300; font-size: 0.75rem; color: var(--grey-mid); }
+
+/* ===== PUBLICATIONS — Clean list inside overlapping dark plane ===== */
+.pubs-plane {
+  background: var(--black); color: var(--white);
+  margin: 0 calc(-1 * var(--pad));
+  padding: 5rem var(--pad);
+  position: relative;
+  /* Overlap: pull up into previous section */
+  margin-top: -2rem;
+  z-index: 2;
+}
+.pubs-plane .section-label { color: rgba(255,255,255,0.4); }
+.pubs-plane .section-label::after { border-color: rgba(255,255,255,0.15); }
+
+.pub-entry {
+  padding: 2.25rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: grid; grid-template-columns: 5rem 1fr;
+  gap: 0 2.5rem;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.pub-entry.visible { opacity: 1; transform: translateY(0); }
+.pub-entry:last-child { border-bottom: none; }
+
+.pubs-plane .pub-year { font-weight: 300; font-size: 0.8125rem; color: rgba(255,255,255,0.35); font-variant-numeric: tabular-nums; padding-top: 0.2rem; }
+.pubs-plane .pub-title { font-weight: 600; font-size: 1.0625rem; line-height: 1.4; letter-spacing: -0.01em; color: var(--white); }
+.pubs-plane .pub-title a { color: var(--white); transition: color 0.2s; }
+.pubs-plane .pub-title a:hover { color: var(--accent); }
+.pubs-plane .pub-venue { font-weight: 800; font-size: 0.625rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-top: 0.4rem; }
+.pubs-plane .pub-authors { font-weight: 300; font-size: 0.8125rem; color: rgba(255,255,255,0.5); margin-top: 0.25rem; }
+.pubs-plane .pub-authors .self { font-weight: 600; color: var(--white); }
+.pubs-plane .pub-links { display: flex; gap: 1.25rem; margin-top: 0.6rem; }
+.pubs-plane .pub-links a { font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+.pubs-plane .pub-links a:hover { color: var(--accent); }
+
+.pubs-plane .toggle-btn { background: none; border: none; color: var(--accent); font-size: 0.8125rem; font-weight: 500; cursor: pointer; padding: 1.5rem 0 0; font-family: var(--font); }
+.pubs-plane .toggle-btn:hover { text-decoration: underline; }
+.more-pubs { display: none; }
+.more-pubs.show { display: block; }
+
+/* ===== OPEN SOURCE — White plane overlapping the dark ===== */
+.repos-plane {
+  background: var(--white);
+  margin: 0 calc(-1 * var(--pad));
+  padding: 5rem var(--pad) 4rem;
+  position: relative;
+  margin-top: -2rem;
+  z-index: 3;
+  /* Subtle top shadow to show overlap */
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.06);
+}
+
+.repo-marquee-outer {
+  overflow: hidden;
+  margin: 2rem calc(-1 * var(--pad)) 0;
+  border-top: 1px solid var(--grey-rule);
+  border-bottom: 1px solid var(--grey-rule);
+}
+.repo-marquee {
+  display: flex; width: max-content;
+  animation: marquee 35s linear infinite;
+}
+.repo-marquee:hover { animation-play-state: paused; }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.repo-slide {
+  flex: 0 0 auto;
+  width: clamp(300px, 33vw, 420px);
+  padding: 3rem;
+  border-right: 1px solid var(--grey-rule);
+  transition: background 0.3s;
+}
+.repo-slide:hover { background: var(--grey-light); }
+
+.repo-slide .repo-name {
+  font-weight: 900; font-size: clamp(1.25rem, 2.5vw, 2rem);
+  letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.5rem;
+}
+.repo-slide .repo-name a { transition: color 0.3s; }
+.repo-slide .repo-name a:hover { color: var(--accent); }
+.repo-slide .repo-desc {
+  font-weight: 300; font-size: 0.8125rem; color: var(--grey-mid);
+  line-height: 1.55; margin-bottom: 1rem; max-width: 320px;
+}
+.repo-slide .repo-meta {
+  display: flex; gap: 1.5rem; font-size: 0.6875rem;
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.repo-slide .repo-stars { color: var(--accent); font-weight: 800; }
+
+.view-all { padding: 1.5rem var(--pad) 0; font-size: 0.8125rem; }
+.view-all a { color: var(--accent); }
+.view-all a:hover { text-decoration: underline; }
+
+/* ===== EDUCATION — light grey plane ===== */
+.edu-plane {
+  background: var(--grey-light);
+  margin: 0 calc(-1 * var(--pad));
+  padding: 5rem var(--pad);
+  position: relative;
+  margin-top: -1rem;
+  z-index: 4;
+}
+
+.edu-item {
+  display: grid; grid-template-columns: 5rem 1fr;
+  gap: 0 2.5rem; padding: 1rem 0;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.edu-item.visible { opacity: 1; transform: translateY(0); }
+.edu-year { font-weight: 300; font-size: 0.75rem; color: var(--grey-mid); }
+.edu-degree { font-weight: 600; font-size: 0.9375rem; }
+.edu-place { font-size: 0.8125rem; color: var(--grey-mid); }
+.edu-place a:hover { color: var(--accent); }
+
+/* CONTACT + FOOTER */
+.contact { padding: 5rem 0; }
+.contact-grid { display: flex; gap: 3rem; flex-wrap: wrap; }
+.contact-item { border-left: 2px solid var(--accent); padding-left: 1rem; }
+.contact-label { font-size: 0.625rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 0.2rem; }
+.contact-value { font-weight: 500; font-size: 0.9375rem; }
+.contact-value a:hover { color: var(--accent); }
+
+.footer { padding: 2rem 0; border-top: 1px solid var(--black); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.footer-left { font-size: 0.625rem; font-weight: 300; color: var(--grey-mid); letter-spacing: 0.04em; text-transform: uppercase; }
+.footer-right { font-size: 0.625rem; font-weight: 300; color: var(--grey-mid); }
+.footer-right a { margin-left: 1.5rem; }
+.footer-right a:hover { color: var(--accent); }
+
+@media (max-width: 768px) {
+  .pub-entry { grid-template-columns: 1fr; }
+  .edu-item { grid-template-columns: 1fr; }
+  .hero { padding: 6rem 0 3rem; }
+  .repo-slide { width: 260px; padding: 2rem; }
+  .footer { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .pub-entry, .edu-item { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+<div class="variant-label">F — Overlapping Planes: sections layer on top of each other as you scroll</div>
+
+<div class="contained">
+  <section class="hero">
+    <h1 class="hero-name">Florian P<span class="dot">.</span><br>Mahner</h1>
+    <dl class="hero-meta">
+      <dt>Role</dt><dd>PhD Candidate in Machine Learning</dd>
+      <dt>Location</dt><dd>Frankfurt, DE</dd>
+      <dt>Focus</dt><dd>Representation &middot; Perception &middot; Alignment</dd>
+    </dl>
+    <hr class="hero-rule">
+  </section>
+
+  <section class="about">
+    <div class="section-label"><span class="section-num">01</span> About</div>
+    <p class="about-text">I study <strong>representation learning</strong> across humans and machines&mdash;combining computational modeling with cognitive science to understand how both systems <em>see</em> and <em>understand</em> the world.</p>
+    <div class="affiliations">
+      <div class="affiliation"><div class="affiliation-name"><a href="#">Max Planck Research Group Vision and Computational Cognition</a></div><div class="affiliation-role">PhD Candidate</div></div>
+      <div class="affiliation"><div class="affiliation-name"><a href="#">Neural Coding Lab, Radboud University</a></div><div class="affiliation-role">Guest Researcher</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- PUBLICATIONS — Dark plane -->
+<div class="pubs-plane">
+  <div class="section-label"><span class="section-num">02</span> Selected Publications</div>
+
+  <div class="pub-entry"><div class="pub-year">2025</div><div><div class="pub-title"><a href="#">Dimensions underlying the representational alignment of deep neural networks with humans</a></div><div class="pub-venue">AAAI</div><div class="pub-authors"><span class="self">Florian P. Mahner</span>, Lukas Muttenthaler, Martin N. Hebart</div><div class="pub-links"><a href="#">Paper</a><a href="#">Web</a><a href="#">Code</a></div></div></div>
+  <div class="pub-entry"><div class="pub-year">2025</div><div><div class="pub-title"><a href="#">Ten lessons for data sharing with a data commons</a></div><div class="pub-venue">Nature Scientific Data</div><div class="pub-authors">Sebastian Roth, ..., <span class="self">Florian P. Mahner</span>, ..., Martin N. Hebart</div><div class="pub-links"><a href="#">Paper</a></div></div></div>
+  <div class="pub-entry"><div class="pub-year">2025</div><div><div class="pub-title"><a href="#">High-throughput visual experimentation toolkit</a></div><div class="pub-venue">Behavior Research Methods</div><div class="pub-authors">Lukas Kaniuth, <span class="self">Florian P. Mahner</span>, Martin N. Hebart</div><div class="pub-links"><a href="#">Paper</a><a href="#">Code</a></div></div></div>
+
+  <button class="toggle-btn" id="toggle-pubs">View all publications &darr;</button>
+  <div class="more-pubs" id="more-pubs">
+    <div class="pub-entry"><div class="pub-year">2024</div><div><div class="pub-title"><a href="#">THINGS-data: A collection of large-scale datasets</a></div><div class="pub-venue">PLOS ONE</div><div class="pub-authors">Martin N. Hebart, ..., <span class="self">Florian P. Mahner</span>, et al.</div><div class="pub-links"><a href="#">Paper</a></div></div></div>
+    <div class="pub-entry"><div class="pub-year">2023</div><div><div class="pub-title"><a href="#">THINGSvision: A Python toolbox for streamlining the extraction of activations from DNNs</a></div><div class="pub-venue">Frontiers in Neuroinformatics</div><div class="pub-authors">Lukas Muttenthaler, Lorenz Doshi, <span class="self">Florian P. Mahner</span>, et al.</div><div class="pub-links"><a href="#">Paper</a><a href="#">Code</a></div></div></div>
+    <div class="pub-entry"><div class="pub-year">2023</div><div><div class="pub-title"><a href="#">VICE: Variational Interpretable Concept Embeddings</a></div><div class="pub-venue">NeurIPS</div><div class="pub-authors">Lukas Muttenthaler, <span class="self">Florian P. Mahner</span>, et al.</div><div class="pub-links"><a href="#">Paper</a><a href="#">Code</a></div></div></div>
+    <div class="pub-entry"><div class="pub-year">2020</div><div><div class="pub-title"><a href="#">Sharpening of hierarchical visual feature representations of blurred natural images</a></div><div class="pub-venue">eNeuro</div><div class="pub-authors"><span class="self">Florian P. Mahner</span>, Kamila M. Jozwik, et al.</div><div class="pub-links"><a href="#">Paper</a></div></div></div>
+    <div class="pub-entry"><div class="pub-year">2018</div><div><div class="pub-title"><a href="#">Comparing deep neural networks and humans in early visual cortex</a></div><div class="pub-venue">Journal of Vision</div><div class="pub-authors"><span class="self">Florian P. Mahner</span>, Hans Bischof</div><div class="pub-links"><a href="#">Paper</a></div></div></div>
+  </div>
+</div>
+
+<!-- REPOS — White plane with marquee -->
+<div class="repos-plane">
+  <div class="section-label"><span class="section-num">04</span> Open Source</div>
+  <div class="repo-marquee-outer">
+    <div class="repo-marquee">
+      <a href="#" class="repo-slide"><div class="repo-name">thingsvision</div><div class="repo-desc">A Python toolbox for extracting and comparing representations from deep neural networks and humans</div><div class="repo-meta"><span class="repo-stars">174</span> Stars <span>Python</span></div></a>
+      <a href="#" class="repo-slide"><div class="repo-name">tomlparse</div><div class="repo-desc">A Python library for parsing TOML configuration files with CLI support</div><div class="repo-meta"><span class="repo-stars">22</span> Stars <span>Python</span></div></a>
+      <a href="#" class="repo-slide"><div class="repo-name">object-dimensions</div><div class="repo-desc">Code for predicting dimensions of object representations in neural networks</div><div class="repo-meta"><span class="repo-stars">12</span> Stars <span>Python</span></div></a>
+      <a href="#" class="repo-slide"><div class="repo-name">torch-multipletests</div><div class="repo-desc">Multiple hypothesis testing corrections for PyTorch tensors</div><div class="repo-meta"><span class="repo-stars">4</span> Stars <span>Python</span></div></a>
+      <!-- Duplicates for seamless loop -->
+      <a href="#" class="repo-slide"><div class="repo-name">thingsvision</div><div class="repo-desc">A Python toolbox for extracting and comparing representations from deep neural networks and humans</div><div class="repo-meta"><span class="repo-stars">174</span> Stars <span>Python</span></div></a>
+      <a href="#" class="repo-slide"><div class="repo-name">tomlparse</div><div class="repo-desc">A Python library for parsing TOML configuration files with CLI support</div><div class="repo-meta"><span class="repo-stars">22</span> Stars <span>Python</span></div></a>
+      <a href="#" class="repo-slide"><div class="repo-name">object-dimensions</div><div class="repo-desc">Code for predicting dimensions of object representations in neural networks</div><div class="repo-meta"><span class="repo-stars">12</span> Stars <span>Python</span></div></a>
+      <a href="#" class="repo-slide"><div class="repo-name">torch-multipletests</div><div class="repo-desc">Multiple hypothesis testing corrections for PyTorch tensors</div><div class="repo-meta"><span class="repo-stars">4</span> Stars <span>Python</span></div></a>
+    </div>
+  </div>
+  <p class="view-all"><a href="#">View all on GitHub &rarr;</a></p>
+</div>
+
+<!-- EDUCATION — Grey plane -->
+<div class="edu-plane">
+  <div class="section-label"><span class="section-num">03</span> Background</div>
+  <div class="edu-item"><div class="edu-year">2021–2025</div><div><div class="edu-degree">PhD in Machine Learning</div><div class="edu-place"><a href="#">Goethe University Frankfurt</a></div></div></div>
+  <div class="edu-item"><div class="edu-year">2018–2021</div><div><div class="edu-degree">MSc in Cognitive &amp; Integrative Systems Neuroscience</div><div class="edu-place"><a href="#">Philipps-Universität Marburg</a></div></div></div>
+  <div class="edu-item"><div class="edu-year">2013–2017</div><div><div class="edu-degree">BSc in Psychology</div><div class="edu-place"><a href="#">Philipps-Universität Marburg</a></div></div></div>
+</div>
+
+<div class="contained">
+  <section class="contact">
+    <div class="section-label"><span class="section-num">06</span> Contact</div>
+    <div class="contact-grid">
+      <div class="contact-item"><div class="contact-label">Email</div><div class="contact-value"><a href="#">florian.mahner@gmail.com</a></div></div>
+      <div class="contact-item"><div class="contact-label">GitHub</div><div class="contact-value"><a href="#">florianmahner</a></div></div>
+      <div class="contact-item"><div class="contact-label">LinkedIn</div><div class="contact-value"><a href="#">florianmahner</a></div></div>
+    </div>
+  </section>
+  <footer class="footer">
+    <div class="footer-left">&copy; 2026 Florian P. Mahner</div>
+    <div class="footer-right"><a href="#">Email</a><a href="#">GitHub</a><a href="#">LinkedIn</a></div>
+  </footer>
+</div>
+
+<script>
+var els = document.querySelectorAll('.pub-entry, .edu-item');
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+els.forEach(function(el) { obs.observe(el); });
+
+document.getElementById('toggle-pubs').addEventListener('click', function() {
+  var m = document.getElementById('more-pubs');
+  var s = m.classList.toggle('show');
+  this.textContent = s ? 'Show less \u2191' : 'View all publications \u2193';
+  if (s) m.querySelectorAll('.pub-entry').forEach(function(el) { obs.observe(el); });
+});
+</script>
+</body>
+</html>

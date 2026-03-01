@@ -1,0 +1,34 @@
+[
+  {
+    "name": "thingsvision",
+    "description": "A Python toolbox for extracting and analyzing deep neural network representations",
+    "url": "https://github.com/ViCCo-Group/thingsvision",
+    "language": "Python",
+    "stars": 174,
+    "forks": 23
+  },
+  {
+    "name": "tomlparse",
+    "description": "A simple TOML configuration parser for Python projects",
+    "url": "https://github.com/florianmahner/tomlparse",
+    "language": "Python",
+    "stars": 22,
+    "forks": 3
+  },
+  {
+    "name": "object-dimensions",
+    "description": "Code for analyzing object dimensions in humans and DNNs",
+    "url": "https://github.com/florianmahner/object-dimensions",
+    "language": "Python",
+    "stars": 12,
+    "forks": 3
+  },
+  {
+    "name": "torch-multipletests",
+    "description": "PyTorch implementation of multiple testing corrections",
+    "url": "https://github.com/florianmahner/torch-multipletests",
+    "language": "Python",
+    "stars": 4,
+    "forks": 0
+  }
+]

@@ -1,8 +1,5 @@
 # Build output
-dist/
-
-# Astro generated types
-.astro/
+_site/
 
 # Dependencies
 node_modules/
@@ -26,11 +23,6 @@ pnpm-debug.log*
 .vscode/
 *.swp
 *.swo
-
-# Manim animation intermediates
-animations/media/
-animations/__pycache__/
-__pycache__/
 
 # Misc
 *.log

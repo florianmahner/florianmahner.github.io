@@ -1,0 +1,32 @@
+[
+  {
+    "degree": "PhD",
+    "field": "Machine Learning",
+    "institution": "Max Planck Research Group Vision and Computational Cognition",
+    "institutionUrl": "https://hebartlab.com/",
+    "startYear": 2021,
+    "endYear": 2025,
+    "supervisors": [
+      { "name": "Martin Hebart", "url": "http://martin-hebart.de" },
+      { "name": "Umut Güçlü", "url": "https://www.ru.nl/en/people/guclu-u" }
+    ]
+  },
+  {
+    "degree": "MSc",
+    "field": "Artificial Intelligence",
+    "institution": "Radboud University",
+    "institutionUrl": "https://www.ru.nl/ai/",
+    "startYear": 2018,
+    "endYear": 2021,
+    "grade": "Excellent with distinction, top 1%"
+  },
+  {
+    "degree": "BSc",
+    "field": "Cognitive Science",
+    "institution": "Osnabrück University",
+    "institutionUrl": "https://www.ikw.uni-osnabrueck.de/en/home.html",
+    "startYear": 2013,
+    "endYear": 2017,
+    "grade": "Excellent"
+  }
+]

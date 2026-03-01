@@ -1,0 +1,98 @@
+[
+  {
+    "id": "mahner2025dimensions",
+    "title": "Dimensions underlying the representational alignment of deep neural networks with humans",
+    "authors": ["Florian P. Mahner", "Lukas Muttenthaler", "Umut Güçlü", "Martin N. Hebart"],
+    "year": 2025,
+    "venue": "Nature Machine Intelligence",
+    "pdf": "https://www.nature.com/articles/s42256-025-01041-7.pdf",
+    "html": "https://www.nature.com/articles/s42256-025-01041-7",
+    "code": null,
+    "selected": true,
+    "description": "We identify interpretable dimensions that explain when and why deep neural network representations align with human perception."
+  },
+  {
+    "id": "roth2025ten",
+    "title": "Ten principles for reliable, efficient, and adaptable coding in psychology and cognitive neuroscience",
+    "authors": ["Johannes Roth", "Yunyan Duan", "Florian P. Mahner", "Philipp Kaniuth", "Thomas SA Wallis", "Martin N. Hebart"],
+    "year": 2025,
+    "venue": "Communications Psychology",
+    "pdf": "https://www.nature.com/articles/s44271-025-00216-1.pdf",
+    "html": "https://www.nature.com/articles/s44271-025-00216-1",
+    "code": null,
+    "selected": true,
+    "description": "A practical guide to writing better research code — from project structure to testing and reproducibility."
+  },
+  {
+    "id": "kaniuth2025high",
+    "title": "A high-throughput approach for the efficient prediction of perceived similarity of natural objects",
+    "authors": ["Philipp Kaniuth", "Florian P. Mahner", "Jonas Perkuhn", "Martin N. Hebart"],
+    "year": 2025,
+    "venue": "eLife",
+    "pdf": "https://elifesciences.org/reviewed-preprints/105394.pdf",
+    "html": "https://elifesciences.org/reviewed-preprints/105394",
+    "code": null,
+    "selected": true,
+    "description": "Predicting how humans perceive similarity between objects using efficient computational methods at scale."
+  },
+  {
+    "id": "stoinski2025quantifying",
+    "title": "Quantifying the role of perceived curvature in the processing of natural object images",
+    "authors": ["Laura M. Stoinski", "Diego García Cerdas", "Florian P. Mahner", "Parsa Yousefi", "Martin N. Hebart"],
+    "year": 2025,
+    "venue": "Conference on Cognitive Computational Neuroscience",
+    "pdf": "https://2025.ccneuro.org/abstract_pdf/Stoinski_2025_Quantifying_Role_Perceived_Curvature_Processing_.pdf",
+    "html": null,
+    "code": null,
+    "selected": false,
+    "description": null
+  },
+  {
+    "id": "mahner2023dimensions",
+    "title": "Dimensions that matter: Interpretable object dimensions in humans and deep neural networks",
+    "authors": ["Florian P. Mahner", "Lukas Muttenthaler", "Umut Güçlü", "Martin N. Hebart"],
+    "year": 2023,
+    "venue": "Conference on Cognitive Computational Neuroscience",
+    "pdf": "https://repository.ubn.ru.nl/bitstream/handle/2066/297725/297725.pdf?sequence=1",
+    "html": null,
+    "code": null,
+    "selected": false,
+    "description": null
+  },
+  {
+    "id": "mahner2022learning",
+    "title": "Learning cortical magnification with brain-optimized convolutional neural networks",
+    "authors": ["Florian P. Mahner", "Katja Seeliger", "Umut Güçlü", "Martin N. Hebart"],
+    "year": 2022,
+    "venue": "Conference on Cognitive Computational Neuroscience",
+    "pdf": "https://repository.ubn.ru.nl/bitstream/handle/2066/302838/302838.pdf?sequence=1",
+    "html": null,
+    "code": null,
+    "selected": false,
+    "description": null
+  },
+  {
+    "id": "janssen2020reliance",
+    "title": "Reliance on model-based and model-free control in obesity",
+    "authors": ["Lieneke K. Janssen", "Florian P. Mahner", "Florian Schlagenhauf", "Lorenz Deserno", "Annette Horstmann"],
+    "year": 2020,
+    "venue": "Scientific Reports",
+    "pdf": "https://www.nature.com/articles/s41598-020-79407-6.pdf",
+    "html": "https://www.nature.com/articles/s41598-020-79407-6",
+    "code": null,
+    "selected": false,
+    "description": null
+  },
+  {
+    "id": "tanisaro2017quasi",
+    "title": "Quasi view-independent human motion recognition in subspaces",
+    "authors": ["Pattreeya Tanisaro", "Florian P. Mahner", "Gunther Heidemann"],
+    "year": 2017,
+    "venue": "Proceedings of the 9th International Conference on Machine Learning and Computing",
+    "pdf": "https://www.researchgate.net/profile/Pattreeya-Tanisaro/publication/317200656",
+    "html": "https://dl.acm.org/doi/abs/10.1145/3055635.3056577",
+    "code": null,
+    "selected": false,
+    "description": null
+  }
+]

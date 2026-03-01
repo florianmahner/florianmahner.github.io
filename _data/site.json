@@ -1,0 +1,21 @@
+{
+  "name": { "first": "Florian", "middle": "P.", "last": "Mahner" },
+  "fullName": "Florian P. Mahner",
+  "title": "PhD Candidate in Machine Learning",
+  "email": "florian.mahner@gmail.com",
+  "url": "https://florianmahner.github.io",
+  "description": "Personal academic website of Florian Mahner - Research in computational neuroscience and machine learning",
+  "social": {
+    "github": "florianmahner",
+    "scholar": "",
+    "linkedin": "florianmahner"
+  },
+  "affiliations": [
+    {
+      "name": "Max Planck Research Group Vision and Computational Cognition",
+      "role": "PhD Candidate",
+      "url": "https://hebartlab.com/"
+    }
+  ],
+  "highlightAuthor": "Mahner"
+}
