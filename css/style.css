@@ -45,7 +45,7 @@
   /* Layout */
   --page-pad-x: clamp(1.5rem, 5vw, 6rem);
   --measure: 640px;
-  --measure-narrow: 360px;
+  --measure-full: calc(var(--col-year) + var(--space-xl) + var(--measure));
   --col-year: 5.5rem;
 
   /* Rules */
@@ -98,12 +98,12 @@ section, header, footer { position: relative; z-index: 1; }
 .section-number { font-weight: var(--fw-light); font-size: var(--fs-micro); color: var(--grey-mid); margin-inline-end: var(--space-xs); font-variant-numeric: tabular-nums; }
 
 /* About */
-.about-text { font-size: var(--fs-lead); font-weight: var(--fw-light); line-height: 1.5; max-width: 720px; letter-spacing: -0.01em; }
+.about-text { font-size: var(--fs-lead); font-weight: var(--fw-light); line-height: 1.5; max-width: var(--measure-full); letter-spacing: -0.01em; }
 .about-text strong { font-weight: var(--fw-bold); }
 .about-text em { font-style: normal; color: var(--accent); font-weight: var(--fw-medium); }
 .about-text a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
 .about-text a:hover { text-decoration-color: var(--accent); }
-.about-detail { margin-top: var(--space-lg); font-size: var(--fs-body); font-weight: var(--fw-light); line-height: 1.65; color: var(--grey-dark); max-width: var(--measure); }
+.about-detail { margin-top: var(--space-lg); margin-inline-start: calc(var(--col-year) + var(--space-xl)); font-size: var(--fs-body); font-weight: var(--fw-light); line-height: 1.65; color: var(--grey-dark); max-width: var(--measure); }
 .about-detail a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
 .about-detail a:hover { text-decoration-color: var(--accent); }
 
@@ -210,7 +210,7 @@ section, header, footer { position: relative; z-index: 1; }
   font-variant-numeric: tabular-nums;
 }
 
-.oss-body { max-width: var(--measure); }
+.oss-body { max-width: var(--measure); min-width: 0; }
 
 .oss-name {
   font-weight: var(--fw-bold);
@@ -236,7 +236,7 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 /* Tools */
-.tools-grid { display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-sm); }
+.tools-grid { display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-sm); max-width: var(--measure-full); }
 .tool-chip { display: inline-flex; align-items: baseline; gap: var(--space-sm); padding: 0.35rem 0.75rem; font-size: var(--fs-caption); transition: color 0.15s; }
 .tool-chip:hover { color: var(--accent); }
 .tool-name { font-weight: var(--fw-medium); }
@@ -331,6 +331,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
     gap: var(--space-xs);
   }
 
+  .about-detail { margin-inline-start: 0; }
   .nav { gap: var(--space-md); border-bottom: none; padding: 0.75rem 0; min-height: 44px; }
   .nav-links { display: none; }
   .mobile-nav-toggle, .mobile-nav-overlay, .mobile-nav-panel { display: flex; }
