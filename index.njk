@@ -101,16 +101,17 @@ title: Florian P. Mahner
   <div class="section-content reveal">
     {% for repo in repos %}
     <div class="oss-row">
-      <div class="oss-col-left">
+      <div class="oss-lang">{{ repo.language }}</div>
+      <div class="oss-body">
         <div class="oss-name"><a href="{{ repo.url }}" target="_blank" rel="noopener noreferrer">{{ repo.name }}</a></div>
-        <div class="oss-meta">
-          {{ repo.language }}
-          {% if repo.stars > 0 %} &middot; {{ repo.stars }} stars{% endif %}
-          {% if repo.forks > 0 %} &middot; {{ repo.forks }} forks{% endif %}
-        </div>
-      </div>
-      <div class="oss-col-right">
         <div class="oss-desc">{{ repo.description }}</div>
+        {% if repo.stars > 0 or repo.forks > 0 %}
+        <div class="oss-meta">
+          {% if repo.stars > 0 %}{{ repo.stars }} stars{% endif %}
+          {% if repo.stars > 0 and repo.forks > 0 %} &middot; {% endif %}
+          {% if repo.forks > 0 %}{{ repo.forks }} forks{% endif %}
+        </div>
+        {% endif %}
       </div>
     </div>
     {% endfor %}

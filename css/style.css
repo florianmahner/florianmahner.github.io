@@ -196,15 +196,21 @@ section, header, footer { position: relative; z-index: 1; }
 /* Open Source */
 .oss-row {
   display: grid;
-  grid-template-columns: 10rem 1fr;
+  grid-template-columns: var(--col-year) 1fr;
   gap: 0 var(--space-xl);
   padding: var(--space-md) 0;
-  align-items: start;
+  align-items: baseline;
 }
 .oss-row:first-child { padding-top: 0; }
 
-.oss-col-left { min-width: 0; }
-.oss-col-right { min-width: 0; }
+.oss-lang {
+  font-weight: var(--fw-light);
+  font-size: var(--fs-caption);
+  color: var(--grey-mid);
+  font-variant-numeric: tabular-nums;
+}
+
+.oss-body { max-width: var(--measure); }
 
 .oss-name {
   font-weight: var(--fw-bold);
@@ -214,19 +220,19 @@ section, header, footer { position: relative; z-index: 1; }
 .oss-name a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
 .oss-name a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
-.oss-meta {
-  font-size: var(--fs-caption);
-  font-weight: var(--fw-regular);
-  color: var(--grey-mid);
-  margin-top: var(--space-xs);
-}
-
 .oss-desc {
   font-size: var(--fs-caption);
   font-weight: var(--fw-light);
   color: var(--grey-mid);
   line-height: 1.5;
-  max-width: var(--measure-narrow);
+  margin-top: 0.15rem;
+}
+
+.oss-meta {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-regular);
+  color: var(--grey-mid);
+  margin-top: var(--space-xs);
 }
 
 /* Tools */
