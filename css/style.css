@@ -366,9 +366,16 @@ section[id] { scroll-margin-top: var(--space-3xl); }
    ========================================================================== */
 
 @media (max-width: 768px) {
+  :root {
+    /* Grid lines hidden on mobile — no 66% constraint */
+    --content-max: none;
+  }
+
   .page::before, .page::after { display: none; }
   .hero { padding: 3.5rem 0 var(--space-2xl); }
   .section { padding: var(--space-2xl) 0; }
+  .section-label { margin-bottom: var(--space-xl); }
+  .section-number { font-size: clamp(3rem, 12vw, 5rem); }
 
   .pub-row,
   .oss-row,
