@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Typographic Drama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200..900&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MOCKUP A — "Swiss Poster" Typographic Drama
+   Large watermark numbers, dramatic scale, choreographed motion
+   ========================================================================== */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black: #000;
+  --white: #fff;
+  --accent: #E63946;
+  --grey-dark: #555;
+  --grey-mid: #999;
+  --grey-rule: #d0d0d0;
+  --grey-faint: #f2f2f2;
+
+  --font: 'Inter', -apple-system, sans-serif;
+  --fs-display: clamp(3.5rem, 10vw, 7.5rem);
+  --fs-lead: clamp(1.25rem, 2.5vw, 1.75rem);
+  --fs-body: 1rem;
+  --fs-caption: 0.8125rem;
+  --fs-micro: 0.6875rem;
+
+  /* Section label: much larger */
+  --fs-section-number: clamp(4rem, 8vw, 7rem);
+  --fs-section-name: clamp(0.875rem, 1.2vw, 1.125rem);
+
+  --fw-extralight: 200;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+  --fw-black: 900;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+
+  --page-pad-x: clamp(1.5rem, 5vw, 6rem);
+  --col-year: 5.5rem;
+  --content-max: calc(66.666% + var(--page-pad-x) / 3 - var(--space-xl));
+
+  --rule: 1px solid var(--black);
+  --rule-light: 1px solid var(--grey-rule);
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+body { font-family: var(--font); font-weight: var(--fw-regular); color: var(--black); background: var(--white); line-height: 1.55; }
+::selection { background: var(--accent); color: var(--white); }
+a { color: inherit; text-decoration: none; }
+
+/* Page Container & Grid Lines */
+.page {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 var(--page-pad-x);
+  border-left: var(--rule); border-right: var(--rule-light);
+  min-height: 100vh; position: relative; overflow-x: clip;
+}
+.page::before, .page::after {
+  content: ''; position: absolute; top: 0; bottom: 0;
+  width: 0; border-left: var(--rule-light);
+  pointer-events: none; z-index: 0;
+}
+.page::before { left: 33.333%; }
+.page::after { left: 66.666%; }
+section, header, footer { position: relative; z-index: 1; }
+
+/* Navigation */
+.nav {
+  border-bottom: var(--rule); padding: 1.25rem 0;
+  display: flex; align-items: baseline; justify-content: flex-end;
+  gap: 1.75rem; position: sticky; top: 0;
+  background: var(--white); z-index: 100;
+}
+.nav-links { display: flex; gap: 1.75rem; list-style: none; }
+.nav-links a {
+  font-size: var(--fs-caption); font-weight: var(--fw-regular);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  font-variation-settings: 'wght' 400;
+  transition: font-variation-settings 0.2s ease;
+}
+.nav-links a:hover { font-variation-settings: 'wght' 700; }
+
+/* =========================================================================
+   HERO — Staggered reveal with dramatic weight
+   ========================================================================= */
+.hero {
+  padding: var(--space-4xl) 0 var(--space-3xl);
+  border-bottom: var(--rule);
+}
+
+.hero-name {
+  font-size: var(--fs-display);
+  font-weight: var(--fw-black);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  max-width: 90%;
+}
+
+/* Each line staggers in */
+.hero-line {
+  display: block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hero-stagger 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-line:nth-child(1) { animation-delay: 0.1s; }
+.hero-line:nth-child(2) { animation-delay: 0.25s; }
+.hero-line:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes hero-stagger {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.accent-dot { color: var(--accent); }
+
+.hero-rule {
+  display: block; width: 60px; height: 3px;
+  background: var(--accent); border: none;
+  margin-top: var(--space-2xl);
+  opacity: 0; animation: fade-in 0.5s 0.6s ease forwards;
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+/* Affiliations with stagger */
+.affiliations {
+  margin-top: var(--space-2xl); display: flex;
+  gap: var(--space-xl); flex-wrap: wrap;
+  opacity: 0; animation: fade-in 0.5s 0.5s ease forwards;
+}
+.affiliation {
+  border-inline-start: 2px solid var(--black);
+  padding-inline-start: var(--space-md);
+}
+.affiliation-name { font-weight: var(--fw-semibold); font-size: var(--fs-body); }
+
+/* =========================================================================
+   SECTION LABEL — Number as massive background glyph
+   The number sits behind the section name as a typographic texture,
+   not a sequential counter. No leading zeros. No template energy.
+   ========================================================================= */
+.section {
+  padding: var(--space-4xl) 0 var(--space-3xl);
+  border-bottom: var(--rule);
+}
+
+.section-label {
+  position: relative;
+  margin-bottom: var(--space-3xl);
+  overflow: visible;
+}
+
+/* The number — giant, nearly invisible, offset behind the name */
+.section-number {
+  position: absolute;
+  top: -0.15em;
+  left: -0.05em;
+  font-size: clamp(5rem, 12vw, 10rem);
+  font-weight: var(--fw-black);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--grey-rule);
+  letter-spacing: -0.05em;
+  user-select: none;
+  pointer-events: none;
+  transition: -webkit-text-stroke-color 0.4s ease;
+}
+
+/* On section hover, the stroke gets bolder */
+.section:hover .section-number {
+  -webkit-text-stroke-color: var(--grey-mid);
+}
+
+/* The section name — larger, sits on top of the number */
+.section-name {
+  position: relative;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: var(--fw-black);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+
+/* Thin rule extending from label */
+.section-rule {
+  display: block;
+  margin-top: var(--space-md);
+  border: none;
+  border-top: var(--rule-light);
+}
+
+/* =========================================================================
+   ABOUT
+   ========================================================================= */
+.about-text {
+  font-size: var(--fs-lead); font-weight: var(--fw-light);
+  line-height: 1.5; max-width: var(--content-max);
+  letter-spacing: -0.01em;
+}
+.about-text a {
+  color: var(--accent); text-decoration: underline;
+  text-decoration-color: transparent; text-underline-offset: 0.15em;
+  transition: text-decoration-color 0.2s;
+}
+.about-text a:hover { text-decoration-color: var(--accent); }
+
+.about-detail {
+  margin-top: var(--space-lg); font-size: var(--fs-body);
+  font-weight: var(--fw-light); line-height: 1.65;
+  color: var(--grey-dark); max-width: var(--content-max);
+}
+.about-detail a {
+  color: var(--accent); text-decoration: underline;
+  text-decoration-color: transparent; text-underline-offset: 0.15em;
+  transition: text-decoration-color 0.2s;
+}
+.about-detail a:hover { text-decoration-color: var(--accent); }
+
+/* =========================================================================
+   BACKGROUND
+   ========================================================================= */
+.edu-item {
+  display: grid;
+  grid-template-columns: var(--col-year) 1fr;
+  gap: 0 var(--space-xl);
+  padding: 0.75rem 0;
+  align-items: baseline;
+  max-width: var(--content-max);
+  transition: transform 0.25s ease;
+}
+.edu-item:first-child { padding-top: 0; }
+.edu-item:hover { transform: translateX(4px); }
+
+.edu-year {
+  font-weight: var(--fw-light); font-size: var(--fs-caption);
+  color: var(--grey-mid); font-variant-numeric: tabular-nums;
+  transition: color 0.2s;
+}
+.edu-item:hover .edu-year { color: var(--accent); }
+
+.edu-content { display: flex; flex-direction: column; gap: 0.15rem; }
+.edu-content strong { font-weight: var(--fw-semibold); font-size: var(--fs-body); }
+.edu-place { font-size: var(--fs-caption); color: var(--grey-mid); }
+.edu-place a {
+  color: inherit; text-decoration: underline; text-decoration-color: transparent;
+  text-underline-offset: 0.15em; transition: color 0.2s, text-decoration-color 0.2s;
+}
+.edu-place a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.edu-detail { font-size: var(--fs-caption); color: var(--grey-mid); font-weight: var(--fw-light); }
+
+/* =========================================================================
+   PUBLICATIONS
+   ========================================================================= */
+.pub-row {
+  display: grid;
+  grid-template-columns: var(--col-year) 1fr;
+  gap: 0 var(--space-xl);
+  padding: var(--space-lg) 0;
+  border-top: var(--rule-light);
+  align-items: start;
+  max-width: var(--content-max);
+  transition: transform 0.25s ease;
+}
+.pub-row:first-child { border-top: none; }
+.pub-row:hover { transform: translateX(4px); }
+
+.pub-col-year {
+  font-weight: var(--fw-light); font-size: var(--fs-caption);
+  color: var(--grey-mid); padding-top: 0.15rem;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.2s;
+}
+.pub-row:hover .pub-col-year { color: var(--accent); }
+
+.pub-col-main { min-width: 0; }
+
+.pub-title {
+  font-weight: var(--fw-semibold); font-size: var(--fs-body);
+  line-height: 1.4; letter-spacing: -0.01em;
+}
+.pub-title a {
+  text-decoration: underline; text-decoration-color: transparent;
+  text-underline-offset: 0.15em;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+.pub-title a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+.pub-venue {
+  font-weight: var(--fw-extrabold); font-size: var(--fs-caption);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.4rem;
+}
+
+.pub-authors {
+  font-weight: var(--fw-light); font-size: var(--fs-caption);
+  color: var(--grey-mid); margin-top: var(--space-xs); line-height: 1.45;
+}
+.pub-authors .self { font-weight: var(--fw-semibold); color: var(--black); }
+
+.pub-links { display: flex; gap: 0.625rem; margin-top: 0.4rem; }
+.pub-links a {
+  font-size: var(--fs-caption); font-weight: var(--fw-medium);
+  color: var(--grey-mid); text-decoration: underline;
+  text-decoration-color: transparent; text-underline-offset: 0.15em;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+.pub-links a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* =========================================================================
+   OPEN SOURCE
+   ========================================================================= */
+.oss-row {
+  display: grid;
+  grid-template-columns: var(--col-year) 1fr;
+  gap: 0 var(--space-xl);
+  padding: var(--space-md) 0;
+  align-items: baseline;
+  max-width: var(--content-max);
+  transition: transform 0.25s ease;
+}
+.oss-row:first-child { padding-top: 0; }
+.oss-row:hover { transform: translateX(4px); }
+
+.oss-lang {
+  font-weight: var(--fw-light); font-size: var(--fs-caption);
+  color: var(--grey-mid); font-variant-numeric: tabular-nums;
+  transition: color 0.2s;
+}
+.oss-row:hover .oss-lang { color: var(--accent); }
+
+.oss-body { min-width: 0; }
+.oss-name { font-weight: var(--fw-bold); font-size: var(--fs-body); letter-spacing: -0.01em; }
+.oss-name a {
+  text-decoration: underline; text-decoration-color: transparent;
+  text-underline-offset: 0.15em; transition: color 0.2s, text-decoration-color 0.2s;
+}
+.oss-name a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.oss-desc { font-size: var(--fs-caption); font-weight: var(--fw-light); color: var(--grey-mid); line-height: 1.5; margin-top: 0.15rem; }
+.oss-meta { font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--grey-mid); margin-top: var(--space-xs); }
+
+/* =========================================================================
+   TOOLS
+   ========================================================================= */
+.tools-grid {
+  display: flex; flex-wrap: wrap;
+  gap: var(--space-md) var(--space-sm);
+  max-width: var(--content-max);
+}
+.tool-chip {
+  display: inline-flex; align-items: baseline;
+  gap: var(--space-sm); padding: 0.35rem 0.75rem;
+  font-size: var(--fs-caption);
+  transition: color 0.2s, transform 0.2s;
+}
+.tool-chip:hover { color: var(--accent); transform: translateY(-2px); }
+.tool-name { font-weight: var(--fw-medium); }
+.tool-desc { font-weight: var(--fw-light); color: var(--grey-mid); }
+
+/* =========================================================================
+   VIEW ALL
+   ========================================================================= */
+.view-all { margin-top: var(--space-lg); font-size: var(--fs-caption); }
+.view-all a { color: var(--accent); }
+.view-all a:hover { text-decoration: underline; }
+
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
+.footer {
+  padding: var(--space-xl) 0; border-top: var(--rule);
+  display: flex; justify-content: space-between;
+  align-items: baseline; flex-wrap: wrap; gap: var(--space-md);
+}
+.footer-left {
+  font-size: var(--fs-micro); font-weight: var(--fw-light);
+  color: var(--grey-mid); letter-spacing: 0.04em; text-transform: uppercase;
+}
+.footer-right { font-size: var(--fs-micro); font-weight: var(--fw-light); color: var(--grey-mid); }
+.footer-right a {
+  margin-inline-start: var(--space-lg);
+  text-decoration: underline; text-decoration-color: transparent;
+  text-underline-offset: 0.15em; transition: color 0.2s, text-decoration-color 0.2s;
+}
+.footer-right a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* =========================================================================
+   SCROLL REVEAL — staggered, smoother
+   ========================================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0s; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.06s; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.12s; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.18s; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.24s; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.30s; }
+.reveal-stagger.visible > *:nth-child(7) { transition-delay: 0.36s; }
+.reveal-stagger.visible > *:nth-child(8) { transition-delay: 0.42s; }
+.reveal-stagger.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+@media (max-width: 768px) {
+  .page::before, .page::after { display: none; }
+  .hero { padding: 3.5rem 0 var(--space-2xl); }
+  .section { padding: var(--space-2xl) 0; }
+  .section-number { font-size: clamp(2.5rem, 12vw, 4rem); }
+  .pub-row, .oss-row, .edu-item {
+    grid-template-columns: 1fr;
+    gap: var(--space-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-name { font-size: clamp(2.5rem, 14vw, 4rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <nav class="nav">
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#background">Background</a></li>
+        <li><a href="#publications">Publications</a></li>
+        <li><a href="#code">Code</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <h1 class="hero-name">
+      <span class="hero-line">Florian P<span class="accent-dot">.</span></span>
+      <span class="hero-line">Mahner</span>
+    </h1>
+    <div class="affiliations">
+      <div class="affiliation">
+        <div class="affiliation-name"><a href="https://hebartlab.com/">Max Planck Research Group Vision and Computational Cognition</a></div>
+      </div>
+    </div>
+    <hr class="hero-rule">
+  </section>
+
+  <!-- 01 About -->
+  <section class="section" id="about">
+    <div class="section-label">
+      <span class="section-number">1</span>
+      <span class="section-name">About</span>
+      <hr class="section-rule">
+    </div>
+    <div class="section-content reveal">
+      <p class="about-text">
+        I am a PhD Candidate at the <a href="https://hebartlab.com/">Max Planck Research Group Vision and Computational Cognition</a> supervised by <a href="http://martin-hebart.de">Martin Hebart</a>.
+      </p>
+      <p class="about-detail">
+        My work primarily focuses on representation learning in humans and machines. I combine computational modeling and machine learning with insights from cognitive science to understand the similarities and differences between human and artificial systems. I mostly work on vision, but also use insights from language and other domains.
+      </p>
+      <p class="about-detail">
+        I am particularly interested in interpretable alignment of representations and how to use insights from cognitive science to improve machine learning models and vice versa. If you are interested in collaborating, feel free to reach out.
+      </p>
+    </div>
+  </section>
+
+  <!-- 02 Background -->
+  <section class="section" id="background">
+    <div class="section-label">
+      <span class="section-number">2</span>
+      <span class="section-name">Background</span>
+      <hr class="section-rule">
+    </div>
+    <div class="section-content reveal-stagger">
+      <div class="edu-item">
+        <div class="edu-year">2021&ndash;2025</div>
+        <div class="edu-content">
+          <strong>PhD in Machine Learning</strong>
+          <span class="edu-place"><a href="https://hebartlab.com/">Max Planck Research Group Vision and Computational Cognition</a></span>
+        </div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-year">2018&ndash;2021</div>
+        <div class="edu-content">
+          <strong>MSc in Artificial Intelligence</strong>
+          <span class="edu-place"><a href="https://www.ru.nl/ai/">Radboud University</a></span>
+          <span class="edu-detail">Excellent with distinction, top 1%</span>
+        </div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-year">2013&ndash;2017</div>
+        <div class="edu-content">
+          <strong>BSc in Cognitive Science</strong>
+          <span class="edu-place"><a href="https://www.ikw.uni-osnabrueck.de/en/home.html">Osnabr&uuml;ck University</a></span>
+          <span class="edu-detail">Excellent</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Selected Publications -->
+  <section class="section" id="publications">
+    <div class="section-label">
+      <span class="section-number">3</span>
+      <span class="section-name">Selected Publications</span>
+      <hr class="section-rule">
+    </div>
+    <div class="section-content reveal-stagger">
+      <div class="pub-row">
+        <div class="pub-col-year">2025</div>
+        <div class="pub-col-main">
+          <div class="pub-title"><a href="https://www.nature.com/articles/s42256-025-01041-7">Dimensions underlying the representational alignment of deep neural networks with humans</a></div>
+          <div class="pub-venue">Nature Machine Intelligence</div>
+          <div class="pub-authors"><span class="self">Florian P. Mahner</span>, Lukas Muttenthaler, Umut G&uuml;&ccedil;l&uuml;, Martin N. Hebart</div>
+          <div class="pub-links">
+            <a href="https://www.nature.com/articles/s42256-025-01041-7.pdf">Paper</a>
+            <a href="https://www.nature.com/articles/s42256-025-01041-7">Web</a>
+          </div>
+        </div>
+      </div>
+      <div class="pub-row">
+        <div class="pub-col-year">2025</div>
+        <div class="pub-col-main">
+          <div class="pub-title"><a href="https://www.nature.com/articles/s44271-025-00216-1">Ten principles for reliable, efficient, and adaptable coding in psychology and cognitive neuroscience</a></div>
+          <div class="pub-venue">Communications Psychology</div>
+          <div class="pub-authors">Johannes Roth, Yunyan Duan, <span class="self">Florian P. Mahner</span>, Philipp Kaniuth, Thomas SA Wallis, Martin N. Hebart</div>
+          <div class="pub-links">
+            <a href="https://www.nature.com/articles/s44271-025-00216-1.pdf">Paper</a>
+            <a href="https://www.nature.com/articles/s44271-025-00216-1">Web</a>
+          </div>
+        </div>
+      </div>
+      <div class="pub-row">
+        <div class="pub-col-year">2025</div>
+        <div class="pub-col-main">
+          <div class="pub-title"><a href="https://elifesciences.org/reviewed-preprints/105394">A high-throughput approach for the efficient prediction of perceived similarity of natural objects</a></div>
+          <div class="pub-venue">eLife</div>
+          <div class="pub-authors">Philipp Kaniuth, <span class="self">Florian P. Mahner</span>, Jonas Perkuhn, Martin N. Hebart</div>
+          <div class="pub-links">
+            <a href="https://elifesciences.org/reviewed-preprints/105394.pdf">Paper</a>
+            <a href="https://elifesciences.org/reviewed-preprints/105394">Web</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Open Source -->
+  <section class="section" id="code">
+    <div class="section-label">
+      <span class="section-number">4</span>
+      <span class="section-name">Open Source</span>
+      <hr class="section-rule">
+    </div>
+    <div class="section-content reveal-stagger">
+      <div class="oss-row">
+        <div class="oss-lang">Python</div>
+        <div class="oss-body">
+          <div class="oss-name"><a href="https://github.com/ViCCo-Group/thingsvision">thingsvision</a></div>
+          <div class="oss-desc">A Python toolbox for extracting and analyzing deep neural network representations</div>
+          <div class="oss-meta">174 stars &middot; 23 forks</div>
+        </div>
+      </div>
+      <div class="oss-row">
+        <div class="oss-lang">Python</div>
+        <div class="oss-body">
+          <div class="oss-name"><a href="https://github.com/florianmahner/tomlparse">tomlparse</a></div>
+          <div class="oss-desc">A simple TOML configuration parser for Python projects</div>
+          <div class="oss-meta">22 stars &middot; 3 forks</div>
+        </div>
+      </div>
+      <div class="oss-row">
+        <div class="oss-lang">Python</div>
+        <div class="oss-body">
+          <div class="oss-name"><a href="https://github.com/florianmahner/object-dimensions">object-dimensions</a></div>
+          <div class="oss-desc">Code for analyzing object dimensions in humans and DNNs</div>
+          <div class="oss-meta">12 stars &middot; 3 forks</div>
+        </div>
+      </div>
+      <div class="oss-row">
+        <div class="oss-lang">Python</div>
+        <div class="oss-body">
+          <div class="oss-name"><a href="https://github.com/florianmahner/torch-multipletests">torch-multipletests</a></div>
+          <div class="oss-desc">PyTorch implementation of multiple testing corrections</div>
+          <div class="oss-meta">4 stars</div>
+        </div>
+      </div>
+      <p class="view-all"><a href="https://github.com/florianmahner">View all on GitHub &rarr;</a></p>
+    </div>
+  </section>
+
+  <!-- 05 Tools -->
+  <section class="section" id="tools">
+    <div class="section-label">
+      <span class="section-number">5</span>
+      <span class="section-name">Tools</span>
+      <hr class="section-rule">
+    </div>
+    <div class="section-content reveal">
+      <div class="tools-grid">
+        <a href="https://zed.dev/" class="tool-chip"><span class="tool-name">Zed</span><span class="tool-desc">High-performance code editor</span></a>
+        <a href="https://ghostty.org/" class="tool-chip"><span class="tool-name">Ghostty</span><span class="tool-desc">Fast, native terminal emulator</span></a>
+        <a href="https://www.overleaf.com" class="tool-chip"><span class="tool-name">Overleaf</span><span class="tool-desc">Collaborative LaTeX editor</span></a>
+        <a href="https://mathpix.com" class="tool-chip"><span class="tool-name">MathPix</span><span class="tool-desc">Convert images to LaTeX</span></a>
+        <a href="https://www.notion.so/" class="tool-chip"><span class="tool-name">Notion</span><span class="tool-desc">All-in-one workspace</span></a>
+        <a href="https://paperpile.com/" class="tool-chip"><span class="tool-name">Paperpile</span><span class="tool-desc">Reference management</span></a>
+        <a href="https://obsidian.md/" class="tool-chip"><span class="tool-name">Obsidian</span><span class="tool-desc">Knowledge base and note-taking</span></a>
+        <a href="https://www.affinity.studio/" class="tool-chip"><span class="tool-name">Affinity</span><span class="tool-desc">Like Illustrator but better</span></a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">&copy; 2026 Florian P. Mahner</div>
+    <div class="footer-right">
+      <a href="mailto:florian.mahner@gmail.com">Email</a>
+      <a href="https://github.com/florianmahner">GitHub</a>
+      <a href="https://www.linkedin.com/in/florianmahner">LinkedIn</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Scroll reveal with IntersectionObserver
+  (function() {
+    var els = document.querySelectorAll('.reveal, .reveal-stagger');
+    if (!('IntersectionObserver' in window) ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      els.forEach(function(el) { el.classList.add('visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    els.forEach(function(el) { observer.observe(el); });
+  })();
+</script>
+</body>
+</html>
