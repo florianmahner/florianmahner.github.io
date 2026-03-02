@@ -101,9 +101,11 @@ section, header, footer { position: relative; z-index: 1; }
 .about-text { font-size: var(--fs-lead); font-weight: var(--fw-light); line-height: 1.5; max-width: 720px; letter-spacing: -0.01em; }
 .about-text strong { font-weight: var(--fw-bold); }
 .about-text em { font-style: normal; color: var(--accent); font-weight: var(--fw-medium); }
+.about-text a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
+.about-text a:hover { text-decoration-color: var(--accent); }
 .about-detail { margin-top: var(--space-lg); font-size: var(--fs-body); font-weight: var(--fw-light); line-height: 1.65; color: var(--grey-dark); max-width: var(--measure); }
-.about-detail a { color: var(--accent); }
-.about-detail a:hover { text-decoration: underline; }
+.about-detail a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
+.about-detail a:hover { text-decoration-color: var(--accent); }
 
 /* Background */
 .edu-item {
@@ -125,8 +127,8 @@ section, header, footer { position: relative; z-index: 1; }
 .edu-content { display: flex; flex-direction: column; gap: 0.15rem; }
 .edu-content strong { font-weight: var(--fw-semibold); font-size: var(--fs-body); }
 .edu-place { font-size: var(--fs-caption); color: var(--grey-mid); }
-.edu-place a { color: inherit; }
-.edu-place a:hover { color: var(--accent); }
+.edu-place a { color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
+.edu-place a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 .edu-detail { font-size: var(--fs-caption); color: var(--grey-mid); font-weight: var(--fw-light); }
 
 /* Publications */
@@ -156,7 +158,8 @@ section, header, footer { position: relative; z-index: 1; }
   line-height: 1.4;
   letter-spacing: -0.01em;
 }
-.pub-title a:hover { color: var(--accent); }
+.pub-title a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
+.pub-title a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 .pub-venue {
   font-weight: var(--fw-extrabold);
@@ -184,9 +187,11 @@ section, header, footer { position: relative; z-index: 1; }
   font-size: var(--fs-caption);
   font-weight: var(--fw-medium);
   color: var(--grey-mid);
-  transition: color 0.15s;
+  text-decoration: underline; text-decoration-color: transparent;
+  text-underline-offset: 0.15em;
+  transition: color 0.15s, text-decoration-color 0.15s;
 }
-.pub-links a:hover { color: var(--accent); }
+.pub-links a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 /* Open Source */
 .oss-row {
@@ -206,7 +211,8 @@ section, header, footer { position: relative; z-index: 1; }
   font-size: var(--fs-body);
   letter-spacing: -0.01em;
 }
-.oss-name a:hover { color: var(--accent); }
+.oss-name a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
+.oss-name a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 .oss-meta {
   font-size: var(--fs-caption);
@@ -252,7 +258,8 @@ section, header, footer { position: relative; z-index: 1; }
 .footer-left { font-size: var(--fs-micro); font-weight: var(--fw-light); color: var(--grey-mid); letter-spacing: 0.04em; text-transform: uppercase; }
 .footer-right { font-size: var(--fs-micro); font-weight: var(--fw-light); color: var(--grey-mid); }
 .footer-right a { margin-inline-start: var(--space-lg); }
-.footer-right a:hover { color: var(--accent); }
+.footer-right a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
+.footer-right a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 /* Mobile Navigation */
 .mobile-nav-toggle {
