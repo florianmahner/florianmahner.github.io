@@ -46,6 +46,7 @@
   --page-pad-x: clamp(1.5rem, 5vw, 6rem);
   --measure: 640px;
   --measure-narrow: 360px;
+  --col-year: 5.5rem;
 
   /* Rules */
   --rule: 1px solid var(--black);
@@ -66,8 +67,7 @@ a { color: inherit; text-decoration: none; }
 section, header, footer { position: relative; z-index: 1; }
 
 /* Navigation */
-.nav { border-bottom: var(--rule); padding: 1.25rem 0; display: flex; align-items: baseline; gap: var(--space-xl); flex-wrap: wrap; position: sticky; top: 0; background: var(--white); z-index: 100; }
-.nav-logo { font-weight: var(--fw-bold); font-size: var(--fs-caption); letter-spacing: 0.08em; text-transform: uppercase; margin-inline-end: auto; }
+.nav { border-bottom: var(--rule); padding: 1.25rem 0; display: flex; align-items: baseline; justify-content: flex-end; gap: 1.75rem; flex-wrap: wrap; position: sticky; top: 0; background: var(--white); z-index: 100; }
 .nav-links { display: flex; gap: 1.75rem; list-style: none; }
 .nav-links a { font-size: var(--fs-caption); font-weight: var(--fw-regular); letter-spacing: 0.04em; text-transform: uppercase; position: relative; font-variation-settings: 'wght' 400; transition: font-variation-settings 0.15s; }
 .nav-links a:hover { font-variation-settings: 'wght' 700; }
@@ -78,7 +78,6 @@ section, header, footer { position: relative; z-index: 1; }
 .hero { padding: var(--space-4xl) 0 var(--space-3xl); border-bottom: var(--rule); }
 .hero-name { font-size: var(--fs-display); font-weight: var(--fw-black); line-height: 0.92; letter-spacing: -0.035em; max-width: 90%; }
 .hero-name .accent-dot { color: var(--accent); }
-.hero-role { margin-top: var(--space-2xl); font-weight: var(--fw-light); font-size: var(--fs-body); letter-spacing: 0.04em; color: var(--grey-mid); }
 .hero-rule { display: block; width: 60px; height: 3px; background: var(--accent); margin-top: var(--space-2xl); border: none; }
 
 /* Affiliations */
@@ -109,7 +108,7 @@ section, header, footer { position: relative; z-index: 1; }
 /* Background */
 .edu-item {
   display: grid;
-  grid-template-columns: 5.5rem 1fr;
+  grid-template-columns: var(--col-year) 1fr;
   gap: 0 var(--space-xl);
   padding: 0.75rem 0;
   align-items: baseline;
@@ -133,13 +132,13 @@ section, header, footer { position: relative; z-index: 1; }
 /* Publications */
 .pub-row {
   display: grid;
-  grid-template-columns: 4.5rem 1fr;
+  grid-template-columns: var(--col-year) 1fr;
   gap: 0 var(--space-xl);
   padding: var(--space-lg) 0;
   border-top: var(--rule-light);
   align-items: start;
 }
-.pub-row:first-child { border-top: none; }
+.section-content > .pub-row:first-child { border-top: none; }
 
 .pub-col-year {
   font-weight: var(--fw-light);
@@ -225,7 +224,7 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 /* Tools */
-.tools-grid { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.tools-grid { display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-sm); }
 .tool-chip { display: inline-flex; align-items: baseline; gap: var(--space-sm); padding: 0.35rem 0.75rem; font-size: var(--fs-caption); transition: color 0.15s; }
 .tool-chip:hover { color: var(--accent); }
 .tool-name { font-weight: var(--fw-medium); }
@@ -237,7 +236,7 @@ section, header, footer { position: relative; z-index: 1; }
   font-family: var(--font); font-size: var(--fs-micro); font-weight: var(--fw-semibold);
   text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--grey-mid); cursor: pointer;
-  margin-top: var(--space-lg); transition: color 0.15s;
+  margin-top: var(--space-lg); margin-bottom: var(--space-xs); transition: color 0.15s;
 }
 .view-all-toggle:hover { color: var(--accent); }
 .expanded-publications { margin-top: 0; }
@@ -319,7 +318,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
     gap: var(--space-xs);
   }
 
-  .nav { gap: var(--space-md); }
+  .nav { gap: var(--space-md); border-bottom: none; padding: 0.75rem 0; min-height: 44px; }
   .nav-links { display: none; }
   .mobile-nav-toggle, .mobile-nav-overlay, .mobile-nav-panel { display: flex; }
   .footer { flex-direction: column; align-items: flex-start; }
@@ -327,8 +326,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 }
 
 @media (max-width: 480px) {
-  .hero-name { font-size: clamp(2.5rem, 14vw, 4rem); max-width: 100%; }
-  .nav-logo { width: 100%; }
+  .hero-name { font-size: clamp(2.5rem, 14vw, 4rem); max-width: 100%; overflow-wrap: break-word; }
 }
 
 /* Reduced Motion */

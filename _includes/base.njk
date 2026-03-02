@@ -23,7 +23,6 @@
 <div class="page">
   <header>
     <nav class="nav">
-      <a href="/" class="nav-logo">FPM</a>
       <ul class="nav-links">
         <li><a href="/#about" data-nav="about">About</a></li>
         <li><a href="/#background" data-nav="background">Background</a></li>
@@ -139,7 +138,24 @@
     if (!btn || !section) return;
     btn.addEventListener('click', function() {
       var isHidden = section.hidden;
-      section.hidden = !isHidden;
+      if (isHidden) {
+        section.hidden = false;
+        section.style.opacity = '0';
+        requestAnimationFrame(function() {
+          section.style.transition = 'opacity 0.3s ease';
+          section.style.opacity = '1';
+        });
+      } else {
+        section.style.transition = 'opacity 0.2s ease';
+        section.style.opacity = '0';
+        section.addEventListener('transitionend', function handler() {
+          section.hidden = true;
+          section.style.opacity = '';
+          section.style.transition = '';
+          section.removeEventListener('transitionend', handler);
+        });
+      }
+      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
       btn.textContent = isHidden ? 'Show less \u2191' : 'View all publications \u2193';
     });
   })();

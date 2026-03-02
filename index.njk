@@ -6,12 +6,10 @@ title: Florian P. Mahner
 <!-- Hero -->
 <section class="hero" id="top">
   <h1 class="hero-name reveal">Florian P<span class="accent-dot">.</span><br>Mahner</h1>
-  <div class="hero-role reveal">{{ site.title }}</div>
   <div class="affiliations reveal">
     {% for aff in site.affiliations %}
     <div class="affiliation">
       <div class="affiliation-name"><a href="{{ aff.url }}" target="_blank" rel="noopener noreferrer">{{ aff.name }}</a></div>
-      <div class="affiliation-role">{{ aff.role }}</div>
     </div>
     {% endfor %}
   </div>
@@ -23,13 +21,13 @@ title: Florian P. Mahner
   <div class="section-label"><span class="section-number">01</span> About</div>
   <div class="section-content reveal">
     <p class="about-text">
-      I study <strong>representation learning</strong> across humans and
-      machines&mdash;combining computational modeling with cognitive science
-      to understand how both systems <em>see</em> and <em>understand</em>
-      the world.
+      I am a PhD Candidate at the <a href="https://hebartlab.com/" target="_blank" rel="noopener noreferrer">Max Planck Research Group Vision and Computational Cognition</a> supervised by <a href="http://martin-hebart.de" target="_blank" rel="noopener noreferrer">Martin Hebart</a>.
     </p>
     <p class="about-detail">
-      As a PhD candidate at the <a href="https://hebartlab.com/" target="_blank" rel="noopener noreferrer">Max Planck Research Group Vision and Computational Cognition</a>, supervised by Martin Hebart, I work on interpretable alignment of representations&mdash;bridging cognitive science and machine learning in both directions. I examine similarities and differences between human and artificial systems, primarily in vision but drawing from language and other domains.
+      My work primarily focuses on representation learning in humans and machines. I combine computational modeling and machine learning with insights from cognitive science to understand the similarities and differences between human and artificial systems. I mostly work on vision, but also use insights from language and other domains.
+    </p>
+    <p class="about-detail">
+      I am particularly interested in interpretable alignment of representations and how to use insights from cognitive science to improve machine learning models and vice versa. If you are interested in collaborating, feel free to reach out.
     </p>
   </div>
 </section>
@@ -73,7 +71,7 @@ title: Florian P. Mahner
       {% endif %}
     {% endfor %}
 
-    <button class="view-all-toggle" id="toggle-publications">View all publications &darr;</button>
+    <button class="view-all-toggle" id="toggle-publications" aria-expanded="false" aria-controls="all-publications">View all publications &darr;</button>
 
     <div id="all-publications" class="expanded-publications" hidden>
       {% for pub in publications %}
