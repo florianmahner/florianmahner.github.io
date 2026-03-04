@@ -370,7 +370,98 @@ section, header, footer { position: relative; z-index: 1; }
 .footer-right a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
 .footer-right a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
-/* Mobile Navigation — handled by side-rail responsive styles below */
+/* Mobile Navigation */
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 200;
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mobile-nav-toggle-num {
+  font-family: var(--font);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--white);
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-3xl) var(--space-xl);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.mobile-nav-overlay.open { opacity: 1; visibility: visible; }
+
+.mobile-nav-close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  cursor: pointer;
+  color: var(--grey-mid);
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  font-family: var(--font);
+  transition: color 0.15s;
+}
+.mobile-nav-close:hover { color: var(--black); }
+
+.mobile-nav-toc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.mobile-nav-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-lg);
+  text-decoration: none;
+  color: var(--grey-mid);
+  padding: var(--space-sm) 0;
+  border-bottom: var(--rule-light);
+  transition: color 0.15s;
+}
+.mobile-nav-item:last-child { border-bottom: none; }
+.mobile-nav-item:hover, .mobile-nav-item.active { color: var(--black); }
+.mobile-nav-item.active .mobile-nav-num { color: var(--accent); }
+
+.mobile-nav-num {
+  font-size: clamp(1.5rem, 6vw, 2.5rem);
+  font-weight: var(--fw-black);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 2.5rem;
+  transition: color 0.15s;
+}
+
+.mobile-nav-name {
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 /* Scroll Reveal */
 .reveal {
@@ -413,46 +504,10 @@ section[id] { scroll-margin-top: var(--space-3xl); }
     gap: var(--space-xs);
   }
 
-  /* Side rail → bottom bar on mobile */
-  .side-rail {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 52px;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    gap: 0;
-    border-right: none;
-    border-top: var(--rule);
-    background: var(--white);
-  }
-
-  .side-rail-item {
-    flex-direction: column;
-    gap: 0.1rem;
-    padding: 0.4rem 0.75rem;
-  }
-
-  .side-rail-item::after {
-    /* Indicator moves to top edge on mobile */
-    bottom: auto;
-    top: 0;
-    width: 100%;
-    left: 0;
-    transform: none;
-  }
-
-  .side-rail-label {
-    font-size: 0.5625rem;
-    letter-spacing: 0.06em;
-  }
-
-  /* Prevent footer from being hidden behind bottom bar */
-  body { padding-bottom: 52px; }
+  /* Hide desktop side rail, show mobile hamburger */
+  .side-rail { display: none; }
+  .mobile-nav-toggle { display: block; }
+  .mobile-nav-overlay { display: flex; }
 
   .footer { flex-direction: column; align-items: flex-start; }
   .footer-right a { margin-inline-start: 0; margin-inline-end: var(--space-lg); }
@@ -475,7 +530,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 @media print {
   body { color: black; background: white; }
   a { text-decoration: underline; }
-  .side-rail, .footer-right { display: none !important; }
+  .side-rail, .mobile-nav-toggle, .mobile-nav-overlay, .footer-right { display: none !important; }
   .page { border: none; margin-left: auto; }
   .page::before, .page::after { display: none; }
   .pub-row, .oss-row, .edu-item { break-inside: avoid; }
