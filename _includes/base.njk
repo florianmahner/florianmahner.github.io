@@ -43,6 +43,35 @@
   </a>
 </nav>
 
+<button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
+  <span class="mobile-nav-toggle-num">01</span>
+</button>
+<div class="mobile-nav-overlay">
+  <button class="mobile-nav-close" aria-label="Close menu">&times;</button>
+  <nav class="mobile-nav-toc" aria-label="Mobile navigation">
+    <a href="/#about" class="mobile-nav-item" data-nav="about">
+      <span class="mobile-nav-num">01</span>
+      <span class="mobile-nav-name">About</span>
+    </a>
+    <a href="/#background" class="mobile-nav-item" data-nav="background">
+      <span class="mobile-nav-num">02</span>
+      <span class="mobile-nav-name">Background</span>
+    </a>
+    <a href="/#publications" class="mobile-nav-item" data-nav="publications">
+      <span class="mobile-nav-num">03</span>
+      <span class="mobile-nav-name">Publications</span>
+    </a>
+    <a href="/#code" class="mobile-nav-item" data-nav="code">
+      <span class="mobile-nav-num">04</span>
+      <span class="mobile-nav-name">Code</span>
+    </a>
+    <a href="/#tools" class="mobile-nav-item" data-nav="tools">
+      <span class="mobile-nav-num">05</span>
+      <span class="mobile-nav-name">Tools</span>
+    </a>
+  </nav>
+</div>
+
 <div class="page">
   {{ content | safe }}
 
@@ -57,6 +86,33 @@
 </div>
 
 <script>
+  // Mobile nav
+  (function() {
+    var toggle = document.querySelector('.mobile-nav-toggle');
+    var overlay = document.querySelector('.mobile-nav-overlay');
+    var closeBtn = document.querySelector('.mobile-nav-close');
+    if (!toggle || !overlay) return;
+
+    function openNav() {
+      overlay.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNav() {
+      overlay.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', openNav);
+    closeBtn.addEventListener('click', closeNav);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeNav(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeNav(); });
+    document.querySelectorAll('.mobile-nav-item').forEach(function(link) {
+      link.addEventListener('click', closeNav);
+    });
+  })();
+
   // Scroll reveal
   (function() {
     var els = document.querySelectorAll('.reveal');
@@ -82,10 +138,14 @@
     var navLinks = document.querySelectorAll('[data-nav]');
     if (!sections.length || !navLinks.length) return;
 
+    var sectionMap = { about: '01', background: '02', publications: '03', code: '04', tools: '05' };
+    var toggleNum = document.querySelector('.mobile-nav-toggle-num');
+
     function setActive(id) {
       navLinks.forEach(function(link) {
         link.classList.toggle('active', link.getAttribute('data-nav') === id);
       });
+      if (toggleNum && sectionMap[id]) toggleNum.textContent = sectionMap[id];
     }
 
     var obs = new IntersectionObserver(function(entries) {
