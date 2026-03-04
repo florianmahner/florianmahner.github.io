@@ -20,40 +20,30 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<nav class="side-rail" aria-label="Section navigation">
+  <a href="/#about" class="side-rail-item" data-nav="about">
+    <span class="side-rail-num">01</span>
+    <span class="side-rail-label">About</span>
+  </a>
+  <a href="/#background" class="side-rail-item" data-nav="background">
+    <span class="side-rail-num">02</span>
+    <span class="side-rail-label">Background</span>
+  </a>
+  <a href="/#publications" class="side-rail-item" data-nav="publications">
+    <span class="side-rail-num">03</span>
+    <span class="side-rail-label">Publications</span>
+  </a>
+  <a href="/#code" class="side-rail-item" data-nav="code">
+    <span class="side-rail-num">04</span>
+    <span class="side-rail-label">Code</span>
+  </a>
+  <a href="/#tools" class="side-rail-item" data-nav="tools">
+    <span class="side-rail-num">05</span>
+    <span class="side-rail-label">Tools</span>
+  </a>
+</nav>
+
 <div class="page">
-  <header>
-    <nav class="nav">
-      <ul class="nav-links">
-        <li><a href="/#about" data-nav="about">About</a></li>
-        <li><a href="/#background" data-nav="background">Background</a></li>
-        <li><a href="/#publications" data-nav="publications">Publications</a></li>
-        <li><a href="/#code" data-nav="code">Code</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <line x1="4" y1="8" x2="20" y2="8"></line>
-      <line x1="4" y1="16" x2="20" y2="16"></line>
-    </svg>
-  </button>
-  <div class="mobile-nav-overlay"></div>
-  <div class="mobile-nav-panel">
-    <button class="mobile-nav-close" aria-label="Close menu">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <ul class="mobile-nav-links">
-      <li><a href="/#about" class="mobile-nav-link">About</a></li>
-      <li><a href="/#background" class="mobile-nav-link">Background</a></li>
-      <li><a href="/#publications" class="mobile-nav-link">Publications</a></li>
-      <li><a href="/#code" class="mobile-nav-link">Code</a></li>
-    </ul>
-  </div>
-
   {{ content | safe }}
 
   <footer class="footer">
@@ -67,33 +57,6 @@
 </div>
 
 <script>
-  // Mobile nav
-  const toggle = document.querySelector('.mobile-nav-toggle');
-  const overlay = document.querySelector('.mobile-nav-overlay');
-  const panel = document.querySelector('.mobile-nav-panel');
-  const closeBtn = document.querySelector('.mobile-nav-close');
-
-  function openNav() {
-    panel.classList.add('open');
-    overlay.classList.add('visible');
-    toggle.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeNav() {
-    panel.classList.remove('open');
-    overlay.classList.remove('visible');
-    toggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  if (toggle) toggle.addEventListener('click', openNav);
-  if (closeBtn) closeBtn.addEventListener('click', closeNav);
-  if (overlay) overlay.addEventListener('click', closeNav);
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeNav(); });
-  document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
-    link.addEventListener('click', closeNav);
-  });
-
   // Scroll reveal
   (function() {
     var els = document.querySelectorAll('.reveal');
@@ -113,22 +76,34 @@
     els.forEach(function(el) { observer.observe(el); });
   })();
 
-  // Active nav link
+  // Active nav link (side rail)
   (function() {
     var sections = document.querySelectorAll('section[id]');
     var navLinks = document.querySelectorAll('[data-nav]');
     if (!sections.length || !navLinks.length) return;
+
+    function setActive(id) {
+      navLinks.forEach(function(link) {
+        link.classList.toggle('active', link.getAttribute('data-nav') === id);
+      });
+    }
+
     var obs = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-          var id = entry.target.getAttribute('id');
-          navLinks.forEach(function(link) {
-            link.classList.toggle('active', link.getAttribute('data-nav') === id);
-          });
+          setActive(entry.target.getAttribute('id'));
         }
       });
     }, { rootMargin: '-40% 0px -60% 0px' });
     sections.forEach(function(s) { obs.observe(s); });
+
+    // Highlight last section when scrolled to bottom
+    window.addEventListener('scroll', function() {
+      if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 10) {
+        var last = sections[sections.length - 1];
+        if (last) setActive(last.getAttribute('id'));
+      }
+    }, { passive: true });
   })();
 
   // Expand/collapse publications
