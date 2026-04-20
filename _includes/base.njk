@@ -13,60 +13,58 @@
   <meta property="twitter:title" content="{{ title or site.fullName }}">
   <meta property="twitter:description" content="{{ description or site.description }}">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="theme-color" content="#ffffff">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet">
+  <link rel="preload" href="/fonts/tna-vf.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <nav class="side-rail" aria-label="Section navigation">
   <a href="/#about" class="side-rail-item" data-nav="about">
-    <span class="side-rail-num">01</span>
+    <span class="side-rail-num">1</span>
     <span class="side-rail-label">About</span>
   </a>
   <a href="/#background" class="side-rail-item" data-nav="background">
-    <span class="side-rail-num">02</span>
+    <span class="side-rail-num">2</span>
     <span class="side-rail-label">Background</span>
   </a>
   <a href="/#publications" class="side-rail-item" data-nav="publications">
-    <span class="side-rail-num">03</span>
+    <span class="side-rail-num">3</span>
     <span class="side-rail-label">Publications</span>
   </a>
   <a href="/#code" class="side-rail-item" data-nav="code">
-    <span class="side-rail-num">04</span>
+    <span class="side-rail-num">4</span>
     <span class="side-rail-label">Code</span>
   </a>
   <a href="/#tools" class="side-rail-item" data-nav="tools">
-    <span class="side-rail-num">05</span>
+    <span class="side-rail-num">5</span>
     <span class="side-rail-label">Tools</span>
   </a>
 </nav>
 
 <button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
-  <span class="mobile-nav-toggle-num">01</span>
+  <span class="mobile-nav-toggle-num">1</span>
 </button>
 <div class="mobile-nav-overlay">
   <button class="mobile-nav-close" aria-label="Close menu">&times;</button>
   <nav class="mobile-nav-toc" aria-label="Mobile navigation">
     <a href="/#about" class="mobile-nav-item" data-nav="about">
-      <span class="mobile-nav-num">01</span>
+      <span class="mobile-nav-num">1</span>
       <span class="mobile-nav-name">About</span>
     </a>
     <a href="/#background" class="mobile-nav-item" data-nav="background">
-      <span class="mobile-nav-num">02</span>
+      <span class="mobile-nav-num">2</span>
       <span class="mobile-nav-name">Background</span>
     </a>
     <a href="/#publications" class="mobile-nav-item" data-nav="publications">
-      <span class="mobile-nav-num">03</span>
+      <span class="mobile-nav-num">3</span>
       <span class="mobile-nav-name">Publications</span>
     </a>
     <a href="/#code" class="mobile-nav-item" data-nav="code">
-      <span class="mobile-nav-num">04</span>
+      <span class="mobile-nav-num">4</span>
       <span class="mobile-nav-name">Code</span>
     </a>
     <a href="/#tools" class="mobile-nav-item" data-nav="tools">
-      <span class="mobile-nav-num">05</span>
+      <span class="mobile-nav-num">5</span>
       <span class="mobile-nav-name">Tools</span>
     </a>
   </nav>
@@ -138,7 +136,7 @@
     var navLinks = document.querySelectorAll('[data-nav]');
     if (!sections.length || !navLinks.length) return;
 
-    var sectionMap = { about: '01', background: '02', publications: '03', code: '04', tools: '05' };
+    var sectionMap = { about: '1', background: '2', publications: '3', code: '4', tools: '5' };
     var toggleNum = document.querySelector('.mobile-nav-toggle-num');
 
     function setActive(id) {

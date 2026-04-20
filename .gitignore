@@ -27,3 +27,8 @@ pnpm-debug.log*
 # Misc
 *.log
 .cache/
+
+# Proprietary font sources — NEVER commit these
+assets/
+*.otf
+*.ttf

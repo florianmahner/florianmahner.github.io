@@ -3,6 +3,19 @@
    Florian P. Mahner - Academic Website
    ========================================================================== */
 
+/* Font — subsetted Times New Arial variable font (masters never committed)
+   Axes: wght 0–100, srff 0–100 (0=Arial ↔ 100=Times), ital −100…100
+   size-adjust scales the glyphs up to restore a readable apparent size. */
+@font-face {
+  font-family: 'TNA';
+  src: url('/fonts/tna-vf.woff2') format('woff2-variations'),
+       url('/fonts/tna-vf.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 125%;
+}
+
 /* Reset */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -16,13 +29,18 @@
   --grey-mid: #999;
   --grey-rule: #d0d0d0;
 
-  /* Typography */
-  --font: 'Inter', -apple-system, Helvetica Neue, Arial, sans-serif;
+  /* Typography — single family, different variation-settings for body vs heading.
+     Serif axis: 0 = Arial, 100 = Times. Weight axis: 0 = regular, 100 = bold. */
+  --font: 'TNA', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --vf-body:         'srff' 50, 'wght' 0;
+  --vf-body-bold:    'srff' 50, 'wght' 100;
+  --vf-heading:      'srff' 10, 'wght' 50;
+  --vf-heading-bold: 'srff' 10, 'wght' 100;
   --fs-display: clamp(3.5rem, 10vw, 7.5rem);
-  --fs-lead: clamp(1.25rem, 2.5vw, 1.75rem);
-  --fs-body: 1rem;
-  --fs-caption: 0.8125rem;
-  --fs-micro: 0.6875rem;
+  --fs-lead: clamp(1.5rem, 2.8vw, 2rem);
+  --fs-body: 1.1875rem;
+  --fs-caption: 0.9375rem;
+  --fs-micro: 0.75rem;
 
   --fw-light: 300;
   --fw-regular: 400;
@@ -42,10 +60,12 @@
   --space-3xl: 4rem;
   --space-4xl: 6rem;
 
-  /* Layout — all content ends at the 66% vertical grid line */
+  /* Layout — vertical grid lines at 33% and --grid-right (content bound) */
   --page-pad-x: clamp(1.5rem, 5vw, 6rem);
-  --col-year: 5.5rem;
-  --content-max: calc(66.666% + var(--page-pad-x) / 3 - var(--space-xl));
+  --col-year: 8rem;  /* fits "2021–2025" at body font-size with breathing room */
+  --grid-right: 72%;  /* was 66.666% — extended right for more text breathing room */
+  --content-max: calc(var(--grid-right) + var(--page-pad-x) / 3 - var(--space-xl));
+  --rail-w: 135px;  /* side-rail width; fits "PUBLICATIONS" at current label metrics */
 
   /* Rules */
   --rule: 1px solid var(--black);
@@ -54,24 +74,44 @@
 
 /* Base */
 html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
-body { font-family: var(--font); font-weight: var(--fw-regular); color: var(--black); background: var(--white); line-height: 1.55; }
+body {
+  font-family: var(--font);
+  font-weight: var(--fw-regular);
+  color: var(--black);
+  background: var(--white);
+  line-height: 1.55;
+  font-variation-settings: var(--vf-body);
+}
+
+/* Headings & UI labels: Arial-leaning via the Serif axis */
+.hero-name,
+.section-name,
+.side-rail-num,
+.side-rail-label,
+.nav-link,
+.footer-left,
+.mobile-nav-num,
+.mobile-nav-name { font-variation-settings: var(--vf-heading-bold); }
+
+/* Bold body copy */
+strong, b { font-variation-settings: var(--vf-body-bold); }
 ::selection { background: var(--accent); color: var(--white); }
 a { color: inherit; text-decoration: none; }
 
 /* Page Container & Grid Lines */
-.page { max-width: 1200px; margin: 0 auto; margin-left: max(105px, calc((100vw - 1200px) / 2)); padding: 0 var(--page-pad-x); border-left: none; border-right: var(--rule-light); min-height: 100vh; position: relative; overflow-x: clip; }
+.page { max-width: 1200px; margin: 0 auto; margin-left: max(var(--rail-w), calc((100vw - 1200px) / 2)); padding: 0 var(--page-pad-x); border-left: none; border-right: var(--rule-light); min-height: 100vh; position: relative; overflow-x: clip; }
 .page::before, .page::after { content: ''; position: absolute; top: 0; bottom: 0; width: 0; border-left: var(--rule-light); pointer-events: none; z-index: 0; }
 .page::before { left: 33.333%; }
-.page::after { left: 66.666%; }
+.page::after { left: var(--grid-right); }
 section, header, footer { position: relative; z-index: 1; }
 
 /* Side-Rail Navigation */
 .side-rail {
   position: fixed;
-  left: max(0px, calc((100vw - 1200px) / 2 - 105px));
+  left: max(0px, calc((100vw - 1200px) / 2 - var(--rail-w)));
   top: 0;
   bottom: 0;
-  width: 105px;
+  width: var(--rail-w);
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -122,12 +162,14 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 .side-rail-label {
-  font-size: var(--fs-micro);
+  /* deliberately smaller than --fs-micro — labels are subordinate to the number */
+  font-size: 0.6875rem;
   font-weight: var(--fw-regular);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  line-height: 1;
-  white-space: nowrap;
+  line-height: 1.15;
+  text-align: center;
+  max-width: 100%;
 }
 
 /* Hero */
@@ -143,32 +185,14 @@ section, header, footer { position: relative; z-index: 1; }
 .affiliation-role { font-weight: var(--fw-light); font-size: var(--fs-caption); color: var(--grey-mid); }
 
 /* Section */
-.section { padding: var(--space-4xl) 0 var(--space-3xl); border-bottom: var(--rule); }
+.section { padding: var(--space-2xl) 0 var(--space-xl); border-bottom: var(--rule); }
 
 .section-label {
   position: relative;
-  margin-bottom: var(--space-3xl);
+  margin-bottom: var(--space-xl);
   overflow: visible;
 }
 
-/* Number — giant outline glyph behind the section name */
-.section-number {
-  position: absolute;
-  top: -0.15em;
-  left: -0.05em;
-  font-size: clamp(5rem, 12vw, 10rem);
-  font-weight: var(--fw-black);
-  line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--grey-rule);
-  letter-spacing: -0.05em;
-  user-select: none;
-  pointer-events: none;
-  transition: -webkit-text-stroke-color 0.4s ease;
-}
-.section:hover .section-number { -webkit-text-stroke-color: var(--grey-mid); }
-
-/* Section name — larger, sits on top */
 .section-name {
   position: relative;
   font-size: clamp(1rem, 1.5vw, 1.25rem);
@@ -210,7 +234,7 @@ section, header, footer { position: relative; z-index: 1; }
 
 .edu-year {
   font-weight: var(--fw-light);
-  font-size: var(--fs-caption);
+  font-size: var(--fs-body);
   color: var(--grey-mid);
   font-variant-numeric: tabular-nums;
   transition: color 0.2s;
@@ -240,7 +264,7 @@ section, header, footer { position: relative; z-index: 1; }
 
 .pub-col-year {
   font-weight: var(--fw-light);
-  font-size: var(--fs-caption);
+  font-size: var(--fs-body);
   color: var(--grey-mid);
   padding-top: 0.15rem;
   font-variant-numeric: tabular-nums;
@@ -348,7 +372,7 @@ section, header, footer { position: relative; z-index: 1; }
 /* Expand / Collapse Publications */
 .view-all-toggle {
   background: none; border: none;
-  font-family: var(--font); font-size: var(--fs-micro); font-weight: var(--fw-semibold);
+  font: inherit; font-size: var(--fs-micro); font-weight: var(--fw-semibold);
   text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--grey-mid); cursor: pointer;
   margin-top: var(--space-lg); margin-bottom: var(--space-xs); transition: color 0.15s;
@@ -388,7 +412,6 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 .mobile-nav-toggle-num {
-  font-family: var(--font);
   font-size: var(--fs-caption);
   font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
@@ -417,12 +440,12 @@ section, header, footer { position: relative; z-index: 1; }
   right: var(--space-md);
   background: none;
   border: none;
+  font: inherit;
   font-size: 1.75rem;
   cursor: pointer;
   color: var(--grey-mid);
   line-height: 1;
   padding: 0.25rem 0.5rem;
-  font-family: var(--font);
   transition: color 0.15s;
 }
 .mobile-nav-close:hover { color: var(--black); }
@@ -495,7 +518,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
   .hero { padding: 3.5rem 0 var(--space-2xl); }
   .section { padding: var(--space-2xl) 0; }
   .section-label { margin-bottom: var(--space-xl); }
-  .section-number { font-size: clamp(3rem, 12vw, 5rem); }
 
   .pub-row,
   .oss-row,
