@@ -25,7 +25,7 @@
   --black: #000;
   --white: #fff;
   --bg: #faf8f3;       /* warm off-white page background */
-  --accent: #E63946;
+  --accent: #7C3AED;
   --grey-dark: #555;
   --grey-mid: #999;
   --grey-rule: #d0d0d0;
@@ -665,4 +665,156 @@ section[id] { scroll-margin-top: var(--space-3xl); }
   .page { border: none; margin-left: auto; }
   .page::before, .page::after { display: none; }
   .pub-row, .oss-row, .edu-item { break-inside: avoid; }
+}
+
+/* ==========================================================================
+   Project Pages — /projects/<slug>/
+   Same tokens as the homepage. No new visual language.
+   ========================================================================== */
+
+.page-project { padding-top: var(--space-2xl); padding-bottom: var(--space-3xl); }
+
+.project-back {
+  display: inline-block;
+  font-size: var(--fs-desc);
+  color: var(--grey-mid);
+  font-weight: var(--fw-light);
+  margin-bottom: var(--space-2xl);
+  transition: color 0.15s;
+}
+.project-back:hover { color: var(--accent); }
+
+.project-header { max-width: var(--content-max); margin-bottom: var(--space-3xl); }
+
+.project-venue {
+  font-size: var(--fs-desc);
+  color: var(--grey-mid);
+  font-weight: var(--fw-light);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+
+.project-title {
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+  font-weight: var(--fw-black);
+  font-variation-settings: var(--vf-heading-bold);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-lg);
+}
+
+.project-authors {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-light);
+  color: var(--grey-dark);
+  line-height: 1.55;
+  margin-bottom: var(--space-xs);
+}
+.project-authors .self { font-weight: var(--fw-bold); color: var(--black); font-variation-settings: var(--vf-body-bold); }
+
+.project-equal {
+  font-size: var(--fs-desc);
+  color: var(--grey-mid);
+  font-style: italic;
+  margin-bottom: var(--space-lg);
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.project-links a {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border: 2px solid var(--black);
+  background: var(--bg);
+  font-size: var(--fs-desc);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--black);
+  transition: background 0.15s, color 0.15s;
+}
+.project-links a:hover { background: var(--black); color: var(--bg); }
+
+.project-body { max-width: var(--content-max); }
+
+.project-tldr {
+  font-size: var(--fs-heading);
+  font-weight: var(--fw-light);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  color: var(--black);
+  margin: 0 0 var(--space-2xl);
+  padding-bottom: var(--space-xl);
+  border-bottom: var(--rule-light);
+}
+.project-tldr em {
+  font-style: normal;
+  color: var(--accent);
+  font-weight: var(--fw-medium);
+}
+
+.project-figure {
+  margin: 0 0 var(--space-2xl);
+}
+.project-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--white);
+  border: 1px solid var(--grey-rule);
+}
+.project-figure figcaption {
+  margin-top: var(--space-md);
+  font-size: var(--fs-desc);
+  color: var(--grey-dark);
+  line-height: 1.55;
+  font-weight: var(--fw-light);
+}
+.project-figure-hero { margin-bottom: var(--space-3xl); }
+
+.project-section {
+  margin-bottom: var(--space-3xl);
+}
+.project-section .section-name {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-black);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.project-lead {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-light);
+  line-height: 1.6;
+  color: var(--grey-dark);
+  max-width: 56ch;
+  margin: 0 0 var(--space-xl);
+}
+.project-lead em {
+  font-style: normal;
+  color: var(--accent);
+  font-weight: var(--fw-medium);
+}
+
+.project-bibtex {
+  margin: 0;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--white);
+  border: 1px solid var(--grey-rule);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--fs-desc);
+  line-height: 1.55;
+  color: var(--grey-dark);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+@media (max-width: 768px) {
+  .project-title { font-size: 1.625rem; }
+  .project-tldr { font-size: var(--fs-body); }
+  .project-links a { padding: 0.3rem 0.7rem; }
 }
