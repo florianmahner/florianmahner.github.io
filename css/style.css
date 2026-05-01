@@ -417,7 +417,7 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 .mobile-nav-toggle-num {
-  font-size: 2.25rem;
+  font-size: var(--fs-heading);
   font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
   font-variation-settings: var(--vf-heading-bold);
