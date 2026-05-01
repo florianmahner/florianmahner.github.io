@@ -283,7 +283,7 @@ section, header, footer { position: relative; z-index: 1; }
 
 .pub-venue {
   font-weight: var(--fw-semibold);
-  font-size: var(--fs-desc);
+  font-size: var(--fs-heading);
   margin-top: 0.4rem;
 }
 
