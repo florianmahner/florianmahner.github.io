@@ -27,7 +27,7 @@ title: Florian P. Mahner
 <!-- 02 Background -->
 <section class="section" id="background">
   <div class="section-label"><span class="section-name">Background</span><hr class="section-rule"></div>
-  <div class="section-content reveal">
+  <div class="section-content reveal reveal-stagger">
     {% for edu in education %}
     <div class="edu-item">
       <div class="edu-year">{{ edu.startYear }}&ndash;{{ edu.endYear }}</div>
@@ -44,7 +44,7 @@ title: Florian P. Mahner
 <!-- 03 Selected Publications -->
 <section class="section" id="publications">
   <div class="section-label"><span class="section-name">Selected Publications</span><hr class="section-rule"></div>
-  <div class="section-content reveal">
+  <div class="section-content reveal reveal-stagger">
     {% for pub in publications %}
       {% if pub.selected %}
       <div class="pub-row">
@@ -90,7 +90,7 @@ title: Florian P. Mahner
 <!-- 04 Open Source -->
 <section class="section" id="code">
   <div class="section-label"><span class="section-name">Open Source</span><hr class="section-rule"></div>
-  <div class="section-content reveal">
+  <div class="section-content reveal reveal-stagger">
     {% for repo in repos %}
     <div class="oss-row">
       <div class="oss-lang">{{ repo.language }}</div>
