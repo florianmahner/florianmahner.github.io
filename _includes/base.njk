@@ -125,12 +125,8 @@
     <span class="side-rail-num">3</span>
     <span class="side-rail-label">Publications</span>
   </a>
-  <a href="/#code" class="side-rail-item" data-nav="code">
-    <span class="side-rail-num">4</span>
-    <span class="side-rail-label">Code</span>
-  </a>
   <a href="/#tools" class="side-rail-item" data-nav="tools">
-    <span class="side-rail-num">5</span>
+    <span class="side-rail-num">4</span>
     <span class="side-rail-label">Tools</span>
   </a>
 </nav>
@@ -144,8 +140,7 @@
     <a href="/#about" class="desktop-toc-item" data-nav="about"><span class="dt-num">1</span><span class="dt-name">About</span></a>
     <a href="/#background" class="desktop-toc-item" data-nav="background"><span class="dt-num">2</span><span class="dt-name">Background</span></a>
     <a href="/#publications" class="desktop-toc-item" data-nav="publications"><span class="dt-num">3</span><span class="dt-name">Publications</span></a>
-    <a href="/#code" class="desktop-toc-item" data-nav="code"><span class="dt-num">4</span><span class="dt-name">Code</span></a>
-    <a href="/#tools" class="desktop-toc-item" data-nav="tools"><span class="dt-num">5</span><span class="dt-name">Tools</span></a>
+    <a href="/#tools" class="desktop-toc-item" data-nav="tools"><span class="dt-num">4</span><span class="dt-name">Tools</span></a>
   </nav>
 </div>
 <div class="mobile-nav-overlay">
@@ -242,7 +237,7 @@
     var navLinks = document.querySelectorAll('[data-nav]');
     if (!sections.length || !navLinks.length) return;
 
-    var sectionMap = { about: '1', background: '2', publications: '3', code: '4', tools: '5' };
+    var sectionMap = { about: '1', background: '2', publications: '3', tools: '4' };
     var toggleNum = document.querySelector('.mobile-nav-toggle-num');
 
     function setActive(id) {
@@ -297,6 +292,62 @@
       btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
       btn.textContent = isHidden ? 'Show less \u2191' : 'View all publications \u2193';
     });
+  })();
+
+  // Hero accent-dot \u2014 physics-driven bouncing-ball animation.
+  // CSS keyframes can only lerp between samples (visible kinks at apex/contact);
+  // a per-frame integrator gives a genuinely parabolic trajectory.
+  (function() {
+    var dot = document.querySelector('.hero-name .accent-dot');
+    if (!dot) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var fs = parseFloat(getComputedStyle(dot).fontSize);
+    if (!fs || isNaN(fs)) return;
+
+    // Physics, em-relative, converted to px once.
+    var H0 = 1.5 * fs;             // initial drop height (above rest)
+    var X0 = 3.0 * fs;             // initial horizontal offset (right of rest)
+    var e  = 0.72;                 // coefficient of restitution (~tennis ball)
+    var g  = 32 * fs;              // gravity, px/s\u00b2
+
+    // Total flight time = t1 * (1 + 2e/(1-e)) \u2014 geometric sum of bounce cycles.
+    var t1 = Math.sqrt(2 * H0 / g);
+    var T  = t1 * (1 + 2 * e / (1 - e));
+    var vx = -X0 / T;              // constant horizontal velocity \u2192 x reaches 0 at t = T
+
+    var x = X0;
+    var height = H0;               // height above ground (positive)
+    var vy = 0;                    // positive = upward
+    var startTime = null;
+    var lastTime  = null;
+
+    function apply() {
+      dot.style.transform = 'translate(' + x.toFixed(2) + 'px, ' + (-height).toFixed(2) + 'px)';
+    }
+
+    function step(now) {
+      if (startTime === null) { startTime = now; lastTime = now; }
+      var dt = Math.min(0.032, (now - lastTime) / 1000);
+      lastTime = now;
+      var elapsed = (now - startTime) / 1000;
+
+      vy -= g * dt;
+      height += vy * dt;
+      x += vx * dt;
+
+      if (height < 0) { height = 0; vy = -vy * e; }
+
+      if (elapsed < T && (height > 0.3 || Math.abs(vy) > 5 || Math.abs(x) > 0.3)) {
+        apply();
+        requestAnimationFrame(step);
+      } else {
+        dot.style.transform = '';   // settle to natural position
+      }
+    }
+
+    apply();                                         // show start state during delay
+    setTimeout(function() { requestAnimationFrame(step); }, 400);
   })();
 </script>
 </body>

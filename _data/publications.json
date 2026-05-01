@@ -2,7 +2,8 @@
   {
     "id": "mahner2025dimensions",
     "title": "Dimensions underlying the representational alignment of deep neural networks with humans",
-    "authors": ["Florian P. Mahner", "Lukas Muttenthaler", "Umut Güçlü", "Martin N. Hebart"],
+    "authors": ["Florian P. Mahner*", "Lukas Muttenthaler*", "Umut Güçlü", "Martin N. Hebart"],
+    "equalContribution": true,
     "year": 2025,
     "venue": "Nature Machine Intelligence",
     "pdf": "https://www.nature.com/articles/s42256-025-01041-7.pdf",
@@ -20,7 +21,7 @@
     "pdf": "https://www.nature.com/articles/s44271-025-00216-1.pdf",
     "html": "https://www.nature.com/articles/s44271-025-00216-1",
     "code": null,
-    "selected": true,
+    "selected": false,
     "description": "A practical guide to writing better research code — from project structure to testing and reproducibility."
   },
   {
@@ -32,7 +33,7 @@
     "pdf": "https://elifesciences.org/reviewed-preprints/105394.pdf",
     "html": "https://elifesciences.org/reviewed-preprints/105394",
     "code": null,
-    "selected": true,
+    "selected": false,
     "description": "Predicting how humans perceive similarity between objects using efficient computational methods at scale."
   },
   {
