@@ -307,9 +307,9 @@
 
     // Physics, em-relative, converted to px once.
     var H0 = 1.5 * fs;             // initial drop height (above rest)
-    var X0 = 3.0 * fs;             // initial horizontal offset (right of rest)
-    var e  = 0.72;                 // coefficient of restitution (~tennis ball)
-    var g  = 32 * fs;              // gravity, px/s\u00b2
+    var X0 = 0.8 * fs;             // initial horizontal offset (subtle right-angle entry)
+    var e  = 0.82;                 // coefficient of restitution \u2014 high so many visible bounces
+    var g  = 36 * fs;              // gravity, px/s\u00b2
 
     // Total flight time = t1 * (1 + 2e/(1-e)) \u2014 geometric sum of bounce cycles.
     var t1 = Math.sqrt(2 * H0 / g);
@@ -338,7 +338,7 @@
 
       if (height < 0) { height = 0; vy = -vy * e; }
 
-      if (elapsed < T && (height > 0.3 || Math.abs(vy) > 5 || Math.abs(x) > 0.3)) {
+      if (elapsed < T && (height > 0.1 || Math.abs(vy) > 2 || Math.abs(x) > 0.1)) {
         apply();
         requestAnimationFrame(step);
       } else {

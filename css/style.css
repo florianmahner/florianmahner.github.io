@@ -41,7 +41,7 @@
   --fs-title:   clamp(2.5rem, 10vw, 7.5rem);   /* hero name, mobile overlay numbers */
   --fs-heading: 1.125rem;                      /* item titles (pub/oss/edu) — 1px above body for bold-weight contrast */
   --fs-body:    1.0625rem;                     /* paragraphs, dates, default */
-  --fs-desc:    0.8125rem;                     /* meta, captions, nav labels, footer, view-all */
+  --fs-desc:    0.9375rem;                     /* meta, captions, nav labels, footer, view-all */
 
   --fw-light: 300;
   --fw-regular: 400;
