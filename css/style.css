@@ -696,12 +696,13 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 }
 
 .project-title {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: var(--fs-heading);
   font-weight: var(--fw-black);
   font-variation-settings: var(--vf-heading-bold);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
   margin: 0 0 var(--space-lg);
+  max-width: 56ch;
 }
 
 .project-authors {
@@ -814,7 +815,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 }
 
 @media (max-width: 768px) {
-  .project-title { font-size: 1.4rem; }
   .project-tldr { font-size: var(--fs-body); }
   .project-links a { padding: 0.3rem 0.7rem; }
 }
