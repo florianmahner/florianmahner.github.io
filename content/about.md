@@ -2,4 +2,4 @@ I am a PhD Candidate in Machine Learning at the [Max Planck Research Group Visio
 
 My work primarily focuses on representation learning in humans and machines. I combine computational modeling and machine learning with insights from cognitive science to understand the similarities and differences between human and artificial systems. I mostly work on vision, but also use insights from language and other domains.
 
-I am particularly interested in [interpretable alignment](https://www.nature.com/articles/s42256-025-01041-7) of representations and how to use insights from cognitive science to learn something about machine learning models and how to use machine learning to improve our understanding of the brain. If you are interested in collaborating, feel free to reach out.
+I am particularly interested in [interpretable alignment](https://www.nature.com/articles/s42256-025-01041-7) of representations. For this, I use insights from cognitive science to learn something about machine learning models, and machine learning to improve our understanding of the brain. If you are interested in collaborating, feel free to reach out.
