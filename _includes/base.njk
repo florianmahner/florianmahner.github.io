@@ -63,6 +63,24 @@
   }
   </script>
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "{{ site.fullName }}",
+    "url": "{{ site.url }}",
+    "publisher": { "@type": "Person", "name": "{{ site.fullName }}" },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://www.google.com/search?q=site%3Aflorianmahner.com+{search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
   {% if publications %}
   <script type="application/ld+json">
   {
