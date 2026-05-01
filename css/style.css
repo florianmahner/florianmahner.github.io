@@ -696,7 +696,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 }
 
 .project-title {
-  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: var(--fw-black);
   font-variation-settings: var(--vf-heading-bold);
   line-height: 1.05;
@@ -814,7 +814,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 }
 
 @media (max-width: 768px) {
-  .project-title { font-size: 1.625rem; }
+  .project-title { font-size: 1.4rem; }
   .project-tldr { font-size: var(--fs-body); }
   .project-links a { padding: 0.3rem 0.7rem; }
 }
