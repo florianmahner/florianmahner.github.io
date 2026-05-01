@@ -195,7 +195,9 @@
     var closeBtn = document.querySelector('.mobile-nav-close');
     if (!toggle || !overlay) return;
 
+    var mobileMQ = window.matchMedia('(max-width: 768px)');
     function openNav() {
+      if (!mobileMQ.matches) return;
       overlay.classList.add('open');
       toggle.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
