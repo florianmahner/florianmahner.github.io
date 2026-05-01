@@ -4,12 +4,16 @@
   "title": "PhD Candidate in Machine Learning",
   "email": "florian.mahner@gmail.com",
   "url": "https://florianmahner.com",
-  "description": "Personal academic website of Florian Mahner - Research in computational neuroscience and machine learning",
+  "description": "Florian P. Mahner is a PhD candidate at the Max Planck Institute (Hebart Lab) researching computational neuroscience, deep learning, and the representational alignment of neural networks with human vision. Publications, code, and contact.",
+  "keywords": "Florian Mahner, Mahner, Florian P. Mahner, F. P. Mahner, F.P. Mahner, florianmahner, florianmahner.com, Mahner Max Planck, Mahner Hebart, Mahner Hebart Lab, Mahner neuroscience, Mahner deep learning, Mahner representational alignment, Mahner alignment, Mahner Nature Machine Intelligence, computational neuroscience, deep neural networks, representational alignment, human vision, cognitive science, machine learning, PhD Max Planck",
   "social": {
     "github": "florianmahner",
     "scholar": "",
-    "linkedin": "florianmahner"
+    "linkedin": "florianmahner",
+    "orcid": "",
+    "twitter": ""
   },
+  "googleSiteVerification": "",
   "affiliations": [
     {
       "name": "Max Planck Research Group Vision and Computational Cognition",

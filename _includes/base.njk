@@ -5,17 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title or site.fullName }}</title>
   <meta name="description" content="{{ description or site.description }}">
+  <meta name="author" content="{{ site.fullName }}">
+  {% if site.keywords %}<meta name="keywords" content="{{ site.keywords }}">{% endif %}
+  {% if site.googleSiteVerification %}<meta name="google-site-verification" content="{{ site.googleSiteVerification }}">{% endif %}
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
   <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ site.url }}">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
   <meta property="og:title" content="{{ title or site.fullName }}">
   <meta property="og:description" content="{{ description or site.description }}">
-  <meta property="twitter:card" content="summary">
-  <meta property="twitter:title" content="{{ title or site.fullName }}">
-  <meta property="twitter:description" content="{{ description or site.description }}">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="{{ site.fullName }}">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ title or site.fullName }}">
+  <meta name="twitter:description" content="{{ description or site.description }}">
+
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="theme-color" content="#ffffff">
   <link rel="preload" href="/fonts/tna-vf.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ site.fullName }}",
+    "givenName": "{{ site.name.first }}",
+    "familyName": "{{ site.name.last }}",
+    "url": "{{ site.url }}",
+    "email": "mailto:{{ site.email }}",
+    "jobTitle": "{{ site.title }}",
+    "description": "{{ site.description }}",
+    "image": "{{ site.url }}/favicon.svg",
+    {% if site.affiliations and site.affiliations.length %}"affiliation": {
+      "@type": "Organization",
+      "name": "{{ site.affiliations[0].name }}",
+      "url": "{{ site.affiliations[0].url }}"
+    },{% endif %}
+    "knowsAbout": [
+      "Computational Neuroscience",
+      "Deep Learning",
+      "Representational Alignment",
+      "Human Vision",
+      "Neural Networks",
+      "Cognitive Science"
+    ],
+    "sameAs": [
+      {%- set parts = [] -%}
+      {%- if site.social.github -%}{%- set _ = parts.push("https://github.com/" + site.social.github) -%}{%- endif -%}
+      {%- if site.social.linkedin -%}{%- set _ = parts.push("https://www.linkedin.com/in/" + site.social.linkedin) -%}{%- endif -%}
+      {%- if site.social.scholar -%}{%- set _ = parts.push(site.social.scholar) -%}{%- endif -%}
+      {%- if site.social.orcid -%}{%- set _ = parts.push("https://orcid.org/" + site.social.orcid) -%}{%- endif -%}
+      {%- if site.social.twitter -%}{%- set _ = parts.push("https://twitter.com/" + site.social.twitter) -%}{%- endif -%}
+      {%- for link in parts -%}"{{ link }}"{% if not loop.last %},{% endif %}{%- endfor -%}
+    ]
+  }
+  </script>
+
+  {% if publications %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Publications by {{ site.fullName }}",
+    "itemListElement": [
+      {%- for pub in publications -%}
+      {
+        "@type": "ListItem",
+        "position": {{ loop.index }},
+        "item": {
+          "@type": "ScholarlyArticle",
+          "headline": {{ pub.title | dump | safe }},
+          "name": {{ pub.title | dump | safe }},
+          "author": [{%- for a in pub.authors -%}{ "@type": "Person", "name": {{ a | dump | safe }} }{% if not loop.last %},{% endif %}{%- endfor -%}],
+          "datePublished": "{{ pub.year }}"{% if pub.venue %},
+          "publication": {{ pub.venue | dump | safe }}{% endif %}{% if pub.html %},
+          "url": {{ pub.html | dump | safe }}{% endif %}{% if pub.description %},
+          "abstract": {{ pub.description | dump | safe }}{% endif %},
+          "creator": { "@type": "Person", "name": "{{ site.fullName }}" }
+        }
+      }{% if not loop.last %},{% endif %}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+  {% endif %}
 </head>
 <body>
 <nav class="side-rail" aria-label="Section navigation">
