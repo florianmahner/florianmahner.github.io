@@ -136,9 +136,18 @@
 </nav>
 {% endif %}
 
-<button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
-  <span class="mobile-nav-toggle-num">1</span>
-</button>
+<div class="nav-floater">
+  <button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
+    <span class="mobile-nav-toggle-num">1</span>
+  </button>
+  <nav class="desktop-toc" aria-label="Sections">
+    <a href="/#about" class="desktop-toc-item" data-nav="about"><span class="dt-num">1</span><span class="dt-name">About</span></a>
+    <a href="/#background" class="desktop-toc-item" data-nav="background"><span class="dt-num">2</span><span class="dt-name">Background</span></a>
+    <a href="/#publications" class="desktop-toc-item" data-nav="publications"><span class="dt-num">3</span><span class="dt-name">Publications</span></a>
+    <a href="/#code" class="desktop-toc-item" data-nav="code"><span class="dt-num">4</span><span class="dt-name">Code</span></a>
+    <a href="/#tools" class="desktop-toc-item" data-nav="tools"><span class="dt-num">5</span><span class="dt-name">Tools</span></a>
+  </nav>
+</div>
 <div class="mobile-nav-overlay">
   <button class="mobile-nav-close" aria-label="Close menu">&times;</button>
   <nav class="mobile-nav-toc" aria-label="Mobile navigation">
