@@ -63,9 +63,9 @@
   /* Layout — vertical grid lines at 33% and --grid-right (content bound) */
   --page-pad-x: clamp(1.5rem, 5vw, 6rem);
   --col-year: 8rem;  /* fits "2021–2025" at body font-size with breathing room */
-  --grid-right: 72%;  /* was 66.666% — extended right for more text breathing room */
+  --grid-right: 76%;  /* right-side content/grid bound — bumped from 72% for wider text */
   --content-max: calc(var(--grid-right) + var(--page-pad-x) / 3 - var(--space-xl));
-  --rail-w: 160px;  /* side-rail width; fits "PUBLICATIONS" at --fs-desc */
+  --rail-w: 0px;  /* side rail removed — keeps the page centered. Restore to 160px if rail is re-enabled. */
 
   /* Rules */
   --rule: 1px solid var(--black);
