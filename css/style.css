@@ -202,14 +202,13 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 /* About */
-.about-text { font-size: var(--fs-heading); font-weight: var(--fw-light); line-height: 1.5; max-width: var(--content-max); letter-spacing: -0.01em; }
-.about-text strong { font-weight: var(--fw-bold); }
-.about-text em { font-style: normal; color: var(--accent); font-weight: var(--fw-medium); }
-.about-text a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
-.about-text a:hover { text-decoration-color: var(--accent); }
-.about-detail { margin-top: var(--space-lg); font-size: var(--fs-body); font-weight: var(--fw-light); line-height: 1.65; color: var(--grey-dark); max-width: var(--content-max); }
-.about-detail a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
-.about-detail a:hover { text-decoration-color: var(--accent); }
+.about-content > p { max-width: var(--content-max); }
+.about-content > p:first-child { font-size: var(--fs-heading); font-weight: var(--fw-light); line-height: 1.5; letter-spacing: -0.01em; }
+.about-content > p:not(:first-child) { margin-top: var(--space-lg); font-size: var(--fs-body); font-weight: var(--fw-light); line-height: 1.65; color: var(--grey-dark); }
+.about-content strong { font-weight: var(--fw-bold); }
+.about-content em { font-style: normal; color: var(--accent); font-weight: var(--fw-medium); }
+.about-content a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
+.about-content a:hover { text-decoration-color: var(--accent); }
 
 /* Background */
 .edu-item {
