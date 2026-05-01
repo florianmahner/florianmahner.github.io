@@ -491,6 +491,32 @@ section, header, footer { position: relative; z-index: 1; }
   transform: none;
 }
 
+/* Hover accent: red bar slides in from left along the bottom of cards */
+.edu-item,
+.pub-row,
+.oss-row { position: relative; }
+
+.edu-item::after,
+.pub-row::after,
+.oss-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.edu-item:hover::after,
+.pub-row:hover::after,
+.oss-row:hover::after { transform: scaleX(1); }
+
 /* Stagger — children of .reveal.reveal-stagger animate in sequence */
 .reveal-stagger > * {
   opacity: 0;
