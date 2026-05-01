@@ -8,14 +8,6 @@
     "forks": 23
   },
   {
-    "name": "tomlparse",
-    "description": "A simple TOML configuration parser for Python projects",
-    "url": "https://github.com/florianmahner/tomlparse",
-    "language": "Python",
-    "stars": 22,
-    "forks": 3
-  },
-  {
     "name": "object-dimensions",
     "description": "Code for analyzing object dimensions in humans and DNNs",
     "url": "https://github.com/florianmahner/object-dimensions",
