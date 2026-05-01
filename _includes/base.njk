@@ -111,6 +111,7 @@
   {% endif %}
 </head>
 <body>
+{% if site.sideRail %}
 <nav class="side-rail" aria-label="Section navigation">
   <a href="/#about" class="side-rail-item" data-nav="about">
     <span class="side-rail-num">1</span>
@@ -133,6 +134,7 @@
     <span class="side-rail-label">Tools</span>
   </a>
 </nav>
+{% endif %}
 
 <button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
   <span class="mobile-nav-toggle-num">1</span>
