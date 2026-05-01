@@ -173,7 +173,7 @@ section, header, footer { position: relative; z-index: 1; }
 
 /* Hero */
 .hero { padding: var(--space-4xl) 0 var(--space-3xl); border-bottom: var(--rule); }
-.hero-name { font-size: var(--fs-title); font-weight: var(--fw-black); line-height: 0.92; letter-spacing: -0.035em; max-width: 90%; }
+.hero-name { font-size: var(--fs-title); font-weight: var(--fw-black); line-height: 1.05; letter-spacing: -0.035em; max-width: 90%; }
 .hero-name .accent-dot {
   color: var(--accent);
   display: inline-block;
