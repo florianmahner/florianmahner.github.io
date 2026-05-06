@@ -394,7 +394,7 @@ section, header, footer { position: relative; z-index: 1; }
 .nav-floater {
   position: fixed;
   top: var(--space-md);
-  right: var(--space-md);
+  right: max(var(--page-pad-x), calc((100vw - 1200px) / 2 + var(--page-pad-x)));
   z-index: 200;
   display: flex;
   flex-direction: column;
@@ -637,6 +637,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 
   /* Hide desktop side rail + hover TOC; show mobile hamburger overlay */
   .side-rail { display: none; }
+  .nav-floater { right: var(--page-pad-x); }
   .desktop-toc { display: none !important; }
   .mobile-nav-overlay { display: flex; }
 
