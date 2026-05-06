@@ -393,12 +393,13 @@ section, header, footer { position: relative; z-index: 1; }
 /* Floating Navigation (top-right number + hover TOC) */
 .nav-floater {
   position: fixed;
-  top: var(--space-md);
-  right: max(var(--page-pad-x), calc((100vw - 1200px) / 2 + var(--page-pad-x)));
+  top: clamp(18rem, 28vw, 21rem);
+  right: auto;
+  left: min(calc(var(--grid-right) + var(--space-xl)), calc((100vw - 1200px) / 2 + 912px + var(--space-xl)));
   z-index: 200;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .mobile-nav-toggle {
@@ -637,7 +638,12 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 
   /* Hide desktop side rail + hover TOC; show mobile hamburger overlay */
   .side-rail { display: none; }
-  .nav-floater { right: var(--page-pad-x); }
+  .nav-floater {
+    top: var(--space-md);
+    right: var(--page-pad-x);
+    left: auto;
+    align-items: flex-end;
+  }
   .desktop-toc { display: none !important; }
   .mobile-nav-overlay { display: flex; }
 
