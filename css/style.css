@@ -395,7 +395,10 @@ section, header, footer { position: relative; z-index: 1; }
   position: fixed;
   top: clamp(18rem, 28vw, 21rem);
   right: auto;
-  left: min(calc(var(--grid-right) + var(--space-xl)), calc((100vw - 1200px) / 2 + 912px + var(--space-xl)));
+  left: min(
+    calc(100vw - 56px - var(--space-md)),
+    calc((100vw - 1200px) / 2 + 1200px + var(--space-xl))
+  );
   z-index: 200;
   display: flex;
   flex-direction: column;
