@@ -1,5 +1,31 @@
 [
   {
+    "id": "mahner2026characterizing",
+    "title": "Characterizing universal object representations across vision models",
+    "authors": ["Florian P. Mahner*", "Johannes Roth*", "Ka Chun Lam", "Michael F. Bonner", "Francisco Pereira", "Martin N. Hebart"],
+    "equalContribution": true,
+    "year": 2026,
+    "venue": "Preprint at arXiv",
+    "pdf": "https://arxiv.org/pdf/2605.13675",
+    "html": "https://arxiv.org/abs/2605.13675",
+    "code": null,
+    "selected": true,
+    "description": "We characterize universal and model-specific object dimensions across vision models and link their universality to neural and behavioral measures."
+  },
+  {
+    "id": "mahner2026srf",
+    "title": "Similarity-based representation factorization for revealing interpretable dimensions in representational data",
+    "authors": ["Florian P. Mahner*", "Ka Chun Lam*", "Francisco Pereira", "Martin N. Hebart"],
+    "equalContribution": true,
+    "year": 2026,
+    "venue": "Preprint at arXiv",
+    "pdf": "https://arxiv.org/pdf/2605.26921",
+    "html": "https://arxiv.org/abs/2605.26921",
+    "code": null,
+    "selected": true,
+    "description": "We introduce SRF, a method for recovering interpretable dimensions from similarity data across behavior, brains, and models."
+  },
+  {
     "id": "mahner2025dimensions",
     "title": "Dimensions underlying the representational alignment of deep neural networks with humans",
     "authors": ["Florian P. Mahner*", "Lukas Muttenthaler*", "Umut Güçlü", "Martin N. Hebart"],
