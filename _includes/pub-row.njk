@@ -1,0 +1,21 @@
+{# Single publication row. Used for both the selected list and the
+   expanded "all publications" list so the markup lives in one place. #}
+{% macro pubRow(pub, highlight) %}
+<div class="pub-row">
+  <div class="pub-col-main">
+    {# Plain text, not a link — Paper/Web/Code in the footer cover access. #}
+    <div class="pub-title">{{ pub.title }}</div>
+    <div class="pub-authors">{{ pub.authors | highlightAuthor(highlight) | safe }}</div>
+    {# Venue sits on the footer line with the links rather than on its own
+       row, so it reads as part of the metadata instead of interrupting
+       the title → authors flow. #}
+    <div class="pub-foot">
+      <span class="pub-venue">{{ pub.venue }}</span>
+      <span class="pub-year">{{ pub.year }}</span>
+      {% if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer">Paper</a>{% endif %}
+      {% if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer">Web</a>{% endif %}
+      {% if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

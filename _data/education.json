@@ -1,14 +1,35 @@
 [
   {
+    "degree": "Postdoctoral Researcher,",
+    "field": "Machine Learning",
+    "group": "Machine Learning Group",
+    "groupUrl": "https://web.ml.tu-berlin.de/",
+    "institution": "TU Berlin",
+    "institutionUrl": "https://www.tu.berlin/en/",
+    "startLabel": "From Oct 2026",
+    "startYear": 2026,
+    "endYear": null
+  },
+  {
     "degree": "PhD",
     "field": "Machine Learning",
-    "institution": "Max Planck Research Group Vision and Computational Cognition",
-    "institutionUrl": "https://hebartlab.com/",
-    "startYear": 2021,
-    "endYear": 2025,
+    "group": "Vision and Computational Cognition Group",
+    "groupUrl": "https://hebartlab.com/",
+    "institution": "MPI CBS",
+    "institutionUrl": "https://www.cbs.mpg.de/en",
+    "institution2": "TU Berlin",
+    "institution2Url": "https://www.tu.berlin/en/",
+    "startYear": 2022,
+    "endYear": 2026,
     "supervisors": [
-      { "name": "Martin Hebart", "url": "http://martin-hebart.de" },
-      { "name": "Umut Güçlü", "url": "https://www.ru.nl/en/people/guclu-u" }
+      {
+        "name": "Martin Hebart",
+        "url": "http://martin-hebart.de"
+      },
+      {
+        "name": "Umut Güçlü",
+        "url": "https://www.ru.nl/en/people/guclu-u"
+      }
     ]
   },
   {
@@ -17,8 +38,7 @@
     "institution": "Radboud University",
     "institutionUrl": "https://www.ru.nl/ai/",
     "startYear": 2018,
-    "endYear": 2021,
-    "grade": "Excellent with distinction, top 1%"
+    "endYear": 2021
   },
   {
     "degree": "BSc",
@@ -26,7 +46,6 @@
     "institution": "Osnabrück University",
     "institutionUrl": "https://www.ikw.uni-osnabrueck.de/en/home.html",
     "startYear": 2013,
-    "endYear": 2017,
-    "grade": "Excellent"
+    "endYear": 2017
   }
 ]

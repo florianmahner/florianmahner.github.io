@@ -1,78 +1,110 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository.
 
-## Build Commands
+## Commands
 
 ```bash
-npm run dev      # Start development server with live reload
-npm run build    # Build for production (outputs to _site/)
+npm run dev      # dev server with live reload — http://localhost:8080
+npm run build    # production build to _site/
 ```
 
 ## Architecture
 
-This is a personal academic website built with **11ty (Eleventy) v3**. The site uses static site generation with Nunjucks templates, vanilla CSS, and no client-side frameworks.
+Personal academic website. **Eleventy (11ty) v3**, Nunjucks templates, vanilla
+CSS, no client-side framework and no build step beyond 11ty.
 
-### Design System
+- `eleventy.config.js` — config, filters, shortcodes, ignore rules
+- `index.njk` — the whole homepage: Hero, About, Academic Background,
+  Selected Publications, Tools
+- `_includes/base.njk` — layout: nav, footer, inline JS (scroll reveal via
+  IntersectionObserver, active-section tracking)
+- `_includes/pub-row.njk` — `pubRow()` macro; single source for a publication
+  entry, used by both the selected and the expanded list
+- `_data/*.json` — all content: `site`, `education`, `publications`, `repos`,
+  `tools`
+- `content/about.md` — About prose, injected via `{% mdfile "about" %}`
+- `css/style.css` — the entire stylesheet
+- `public/` — static assets copied to output root
 
-**Swiss International Typographic Style + Neobrutalist Cards**
-- Inter font at extreme weight range (300–900)
-- Black/white palette with vivid red accent (#E63946)
-- Visible grid lines at 33%/66% column positions
-- Section numbers and uppercase labels
-- Publication and repo cards: 2px solid black borders, 3px offset shadow, hover lift effect
-- No dark mode — pure black on white
+Filters/shortcodes: `highlightAuthor` (wraps each author in
+`<span class="author">`, adds `.self` for the site owner), `year`, `mdfile`.
 
-### Key Configuration
+## Deployment
 
-- `eleventy.config.js` — 11ty configuration: passthrough copy, custom filters, ignore rules, template formats
-- `_data/` — Global data files (JSON) consumed by all templates
-- `_includes/` — Shared Nunjucks layouts
-- `css/style.css` — Single unified stylesheet with all design tokens and component styles
-- `public/` — Static assets (favicon, PDFs, preview images, robots.txt) copied to output root
+GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to
+**Cloudflare Workers** via wrangler on push to master. `src/index.js` is a
+Worker that forces HTTPS and redirects to the canonical host
+**florianmahner.com**. Despite the repo name, this is *not* GitHub Pages.
 
-### Content Structure
+## Design system
 
-Content is managed through JSON files in `_data/`:
-- `site.json` — Site metadata (name, title, email, social links, affiliations, highlightAuthor)
-- `publications.json` — Publication entries with metadata (title, authors, year, links, selected flag)
-- `repos.json` — GitHub repositories for open source section
-- `education.json` — Academic background entries
-- `tools.json` — Tools and configurations
+Swiss-minimal: black text on a warm off-white ground, thin rules, a visible
+column grid, uppercase section labels.
 
-### Layout System
+### Typography — read this before touching any type
 
-- `_includes/base.njk` — Main layout with sticky nav, mobile hamburger menu, footer, and inline JS for scroll reveals + active nav tracking
-- Uses IntersectionObserver for animations (no external animation library)
+The site uses **TNA**, a variable font with custom axes:
+`wght` 0–100 and `srff` 0–100 (0 = Arial-like, 100 = Times-like).
 
-### Pages
+**CSS `font-weight` does nothing here.** Weight comes only from
+`font-variation-settings`. The `--fw-*` tokens still exist but are inert —
+do not reach for them, and do not add new ones. To change weight, use a
+`--vf-*` token.
 
-- `index.njk` — Single-page homepage with all sections: Hero, About, Publications, Background, Open Source, Tools, Contact
+Everything in the page body is **one size and one weight**:
+`--fs-body` at `--vf-body` (`wght` 0). Hierarchy comes from *spacing*, not
+from size, weight, or colour. The deliberate exceptions are, in full:
 
-### Custom Filters
+| Exception | What |
+|---|---|
+| `--fs-entry` + `--vf-body-medium` | `.pub-title`, `.edu-head` — entry headers; the only list content above body size (22.5px vs 21.25px) |
+| `--vf-body-medium` (`wght` 40) | `.pub-authors .self`, `.about-content strong` — inline emphasis, weight only; a size step would break the line they sit in |
+| `--fs-heading` | the first About paragraph only |
+| `--vf-heading-bold` (`srff` 10) | uppercase UI labels; a genuinely different letterform |
 
-- `highlightAuthor` — Wraps matching author name in `<span class="self">` for bold styling in publication cards
+The accent is for links and hover states only. Body text set in `--accent`
+measures 3.73:1 on `--bg` — below the 4.5:1 minimum — so paper titles and
+other running text stay black.
 
-### Adding Content
+Adding a new size or weight anywhere else will look wrong. Two hard-won
+lessons: identical-size text reads as *larger* when its column is narrower,
+and as *heavier* when it is darker — so before changing a font-size, check
+column width and colour first.
 
-To add a publication: add an entry to `_data/publications.json` with title, authors array, year, and optional links (pdf, html, code). Set `selected: true` to feature it on the homepage.
+### Colour
 
-To add a project page: create a new `.md` or `.njk` file at the root. 11ty will process it using the Nunjucks template engine.
+All body text is pure `#000`; text colour is never declared, it inherits.
+There are no grey text tokens — `--grey-rule` is for hairlines only, never
+type. The accent (`--accent`, purple) is used for links and hover states.
 
-### Deployment
+### Layout
 
-GitHub Actions workflow (`.github/workflows/deploy.yml`) builds with `npm run build` and deploys `_site/` to GitHub Pages on push to master.
+- `--page-w: 75rem` — container, in `rem` so it scales with the type
+- `html { font-size: 125% }` — the whole scale; every other value is `rem`,
+  so this one number resizes the site. Percentage, not `px`, so a reader's
+  own font-size preference is preserved.
+- `--content-max` bounds **every** text block. About, Background and
+  Publications must share it — no per-section column widths, no indents.
+  A narrower column changes how the type reads.
+- Academic Background and Publications are flat blocks, left-aligned, with
+  no year column. Years are inline (`2022–2026 | PhD …`) or in the footer
+  metadata line.
 
-## Skills
+## Content
 
-Project-level skills are available in `.claude/skills/` for use when redesigning or improving the site:
+- Publication: add to `_data/publications.json`; `selected: true` features it
+  on the homepage. Keep `venue` short — long names wrap the footer onto a
+  second line; abbreviate (e.g. "Proceedings of ICMLC").
+- Education: add to `_data/education.json`. `startLabel` overrides the
+  `startYear–endYear` range for open-ended entries ("From Oct 2026").
+- Project page: add a `.md` or `.njk` file at the root.
 
-- **frontend-design** — Core skill for creating distinctive, production-grade UI
-- **canvas-design** — For creating visual assets as PDF/PNG
-- **webapp-testing** — For testing the site with Playwright (dev server runs on port 4321)
+## Gotchas
 
-### Design References
-
-Reference mockups stored in `docs/plans/mockups/`:
-- `mockup-brutalist.html` — Neobrutalist design reference
-- `mockup-swiss.html` — Swiss minimal design reference (primary inspiration)
+- The floating section number is hidden on desktop by a single
+  `.nav-floater { display: none }` rule; delete it to restore. The same
+  element **is** the mobile hamburger below 768px — do not remove the markup.
+- Author names are wrapped per-name and `white-space: nowrap`, so a line
+  breaks between authors and never inside one.
+- `_data/education.json` carries a `supervisors` field that nothing renders.

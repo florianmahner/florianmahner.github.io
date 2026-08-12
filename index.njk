@@ -2,6 +2,7 @@
 layout: base.njk
 title: Florian P. Mahner
 ---
+{% import "pub-row.njk" as pub_row %}
 
 <!-- Hero -->
 <section class="hero" id="top">
@@ -16,17 +17,16 @@ title: Florian P. Mahner
   </div>
 </section>
 
-<!-- 02 Background -->
+<!-- 02 Academic Background -->
 <section class="section" id="background">
-  <div class="section-label"><span class="section-name">Background</span><hr class="section-rule"></div>
+  <div class="section-label"><span class="section-name">Academic Background</span><hr class="section-rule"></div>
   <div class="section-content reveal reveal-stagger">
     {% for edu in education %}
     <div class="edu-item">
-      <div class="edu-year">{{ edu.startYear }}&ndash;{{ edu.endYear }}</div>
       <div class="edu-content">
-        <strong>{{ edu.degree }} in {{ edu.field }}</strong>
-        <span class="edu-place"><a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a></span>
-        {% if edu.grade %}<span class="edu-detail">{{ edu.grade }}</span>{% endif %}
+        <span class="edu-head"><span class="edu-year">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}&ndash;{{ edu.endYear }}{% endif %}</span><span class="edu-degree">{{ edu.degree }} {{ edu.field }}</span></span>
+        {# Affiliation line: group, institution(s), country — one running line. #}
+        <span class="edu-meta">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} &amp; <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</span>
       </div>
     </div>
     {% endfor %}
@@ -37,49 +37,24 @@ title: Florian P. Mahner
 <section class="section" id="publications">
   <div class="section-label"><span class="section-name">Selected Publications</span><hr class="section-rule"></div>
   <div class="section-content reveal reveal-stagger">
-    {% for pub in publications %}
-      {% if pub.selected %}
-      <div class="pub-row">
-        <div class="pub-col-year">{{ pub.year }}</div>
-        <div class="pub-col-main">
-          <div class="pub-title"><a href="{{ pub.pdf or pub.html or '#' }}" {% if pub.pdf or pub.html %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ pub.title }}</a></div>
-          <div class="pub-venue">{{ pub.venue }}</div>
-          <div class="pub-authors">{{ pub.authors | highlightAuthor(site.highlightAuthor) | safe }}</div>
-          <div class="pub-links">
-            {% if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer">Paper</a>{% endif %}
-            {% if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer">Web</a>{% endif %}
-            {% if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif %}
-          </div>
-        </div>
-      </div>
-      {% endif %}
+    {% for pub in publications | selectattr("selected") %}
+      {{ pub_row.pubRow(pub, site.highlightAuthor) }}
     {% endfor %}
 
     <button class="view-all-toggle" id="toggle-publications" aria-expanded="false" aria-controls="all-publications">View all publications &darr;</button>
 
     <div id="all-publications" class="expanded-publications" hidden>
-      {% for pub in publications %}
-        {% if not pub.selected %}
-        <div class="pub-row">
-          <div class="pub-col-year">{{ pub.year }}</div>
-          <div class="pub-col-main">
-            <div class="pub-title"><a href="{{ pub.pdf or pub.html or '#' }}" {% if pub.pdf or pub.html %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ pub.title }}</a></div>
-            <div class="pub-venue">{{ pub.venue }}</div>
-            <div class="pub-authors">{{ pub.authors | highlightAuthor(site.highlightAuthor) | safe }}</div>
-            <div class="pub-links">
-              {% if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer">Paper</a>{% endif %}
-              {% if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer">Web</a>{% endif %}
-              {% if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif %}
-            </div>
-          </div>
-        </div>
-        {% endif %}
+      {% for pub in publications | rejectattr("selected") %}
+        {{ pub_row.pubRow(pub, site.highlightAuthor) }}
       {% endfor %}
     </div>
   </div>
 </section>
 
-<!-- 04 Tools -->
+{# 04 Tools — disabled. Data lives in _data/tools.json and the .tool-* styles
+   are still in css/style.css; uncomment this block to bring the section back.
+   Remember to re-add the Tools entry to the nav in _includes/base.njk.
+
 <section class="section" id="tools">
   <div class="section-label"><span class="section-name">Tools</span><hr class="section-rule"></div>
   <div class="section-content reveal">
@@ -93,4 +68,5 @@ title: Florian P. Mahner
     </div>
   </div>
 </section>
+#}
 

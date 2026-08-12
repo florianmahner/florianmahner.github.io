@@ -29,15 +29,16 @@ export default function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "public": "/" });
   eleventyConfig.addPassthroughCopy("css");
 
-  // Highlight author name in author list
+  // Highlight author name in author list. Each name is wrapped in its own
+  // span so a name never breaks mid-way across two lines — lines wrap
+  // between authors instead.
   eleventyConfig.addFilter("highlightAuthor", function(authors, name) {
     if (!authors || !Array.isArray(authors)) return '';
     const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    return authors.map(a =>
-      a.includes(name)
-        ? '<span class="self">' + esc(a) + '</span>'
-        : esc(a)
-    ).join(', ');
+    return authors.map(a => {
+      const cls = a.includes(name) ? 'author self' : 'author';
+      return '<span class="' + cls + '">' + esc(a) + '</span>';
+    }).join(', ');
   });
 
   // Current year shortcode

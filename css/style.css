@@ -26,21 +26,21 @@
   --white: #fff;
   --bg: #faf8f3;       /* warm off-white page background */
   --accent: #A855F7;
-  --grey-dark: #555;
-  --grey-mid: #999;
-  --grey-rule: #d0d0d0;
+  --grey-rule: #d0d0d0;  /* hairlines only — never text */
 
   /* Typography — single family, different variation-settings for body vs heading.
      Serif axis: 0 = Arial, 100 = Times. Weight axis: 0 = regular, 100 = bold. */
   --font: 'TNA', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --vf-body:         'srff' 50, 'wght' 0;
+  --vf-body-medium:  'srff' 50, 'wght' 40;   /* emphasis only — never the body */
   --vf-body-bold:    'srff' 50, 'wght' 100;
   --vf-heading:      'srff' 10, 'wght' 50;
   --vf-heading-bold: 'srff' 10, 'wght' 100;
   /* Strict 4-tier type scale. Every font-size in the stylesheet must use one of these. */
   --fs-title:   clamp(2.25rem, 8.5vw, 6rem);   /* hero name, mobile overlay numbers */
-  --fs-heading: 1.125rem;                      /* item titles (pub/oss/edu) — 1px above body for bold-weight contrast */
-  --fs-body:    1.0625rem;                     /* paragraphs, dates, default */
+  --fs-heading: 1.25rem;                       /* item titles (pub/oss/edu) — clear step above body */
+  --fs-body:    1.0625rem;                     /* paragraphs, lead text, default */
+  --fs-entry:   1.125rem;                      /* entry headers (pub title, edu head) */
   --fs-desc:    0.875rem;                      /* meta, captions, nav labels, footer, view-all */
 
   --fw-light: 300;
@@ -62,6 +62,7 @@
   --space-4xl: 6rem;
 
   /* Layout — vertical grid lines at 33% and --grid-right (content bound) */
+  --page-w: 75rem;   /* container width; in rem so the column grows with the type */
   --page-pad-x: clamp(1.5rem, 5vw, 6rem);
   --col-year: 8rem;  /* fits "2021–2025" at body font-size with breathing room */
   --grid-right: 76%;  /* right-side content/grid bound — bumped from 72% for wider text */
@@ -74,10 +75,13 @@
 }
 
 /* Base */
-html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+/* Root size sets the whole scale: every type and spacing token is in rem,
+   so 20px ≙ the browser's 16px default viewed at 125% zoom. Set as a
+   percentage rather than px so it still respects a reader's own
+   font-size preference. */
+html { font-size: 125%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
 body {
   font-family: var(--font);
-  font-weight: var(--fw-regular);
   color: var(--black);
   background: var(--bg);
   line-height: 1.55;
@@ -86,7 +90,6 @@ body {
 
 /* Headings & UI labels: Arial-leaning via the Serif axis */
 .hero-name,
-.section-name,
 .side-rail-num,
 .side-rail-label,
 .nav-link,
@@ -99,7 +102,7 @@ strong, b { font-variation-settings: var(--vf-body-bold); }
 a { color: inherit; text-decoration: none; }
 
 /* Page Container & Grid Lines */
-.page { max-width: 1200px; margin: 0 auto; margin-left: max(var(--rail-w), calc((100vw - 1200px) / 2)); padding: 0 var(--page-pad-x); border-left: none; border-right: var(--rule-light); min-height: 100vh; position: relative; overflow-x: clip; }
+.page { max-width: var(--page-w); margin: 0 auto; margin-left: max(var(--rail-w), calc((100vw - var(--page-w)) / 2)); padding: 0 var(--page-pad-x); border-left: none; border-right: var(--rule-light); min-height: 100vh; position: relative; overflow-x: clip; }
 .page::before, .page::after { content: ''; position: absolute; top: 0; bottom: 0; width: 0; border-left: var(--rule-light); pointer-events: none; z-index: 0; }
 .page::before { left: 33.333%; }
 .page::after { left: var(--grid-right); }
@@ -108,7 +111,7 @@ section, header, footer { position: relative; z-index: 1; }
 /* Side-Rail Navigation */
 .side-rail {
   position: fixed;
-  left: max(0px, calc((100vw - 1200px) / 2 - var(--rail-w)));
+  left: max(0px, calc((100vw - var(--page-w)) / 2 - var(--rail-w)));
   top: 0;
   bottom: 0;
   width: var(--rail-w);
@@ -130,7 +133,6 @@ section, header, footer { position: relative; z-index: 1; }
   position: relative;
   text-decoration: none;
   transition: color 0.2s;
-  color: var(--grey-mid);
 }
 
 /* Active indicator — red underline */
@@ -155,7 +157,6 @@ section, header, footer { position: relative; z-index: 1; }
 
 .side-rail-num {
   font-size: var(--fs-desc);
-  font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   transition: color 0.2s;
@@ -163,7 +164,6 @@ section, header, footer { position: relative; z-index: 1; }
 
 .side-rail-label {
   font-size: var(--fs-desc);
-  font-weight: var(--fw-regular);
   letter-spacing: 0;
   text-transform: uppercase;
   line-height: 1.15;
@@ -173,7 +173,7 @@ section, header, footer { position: relative; z-index: 1; }
 
 /* Hero */
 .hero { padding: var(--space-4xl) 0 var(--space-3xl); border-bottom: var(--rule); }
-.hero-name { font-size: var(--fs-title); font-weight: var(--fw-black); line-height: 1.05; letter-spacing: -0.035em; max-width: 90%; }
+.hero-name { font-size: var(--fs-title); line-height: 1.05; letter-spacing: -0.035em; max-width: 90%; }
 .hero-name .accent-dot {
   color: var(--accent);
   display: inline-block;
@@ -184,18 +184,25 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 /* Section */
-.section { padding: var(--space-2xl) 0 var(--space-xl); border-bottom: var(--rule); }
+/* Symmetric padding: every section has the same air above and below its
+   content, so the gap after each one is identical. */
+.section { padding: var(--space-xl) 0; border-bottom: var(--rule); }
+
+/* Last item in any section drops its trailing space — the section padding
+   provides it. Without this each list contributes a different bottom gap. */
+.section-content > *:last-child { margin-bottom: 0; padding-bottom: 0; }
 
 .section-label {
   position: relative;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
   overflow: visible;
 }
 
+/* Same letterform as body copy (srff 50), one step up in size. */
 .section-name {
   position: relative;
-  font-size: var(--fs-body);
-  font-weight: var(--fw-black);
+  font-size: var(--fs-entry);
+  font-variation-settings: var(--vf-body-medium);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--black);
@@ -208,108 +215,105 @@ section, header, footer { position: relative; z-index: 1; }
   border-top: var(--rule-light);
 }
 
-/* About */
-.about-content > p { max-width: var(--content-max); }
-.about-content > p:first-child { font-size: var(--fs-heading); font-weight: var(--fw-light); line-height: 1.5; letter-spacing: -0.01em; }
-.about-content > p:not(:first-child) { margin-top: var(--space-lg); font-size: var(--fs-body); font-weight: var(--fw-light); line-height: 1.65; color: var(--grey-dark); }
-.about-content strong { font-weight: var(--fw-bold); }
-.about-content em { font-style: normal; color: var(--accent); font-weight: var(--fw-medium); }
+/* About — the lead paragraph is the ONLY intentional size step on the page. */
+.about-content > p { max-width: var(--content-max); line-height: 1.65; }
+.about-content > p:first-child { font-size: var(--fs-heading); line-height: 1.5; letter-spacing: -0.01em; }
+.about-content > p:not(:first-child) { margin-top: var(--space-lg); }
+.about-content em { font-style: normal; color: var(--accent); }
 .about-content a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
 .about-content a:hover { text-decoration-color: var(--accent); }
 
-/* Background */
+/* Background — no year column. The year sits inline on the header line so
+   every block starts at the same left edge and spans the full text width. */
 .edu-item {
-  display: grid;
-  grid-template-columns: var(--col-year) 1fr;
-  gap: 0 var(--space-xl);
-  padding: 0.75rem 0;
-  align-items: baseline;
+  /* Bottom-only: adjacent paddings would otherwise stack into a double gap. */
+  padding: 0 0 var(--space-lg);
   max-width: var(--content-max);
-  transition: transform 0.25s ease;
+  font-size: var(--fs-body);
+  line-height: 1.65;
 }
-.edu-item:first-child { padding-top: 0; }
-.edu-item:hover { transform: translateX(4px); }
 
 .edu-year {
-  font-weight: var(--fw-light);
-  font-size: var(--fs-body);
-  color: var(--grey-mid);
   font-variant-numeric: tabular-nums;
-  transition: color 0.2s;
 }
-.edu-item:hover .edu-year { color: var(--accent); }
+/* Pipe is a real glyph, so it inherits the header's size and weight.
+   Spaces are part of the content string — inline pseudo-element margins
+   collapse unreliably, and there is no whitespace in the source markup. */
+.edu-year::after {
+  content: " | ";
+  white-space: pre;
+}
 
-.edu-content { display: flex; flex-direction: column; gap: 0.15rem; }
-.edu-content strong { font-weight: var(--fw-regular); font-variation-settings: var(--vf-body); font-size: var(--fs-heading); }
-.edu-place { font-size: var(--fs-desc); color: var(--grey-mid); }
-.edu-place a { color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
-.edu-place a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-.edu-detail { font-size: var(--fs-desc); color: var(--grey-mid); font-weight: var(--fw-light); }
+/* Same header -> detail gap as .pub-authors, so both lists read alike. */
+.edu-content { display: flex; flex-direction: column; gap: var(--space-sm); }
 
-/* Publications */
+/* Affiliation line — group, institution(s), country as running text. */
+.edu-meta a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.2em; transition: color 0.15s, text-decoration-color 0.15s; }
+.edu-meta a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* Publications — set at a single size and weight; no bold, no size steps.
+   Hierarchy comes from colour alone: black title, grey metadata. */
 .pub-row {
-  display: grid;
-  grid-template-columns: var(--col-year) 1fr;
-  gap: 0 var(--space-xl);
-  padding: var(--space-lg) 0;
+  padding: 0.75rem 0;   /* 15px each side -> 30px between rows, matching .edu-item */
   border-top: var(--rule-light);
-  align-items: start;
   max-width: var(--content-max);
-  transition: transform 0.25s ease;
-}
-.section-content > .pub-row:first-child { border-top: none; }
-.pub-row:hover { transform: translateX(4px); }
-
-.pub-col-year {
-  font-weight: var(--fw-light);
   font-size: var(--fs-body);
-  color: var(--grey-mid);
-  padding-top: 0.15rem;
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s;
+  /* Matches the About paragraphs — generous leading is what makes text
+     read as substantial here; the TNA `wght` axis is pinned at 0, so CSS
+     font-weight has no visual effect. */
+  line-height: 1.65;
 }
-.pub-row:hover .pub-col-year { color: var(--accent); }
+/* First row sheds its rule and the padding that goes with it, so the gap
+   under the section label matches every other section. */
+.section-content > .pub-row:first-child { border-top: none; padding-top: 0; }
+
+.pub-year { font-variant-numeric: tabular-nums; }
 
 .pub-col-main { min-width: 0; }
 
-.pub-title {
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-heading);
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+/* Entry headers — the one place list content steps above body size. */
+.pub-title,
+.edu-head {
+  font-size: var(--fs-entry);
+  font-variation-settings: var(--vf-body-medium);
 }
-.pub-title a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
-.pub-title a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
-.pub-venue {
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-desc);
-  margin-top: 0.4rem;
-}
+/* Inline emphasis — weight only. These sit inside running text, so a size
+   step here would break the line it lives on. */
+.pub-authors .self,
+.about-content strong { font-variation-settings: var(--vf-body-medium); }
+
 
 .pub-authors {
-  font-weight: var(--fw-light);
-  font-size: var(--fs-desc);
-  color: var(--grey-mid);
-  margin-top: var(--space-xs);
-  line-height: 1.45;
+  margin-top: var(--space-sm);
 }
-.pub-authors .self { font-weight: var(--fw-semibold); color: var(--black); }
+/* Names stay whole; the line wraps between authors, not inside one. */
+.pub-authors .author { white-space: nowrap; }
+/* TNA takes its weight from the `wght` axis, not CSS font-weight. */
 
-.pub-links {
+/* Footer line: venue + links share one row, separated by hairline pipes. */
+.pub-foot {
   display: flex;
-  gap: 0.625rem;
-  margin-top: 0.4rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-md);
+  margin-top: var(--space-sm);
 }
-.pub-links a {
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
-  color: var(--grey-mid);
+.pub-foot > * + *::before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 0.75em;
+  margin-inline-end: var(--space-md);
+  background: var(--grey-rule);
+  vertical-align: -0.05em;
+}
+.pub-foot a {
   text-decoration: underline; text-decoration-color: transparent;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.2em;
   transition: color 0.15s, text-decoration-color 0.15s;
 }
-.pub-links a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.pub-foot a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 /* Open Source */
 .oss-row {
@@ -318,6 +322,8 @@ section, header, footer { position: relative; z-index: 1; }
   gap: 0 var(--space-xl);
   padding: var(--space-md) 0;
   align-items: baseline;
+  font-size: var(--fs-body);
+  line-height: 1.65;
   max-width: var(--content-max);
   transition: transform 0.25s ease;
 }
@@ -325,9 +331,6 @@ section, header, footer { position: relative; z-index: 1; }
 .oss-row:hover { transform: translateX(4px); }
 
 .oss-lang {
-  font-weight: var(--fw-light);
-  font-size: var(--fs-body);
-  color: var(--grey-mid);
   font-variant-numeric: tabular-nums;
   transition: color 0.2s;
 }
@@ -336,42 +339,32 @@ section, header, footer { position: relative; z-index: 1; }
 .oss-body { min-width: 0; }
 
 .oss-name {
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-heading);
-  letter-spacing: -0.01em;
+  color: var(--black);
 }
 .oss-name a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
 .oss-name a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
 .oss-desc {
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-light);
-  color: var(--grey-mid);
   line-height: 1.5;
   margin-top: 0.15rem;
 }
 
 .oss-meta {
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-regular);
-  color: var(--grey-mid);
-  margin-top: var(--space-xs);
+  margin-top: 0.15rem;
 }
 
 /* Tools */
 .tools-grid { display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-lg); max-width: var(--content-max); }
 .tool-chip { display: inline-flex; align-items: baseline; gap: var(--space-sm); padding: 0.25rem 0; font-size: var(--fs-body); transition: color 0.2s, transform 0.2s; }
 .tool-chip:hover { color: var(--accent); transform: translateY(-2px); }
-.tool-name { font-weight: var(--fw-medium); }
-.tool-desc { font-size: var(--fs-desc); font-weight: var(--fw-light); color: var(--grey-mid); }
+.tool-name { color: var(--black); }
 
 /* Expand / Collapse Publications */
 .view-all-toggle {
   background: none; border: none;
-  font: inherit; font-size: var(--fs-desc); font-weight: var(--fw-semibold);
-  text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--grey-mid); cursor: pointer;
-  margin-top: var(--space-lg); margin-bottom: var(--space-xs); transition: color 0.15s;
+  font: inherit; font-size: var(--fs-desc);
+  text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
+  margin-top: var(--space-lg); margin-bottom: 0; transition: color 0.15s;
 }
 .view-all-toggle:hover { color: var(--accent); }
 .expanded-publications { margin-top: 0; }
@@ -385,22 +378,27 @@ section, header, footer { position: relative; z-index: 1; }
 /* Footer */
 .footer { padding: var(--space-lg) 0; border-top: var(--rule); display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: var(--space-md); max-width: var(--content-max); }
 .footer-left,
-.footer-right { font-size: var(--fs-desc); font-weight: var(--fw-light); color: var(--grey-mid); }
+.footer-right { font-size: var(--fs-desc); }
 .footer-right a { margin-inline-start: var(--space-lg); }
 .footer-right a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
 .footer-right a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
-/* Floating Navigation (top-right number + hover TOC) */
+/* Floating Navigation (top-right number + hover TOC).
+   Anchored to the top of the viewport and to the page's right gutter, so it
+   reads as part of the layout rather than floating at an arbitrary height.
+
+   DISABLED ON DESKTOP — the section number read as clutter. The markup and
+   all styles below are intact; the mobile hamburger (same element, under the
+   768px breakpoint) still uses them. To bring the desktop number back, delete
+   the `.nav-floater { display: none }` rule directly below. */
+.nav-floater { display: none; }
+
 .nav-floater {
   position: fixed;
-  top: clamp(18rem, 28vw, 21rem);
-  right: auto;
-  left: min(
-    calc(100vw - 56px - var(--space-md)),
-    calc((100vw - 1200px) / 2 + 1200px + var(--space-xl))
-  );
+  top: var(--space-lg);
+  /* Right edge of the page container, clamped to the viewport on narrow screens. */
+  right: max(var(--space-md), calc((100vw - var(--page-w)) / 2 + var(--page-pad-x)));
   z-index: 200;
-  display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
@@ -418,8 +416,8 @@ section, header, footer { position: relative; z-index: 1; }
 }
 
 .mobile-nav-toggle-num {
-  font-size: var(--fs-heading);
-  font-weight: var(--fw-black);
+  /* Standalone graphic marker, not body copy — sits outside the 4-tier text scale. */
+  font-size: 2rem;
   font-variant-numeric: tabular-nums;
   font-variation-settings: var(--vf-heading-bold);
   color: var(--accent);
@@ -458,7 +456,6 @@ section, header, footer { position: relative; z-index: 1; }
   align-items: baseline;
   gap: var(--space-sm);
   padding: 0.4rem 0;
-  color: var(--grey-mid);
   font-size: var(--fs-desc);
   font-variation-settings: var(--vf-heading-bold);
   letter-spacing: 0.04em;
@@ -473,9 +470,7 @@ section, header, footer { position: relative; z-index: 1; }
 .desktop-toc-item.active .dt-num { color: var(--accent); }
 
 .dt-num {
-  font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
-  color: var(--grey-mid);
   min-width: 1.25rem;
   transition: color 0.15s;
 }
@@ -505,7 +500,6 @@ section, header, footer { position: relative; z-index: 1; }
   font: inherit;
   font-size: var(--fs-heading);
   cursor: pointer;
-  color: var(--grey-mid);
   line-height: 1;
   padding: 0.25rem 0.5rem;
   transition: color 0.15s;
@@ -523,7 +517,6 @@ section, header, footer { position: relative; z-index: 1; }
   align-items: baseline;
   gap: var(--space-lg);
   text-decoration: none;
-  color: var(--grey-mid);
   padding: var(--space-sm) 0;
   border-bottom: var(--rule-light);
   transition: color 0.15s;
@@ -534,7 +527,6 @@ section, header, footer { position: relative; z-index: 1; }
 
 .mobile-nav-num {
   font-size: var(--fs-title);
-  font-weight: var(--fw-black);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   min-width: 2.5rem;
@@ -543,7 +535,6 @@ section, header, footer { position: relative; z-index: 1; }
 
 .mobile-nav-name {
   font-size: var(--fs-heading);
-  font-weight: var(--fw-semibold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -561,12 +552,13 @@ section, header, footer { position: relative; z-index: 1; }
   transform: none;
 }
 
-/* Hover accent: red bar slides in from left along the bottom of cards */
-.edu-item,
+/* Hover accent: accent bar slides in from the left along the row's rule.
+   Only rows that HAVE a rule get one — .edu-item has no border, so a bar
+   there would float against nothing. It uses the year-column colour shift
+   as its hover cue instead. */
 .pub-row,
 .oss-row { position: relative; }
 
-.edu-item::after,
 .pub-row::after,
 .oss-row::after {
   content: "";
@@ -583,7 +575,6 @@ section, header, footer { position: relative; z-index: 1; }
   z-index: 1;
 }
 
-.edu-item:hover::after,
 .pub-row:hover::after,
 .oss-row:hover::after { transform: scaleX(1); }
 
@@ -629,19 +620,17 @@ section[id] { scroll-margin-top: var(--space-3xl); }
   .page { margin-left: 0; border-left: var(--rule); }
   .page::before, .page::after { display: none; }
   .hero { padding: 3.5rem 0 var(--space-2xl); }
-  .section { padding: var(--space-2xl) 0; }
-  .section-label { margin-bottom: var(--space-xl); }
 
-  .pub-row,
-  .oss-row,
-  .edu-item {
+  .oss-row {
     grid-template-columns: 1fr;
     gap: var(--space-xs);
   }
 
   /* Hide desktop side rail + hover TOC; show mobile hamburger overlay */
   .side-rail { display: none; }
+  /* Re-enables the floater as the hamburger button (hidden on desktop). */
   .nav-floater {
+    display: flex;
     top: var(--space-md);
     right: var(--page-pad-x);
     left: auto;
@@ -687,8 +676,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 .project-back {
   display: inline-block;
   font-size: var(--fs-desc);
-  color: var(--grey-mid);
-  font-weight: var(--fw-light);
   margin-bottom: var(--space-2xl);
   transition: color 0.15s;
 }
@@ -698,8 +685,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 
 .project-venue {
   font-size: var(--fs-desc);
-  color: var(--grey-mid);
-  font-weight: var(--fw-light);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: var(--space-md);
@@ -707,7 +692,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 
 .project-title {
   font-size: clamp(1.5rem, 3vw, 2.25rem);
-  font-weight: var(--fw-black);
   font-variation-settings: var(--vf-heading-bold);
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -716,16 +700,13 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 
 .project-authors {
   font-size: var(--fs-body);
-  font-weight: var(--fw-light);
-  color: var(--grey-dark);
   line-height: 1.55;
   margin-bottom: var(--space-xs);
 }
-.project-authors .self { font-weight: var(--fw-bold); color: var(--black); font-variation-settings: var(--vf-body-bold); }
+.project-authors .self { color: var(--black); font-variation-settings: var(--vf-body-bold); }
 
 .project-equal {
   font-size: var(--fs-desc);
-  color: var(--grey-mid);
   font-style: italic;
   margin-bottom: var(--space-lg);
 }
@@ -742,7 +723,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
   border: 2px solid var(--black);
   background: var(--bg);
   font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--black);
@@ -754,7 +734,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 
 .project-tldr {
   font-size: var(--fs-heading);
-  font-weight: var(--fw-light);
   line-height: 1.55;
   letter-spacing: -0.005em;
   color: var(--black);
@@ -765,7 +744,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 .project-tldr em {
   font-style: normal;
   color: var(--accent);
-  font-weight: var(--fw-medium);
 }
 
 .project-figure {
@@ -781,9 +759,7 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 .project-figure figcaption {
   margin-top: var(--space-md);
   font-size: var(--fs-desc);
-  color: var(--grey-dark);
   line-height: 1.55;
-  font-weight: var(--fw-light);
 }
 .project-figure-hero { margin-bottom: var(--space-3xl); }
 
@@ -792,22 +768,18 @@ section[id] { scroll-margin-top: var(--space-3xl); }
 }
 .project-section .section-name {
   font-size: var(--fs-body);
-  font-weight: var(--fw-black);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .project-lead {
   font-size: var(--fs-body);
-  font-weight: var(--fw-light);
   line-height: 1.6;
-  color: var(--grey-dark);
   max-width: 56ch;
   margin: 0 0 var(--space-xl);
 }
 .project-lead em {
   font-style: normal;
   color: var(--accent);
-  font-weight: var(--fw-medium);
 }
 
 .project-bibtex {
@@ -818,7 +790,6 @@ section[id] { scroll-margin-top: var(--space-3xl); }
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: var(--fs-desc);
   line-height: 1.55;
-  color: var(--grey-dark);
   overflow-x: auto;
   white-space: pre;
 }
