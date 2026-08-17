@@ -99,6 +99,14 @@ body {
 
 /* Bold body copy */
 strong, b { font-variation-settings: var(--vf-body-bold); }
+
+/* Micro-typography — progressive enhancements, all degrade to plain text.
+   balance: even line lengths on short multi-line blocks (titles, heads).
+   pretty: reworks only a paragraph's last lines to kill orphans.
+   hanging-punctuation: opening quotes hang into the margin (Safari). */
+.pub-title, .edu-head, .section-name { text-wrap: balance; }
+p, .pub-authors, .oss-desc, .project-lead { text-wrap: pretty; }
+.about-content { hanging-punctuation: first allow-end; }
 ::selection { background: var(--accent); color: var(--white); }
 a { color: inherit; text-decoration: none; }
 
