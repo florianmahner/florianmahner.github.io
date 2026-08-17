@@ -81,9 +81,11 @@ type. The accent (`--accent`, purple) is used for links and hover states.
 ### Layout
 
 - `--page-w: 75rem` — container, in `rem` so it scales with the type
-- `html { font-size: 125% }` — the whole scale; every other value is `rem`,
-  so this one number resizes the site. Percentage, not `px`, so a reader's
-  own font-size preference is preserved.
+- `html { font-size: clamp(1rem, 0.714rem + 0.595vw, 1.25rem) }` — the whole
+  scale; every other value is `rem`, so this one rule resizes the site.
+  Fluid: 100% (16px) at ≤768px viewports, growing linearly to 125% (20px,
+  the desktop reading size) at 1440px. `rem` terms, not `px`, so a reader's
+  own font-size preference and zoom are preserved.
 - `--content-max` bounds **every** text block. About, Background and
   Publications must share it — no per-section column widths, no indents.
   A narrower column changes how the type reads.

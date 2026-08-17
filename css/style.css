@@ -75,11 +75,12 @@
 }
 
 /* Base */
-/* Root size sets the whole scale: every type and spacing token is in rem,
-   so 20px ≙ the browser's 16px default viewed at 125% zoom. Set as a
-   percentage rather than px so it still respects a reader's own
-   font-size preference. */
-html { font-size: 125%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+/* Root size sets the whole scale: every type and spacing token is in rem.
+   Fluid: browser default (1rem ≙ 16px) up to phone/tablet-portrait widths,
+   growing linearly to 125% (20px) from 768px → 1440px viewports — the
+   desktop reading size, without a breakpoint jump. The rem terms keep a
+   reader's own font-size preference and zoom working (WCAG 1.4.4); never px. */
+html { font-size: clamp(1rem, 0.714rem + 0.595vw, 1.25rem); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
 body {
   font-family: var(--font);
   color: var(--black);
