@@ -74,6 +74,20 @@
   --rule-light: 1px solid var(--grey-rule);
 }
 
+/* Dark — the same warm palette inverted: near-black paper, off-white ink.
+   Every colour on the site is a token, so this block is the whole theme.
+   --black stays "ink" and --white stays "raised surface"; only their
+   values flip. Accent lifted one step for contrast on the dark ground. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --black: #ece9e2;
+    --white: #221f1b;
+    --bg: #14120f;
+    --grey-rule: #3b3833;
+    --accent: #b98aff;
+  }
+}
+
 /* Base */
 /* Root size sets the whole scale: every type and spacing token is in rem.
    Fluid: browser default (1rem ≙ 16px) up to phone/tablet-portrait widths,
