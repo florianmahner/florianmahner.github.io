@@ -63,9 +63,9 @@ from size, weight, or colour. The deliberate exceptions are, in full:
 | `--fs-heading` | the first About paragraph only |
 | `--vf-heading-bold` (`srff` 10) | uppercase UI labels; a genuinely different letterform |
 
-The accent is for links and hover states only. Body text set in `--accent`
-measures 3.73:1 on `--bg` — below the 4.5:1 minimum — so paper titles and
-other running text stay black.
+The accent is for links and hover states only. `--accent` (#9333EA) measures
+~5.1:1 on `--bg`, so accent links pass the 4.5:1 minimum — but paper titles
+and other running text stay black by design, not for contrast reasons.
 
 Adding a new size or weight anywhere else will look wrong. Two hard-won
 lessons: identical-size text reads as *larger* when its column is narrower,

@@ -25,7 +25,7 @@
   --black: #000;
   --white: #fff;
   --bg: #faf8f3;       /* warm off-white page background */
-  --accent: #A855F7;
+  --accent: #9333EA;  /* one step darker than the original #A855F7 — 5.1:1 on --bg, passes 4.5 */
   --grey-rule: #d0d0d0;  /* hairlines only — never text */
 
   /* Typography — single family, different variation-settings for body vs heading.
