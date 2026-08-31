@@ -23,6 +23,7 @@ export default function(eleventyConfig) {
   eleventyConfig.ignores.add("README.md");
   eleventyConfig.ignores.add("CLAUDE.md");
   eleventyConfig.ignores.add(".claude/**");
+  eleventyConfig.ignores.add("analytics/**");
   eleventyConfig.ignores.add("content/**");
 
   // Passthrough copy static assets to root
@@ -46,10 +47,12 @@ export default function(eleventyConfig) {
 
   // {% mdfile "about" %} — read content/about.md and render to HTML.
   // Edit content/<name>.md in markdown; auto-rebuild on save.
-  eleventyConfig.addShortcode("mdfile", function(name) {
+  eleventyConfig.addShortcode("mdfile", function(name, excludeLeadFromSnippet = false) {
     const filePath = path.join("content", `${name}.md`);
     const raw = fs.readFileSync(filePath, "utf-8");
-    return md.render(raw);
+    const html = md.render(raw);
+    if (!excludeLeadFromSnippet) return html;
+    return html.replace("<p>", "<p><span data-nosnippet>").replace("</p>", "</span></p>");
   });
   eleventyConfig.addWatchTarget("content/");
 

@@ -4,22 +4,23 @@ title: Florian P. Mahner
 ---
 {% import "pub-row.njk" as pub_row %}
 
+<main>
 <!-- Hero -->
 <section class="hero" id="top">
   <h1 class="hero-name reveal">Florian P<span class="accent-dot">.</span><br>Mahner</h1>
 </section>
 
 <!-- 01 About -->
-<section class="section" id="about">
-  <div class="section-label"><span class="section-name">About</span><hr class="section-rule"></div>
+<section class="section" id="about" aria-labelledby="about-heading">
+  <div class="section-label"><h2 class="section-name" id="about-heading">About</h2><hr class="section-rule" aria-hidden="true"></div>
   <div class="section-content about-content reveal">
-    {% mdfile "about" %}
+    {% mdfile "about", true %}
   </div>
 </section>
 
 <!-- 02 Academic Background -->
-<section class="section" id="background">
-  <div class="section-label"><span class="section-name">Academic Background</span><hr class="section-rule"></div>
+<section class="section" id="background" aria-labelledby="background-heading">
+  <div class="section-label"><h2 class="section-name" id="background-heading">Academic Background</h2><hr class="section-rule" aria-hidden="true"></div>
   <div class="section-content reveal reveal-stagger">
     {% for edu in education %}
     <div class="edu-item">
@@ -34,8 +35,8 @@ title: Florian P. Mahner
 </section>
 
 <!-- 03 Selected Publications -->
-<section class="section" id="publications">
-  <div class="section-label"><span class="section-name">Selected Publications</span><hr class="section-rule"></div>
+<section class="section" id="publications" aria-labelledby="publications-heading">
+  <div class="section-label"><h2 class="section-name" id="publications-heading">Selected Publications</h2><hr class="section-rule" aria-hidden="true"></div>
   <div class="section-content reveal reveal-stagger">
     {% for pub in publications | selectattr("selected") %}
       {{ pub_row.pubRow(pub, site.highlightAuthor) }}
@@ -50,6 +51,7 @@ title: Florian P. Mahner
     </div>
   </div>
 </section>
+</main>
 
 {# 04 Tools — disabled. Data lives in _data/tools.json and the .tool-* styles
    are still in css/style.css; uncomment this block to bring the section back.
@@ -69,4 +71,3 @@ title: Florian P. Mahner
   </div>
 </section>
 #}
-

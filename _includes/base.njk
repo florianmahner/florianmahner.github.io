@@ -6,7 +6,6 @@
   <title>{{ title or site.fullName }}</title>
   <meta name="description" content="{{ description or site.description }}">
   <meta name="author" content="{{ site.fullName }}">
-  {% if site.keywords %}<meta name="keywords" content="{{ site.keywords }}">{% endif %}
   {% if site.googleSiteVerification %}<meta name="google-site-verification" content="{{ site.googleSiteVerification }}">{% endif %}
   <link rel="canonical" href="{{ site.url }}{{ page.url }}">
 
@@ -30,55 +29,68 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "{{ site.fullName }}",
-    "givenName": "{{ site.name.first }}",
-    "familyName": "{{ site.name.last }}",
-    "url": "{{ site.url }}",
-    "email": "mailto:{{ site.email }}",
-    "jobTitle": "{{ site.title }}",
-    "description": "{{ site.description }}",
-    "image": "{{ site.url }}/favicon.svg",
-    {% if site.affiliations and site.affiliations.length %}"affiliation": {
-      "@type": "Organization",
-      "name": "{{ site.affiliations[0].name }}",
-      "url": "{{ site.affiliations[0].url }}"
-    },{% endif %}
-    "knowsAbout": [
-      "Computational Neuroscience",
-      "Deep Learning",
-      "Representational Alignment",
-      "Human Vision",
-      "Neural Networks",
-      "Cognitive Science"
-    ],
-    "sameAs": [
-      {%- set parts = [] -%}
-      {%- if site.social.github -%}{%- set _ = parts.push("https://github.com/" + site.social.github) -%}{%- endif -%}
-      {%- if site.social.linkedin -%}{%- set _ = parts.push("https://www.linkedin.com/in/" + site.social.linkedin) -%}{%- endif -%}
-      {%- if site.social.scholar -%}{%- set _ = parts.push(site.social.scholar) -%}{%- endif -%}
-      {%- if site.social.orcid -%}{%- set _ = parts.push("https://orcid.org/" + site.social.orcid) -%}{%- endif -%}
-      {%- if site.social.twitter -%}{%- set _ = parts.push("https://twitter.com/" + site.social.twitter) -%}{%- endif -%}
-      {%- for link in parts -%}"{{ link }}"{% if not loop.last %},{% endif %}{%- endfor -%}
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "{{ site.fullName }}",
-    "url": "{{ site.url }}",
-    "publisher": { "@type": "Person", "name": "{{ site.fullName }}" },
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://www.google.com/search?q=site%3Aflorianmahner.com+{search_term_string}"
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": "{{ site.url }}/#profile",
+        "url": "{{ site.url }}/",
+        "name": {{ (title or site.fullName) | dump | safe }},
+        "description": {{ (description or site.description) | dump | safe }},
+        "mainEntity": { "@id": "{{ site.url }}/#person" },
+        "isPartOf": { "@id": "{{ site.url }}/#website" }
       },
-      "query-input": "required name=search_term_string"
-    }
+      {
+        "@type": "Person",
+        "@id": "{{ site.url }}/#person",
+        "name": {{ site.fullName | dump | safe }},
+        "givenName": {{ site.name.first | dump | safe }},
+        "familyName": {{ site.name.last | dump | safe }},
+        "url": "{{ site.url }}/",
+        "email": "mailto:{{ site.email }}",
+        "jobTitle": {{ site.title | dump | safe }},
+        "description": {{ site.description | dump | safe }},
+        {% if site.affiliations and site.affiliations.length %}"affiliation": [
+          {%- for affiliation in site.affiliations %}
+          {
+            "@type": {{ (affiliation.type or "Organization") | dump | safe }},
+            "name": {{ affiliation.name | dump | safe }},
+            {% if affiliation.alternateName %}"alternateName": {{ affiliation.alternateName | dump | safe }},{% endif %}
+            "url": {{ affiliation.url | dump | safe }}{% if affiliation.department %},
+            "department": {
+              "@type": "Organization",
+              "name": {{ affiliation.department.name | dump | safe }},
+              "url": {{ affiliation.department.url | dump | safe }}
+            }{% endif %}
+          }{% if not loop.last %},{% endif %}
+          {%- endfor %}
+        ],{% endif %}
+        "knowsAbout": [
+          "Computational Neuroscience",
+          "Deep Learning",
+          "Representational Alignment",
+          "Human Vision",
+          "Neural Networks",
+          "Cognitive Science"
+        ],
+        "sameAs": [
+          {%- set parts = [] -%}
+          {%- if site.social.github -%}{%- set _ = parts.push("https://github.com/" + site.social.github) -%}{%- endif -%}
+          {%- if site.social.linkedin -%}{%- set _ = parts.push("https://www.linkedin.com/in/" + site.social.linkedin) -%}{%- endif -%}
+          {%- if site.social.scholar -%}{%- set _ = parts.push(site.social.scholar) -%}{%- endif -%}
+          {%- if site.social.orcid -%}{%- set _ = parts.push("https://orcid.org/" + site.social.orcid) -%}{%- endif -%}
+          {%- if site.social.twitter -%}{%- set _ = parts.push("https://twitter.com/" + site.social.twitter) -%}{%- endif -%}
+          {%- for link in parts -%}{{ link | dump | safe }}{% if not loop.last %},{% endif %}{%- endfor -%}
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ site.url }}/#website",
+        "name": {{ site.fullName | dump | safe }},
+        "alternateName": "florianmahner.com",
+        "url": "{{ site.url }}/",
+        "publisher": { "@id": "{{ site.url }}/#person" }
+      }
+    ]
   }
   </script>
 

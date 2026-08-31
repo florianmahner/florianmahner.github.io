@@ -4,8 +4,7 @@
   "title": "PhD Candidate in Machine Learning",
   "email": "florian.mahner@gmail.com",
   "url": "https://florianmahner.com",
-  "description": "Florian P. Mahner is a PhD candidate at the Max Planck Institute (Hebart Lab) researching computational neuroscience, deep learning, and the representational alignment of neural networks with human vision. Publications, code, and contact.",
-  "keywords": "Florian Mahner, Mahner, Florian P. Mahner, F. P. Mahner, F.P. Mahner, florianmahner, florianmahner.com, Mahner Max Planck, Mahner Hebart, Mahner Hebart Lab, Mahner neuroscience, Mahner deep learning, Mahner representational alignment, Mahner alignment, Mahner Nature Machine Intelligence, computational neuroscience, deep neural networks, representational alignment, human vision, cognitive science, machine learning, PhD Max Planck",
+  "description": "Florian P. Mahner is a PhD candidate at TU Berlin and the Max Planck Institute for Human Cognitive and Brain Sciences, working on representation learning in humans and machines.",
   "sideRail": false,
   "social": {
     "github": "florianmahner",
@@ -17,9 +16,22 @@
   "googleSiteVerification": "",
   "affiliations": [
     {
-      "name": "Max Planck Research Group Vision and Computational Cognition",
+      "type": "Organization",
+      "name": "Max Planck Institute for Human Cognitive and Brain Sciences",
+      "alternateName": "MPI CBS",
       "role": "PhD Candidate",
-      "url": "https://hebartlab.com/"
+      "url": "https://www.cbs.mpg.de/en",
+      "department": {
+        "name": "Vision and Computational Cognition Group",
+        "url": "https://hebartlab.com/"
+      }
+    },
+    {
+      "type": "CollegeOrUniversity",
+      "name": "Technische Universität Berlin",
+      "alternateName": "TU Berlin",
+      "role": "PhD Candidate",
+      "url": "https://www.tu.berlin/en/"
     }
   ],
   "highlightAuthor": "Mahner"
