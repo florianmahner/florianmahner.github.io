@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} — {{ site.fullName }}</title>
+  <meta name="description" content="{{ tldr or title }}">
+  <meta name="author" content="{{ site.fullName }}">
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ tldr or title }}">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="{{ site.fullName }}">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ title }}">
+  <meta name="twitter:description" content="{{ tldr or title }}">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preload" href="/fonts/tna-vf.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": {{ title | dump | safe }},
+    "name": {{ title | dump | safe }},
+    "author": [{%- for a in authors -%}{ "@type": "Person", "name": {{ a.name | dump | safe }} }{% if not loop.last %},{% endif %}{%- endfor -%}],
+    "datePublished": "{{ year }}",
+    "publication": {{ venue | dump | safe }},
+    "url": "{{ site.url }}{{ page.url }}"{% if links.html %},
+    "sameAs": {{ links.html | dump | safe }}{% endif %}
+  }
+  </script>
+</head>
+<body>
+<div class="page page-project">
+  <a class="project-back" href="/">← {{ site.fullName }}</a>
+
+  <header class="project-header">
+    <div class="project-venue">{{ venue }} &middot; {{ year }}</div>
+    <h1 class="project-title">{{ title }}</h1>
+
+    <div class="project-authors">
+      {%- for a in authors -%}
+        {%- if a.self -%}<span class="self">{{ a.name }}{% if a.equal %}*{% endif %}</span>
+        {%- else -%}{{ a.name }}{% if a.equal %}*{% endif %}
+        {%- endif -%}
+        {%- if not loop.last %}, {% endif -%}
+      {%- endfor -%}
+    </div>
+
+    {% set hasEqual = false %}
+    {% for a in authors %}{% if a.equal %}{% set hasEqual = true %}{% endif %}{% endfor %}
+    {% if hasEqual %}<div class="project-equal">* equal contribution</div>{% endif %}
+
+    <nav class="project-links" aria-label="Paper links">
+      {% if links.html %}<a href="{{ links.html }}" target="_blank" rel="noopener noreferrer">HTML</a>{% endif %}
+      {% if links.pdf %}<a href="{{ links.pdf }}" target="_blank" rel="noopener noreferrer">PDF</a>{% endif %}
+      {% if links.arxiv %}<a href="{{ links.arxiv }}" target="_blank" rel="noopener noreferrer">arXiv</a>{% endif %}
+      {% if links.code %}<a href="{{ links.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif %}
+      {% if bibtex %}<a href="#bibtex">BibTeX</a>{% endif %}
+    </nav>
+  </header>
+
+  <main class="project-body">
+    {{ content | safe }}
+
+    {% if bibtex %}
+    <section class="project-section" id="bibtex">
+      <div class="section-label"><span class="section-name">BibTeX</span><hr class="section-rule"></div>
+      <pre class="project-bibtex"><code>{{ bibtex }}</code></pre>
+    </section>
+    {% endif %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer-left">&copy; {% year %} {{ site.fullName }}</div>
+    <div class="footer-right">
+      <a href="mailto:{{ site.email }}">Email</a>
+      {% if site.social.github %}<a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub</a>{% endif %}
+      {% if site.social.linkedin %}<a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>{% endif %}
+    </div>
+  </footer>
+</div>
+</body>
+</html>

@@ -15,6 +15,11 @@ pnpm-debug.log*
 .env.production
 .env.local
 
+# Local analytics
+analytics/cache/
+analytics/credentials/
+analytics/plot/
+
 # macOS
 .DS_Store
 

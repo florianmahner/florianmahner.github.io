@@ -4,7 +4,14 @@
   "type": "module",
   "scripts": {
     "dev": "eleventy --serve",
-    "build": "eleventy"
+    "build": "eleventy",
+    "analytics": "node --env-file-if-exists=.env.local analytics/run.js",
+    "test:analytics": "node --test analytics/*.test.js"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.0.2",
+    "vega": "^6.4.0",
+    "vega-lite": "^6.4.3"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
