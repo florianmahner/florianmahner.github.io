@@ -5,7 +5,7 @@
     "authors": ["Florian P. Mahner*", "Johannes Roth*", "Ka Chun Lam", "Michael F. Bonner", "Francisco Pereira", "Martin N. Hebart"],
     "equalContribution": true,
     "year": 2026,
-    "venue": "Preprint at arXiv",
+    "venue": "NeurIPS",
     "pdf": "https://arxiv.org/pdf/2605.13675",
     "html": "https://arxiv.org/abs/2605.13675",
     "code": null,

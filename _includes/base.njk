@@ -21,9 +21,10 @@
   <meta name="twitter:description" content="{{ description or site.description }}">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta name="theme-color" content="#faf8f3" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
-  <link rel="preload" href="/fonts/tna-vf.woff2" as="font" type="font/woff2" crossorigin>
+  <meta name="theme-color" content="#eeeff1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141417" media="(prefers-color-scheme: dark)">
+  <link rel="preload" href="/fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.classList.add('js')</script>
   <link rel="stylesheet" href="/css/style.css">
 
   <script type="application/ld+json">
@@ -124,110 +125,10 @@
   {% endif %}
 </head>
 <body>
-{% if site.sideRail %}
-<nav class="side-rail" aria-label="Section navigation">
-  <a href="/#about" class="side-rail-item" data-nav="about">
-    <span class="side-rail-num">1</span>
-    <span class="side-rail-label">About</span>
-  </a>
-  <a href="/#background" class="side-rail-item" data-nav="background">
-    <span class="side-rail-num">2</span>
-    <span class="side-rail-label">Background</span>
-  </a>
-  <a href="/#publications" class="side-rail-item" data-nav="publications">
-    <span class="side-rail-num">3</span>
-    <span class="side-rail-label">Publications</span>
-  </a>
-  {# Tools section disabled — see index.njk
-  <a href="/#tools" class="side-rail-item" data-nav="tools">
-    <span class="side-rail-num">4</span>
-    <span class="side-rail-label">Tools</span>
-  </a>
-  #}
-</nav>
-{% endif %}
-
-<div class="nav-floater">
-  <button class="mobile-nav-toggle" aria-label="Open menu" aria-expanded="false">
-    <span class="mobile-nav-toggle-num">1</span>
-  </button>
-  <nav class="desktop-toc" aria-label="Sections">
-    <a href="/#about" class="desktop-toc-item" data-nav="about"><span class="dt-num">1</span><span class="dt-name">About</span></a>
-    <a href="/#background" class="desktop-toc-item" data-nav="background"><span class="dt-num">2</span><span class="dt-name">Background</span></a>
-    <a href="/#publications" class="desktop-toc-item" data-nav="publications"><span class="dt-num">3</span><span class="dt-name">Publications</span></a>
-    {# Tools disabled — see index.njk
-    <a href="/#tools" class="desktop-toc-item" data-nav="tools"><span class="dt-num">4</span><span class="dt-name">Tools</span></a>
-    #}
-  </nav>
-</div>
-<div class="mobile-nav-overlay">
-  <button class="mobile-nav-close" aria-label="Close menu">&times;</button>
-  <nav class="mobile-nav-toc" aria-label="Mobile navigation">
-    <a href="/#about" class="mobile-nav-item" data-nav="about">
-      <span class="mobile-nav-num">1</span>
-      <span class="mobile-nav-name">About</span>
-    </a>
-    <a href="/#background" class="mobile-nav-item" data-nav="background">
-      <span class="mobile-nav-num">2</span>
-      <span class="mobile-nav-name">Background</span>
-    </a>
-    <a href="/#publications" class="mobile-nav-item" data-nav="publications">
-      <span class="mobile-nav-num">3</span>
-      <span class="mobile-nav-name">Publications</span>
-    </a>
-    {# Tools disabled — see index.njk
-    <a href="/#tools" class="mobile-nav-item" data-nav="tools">
-      <span class="mobile-nav-num">4</span>
-      <span class="mobile-nav-name">Tools</span>
-    </a>
-    #}
-  </nav>
-</div>
-
-<div class="page">
-  {{ content | safe }}
-
-  <footer class="footer">
-    <div class="footer-left">&copy; {% year %} {{ site.fullName }}</div>
-    <div class="footer-right">
-      <a href="mailto:{{ site.email }}">Email</a>
-      {% if site.social.github %}<a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub</a>{% endif %}
-      {% if site.social.linkedin %}<a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>{% endif %}
-    </div>
-  </footer>
-</div>
+{{ content | safe }}
 
 <script>
-  // Mobile nav
-  (function() {
-    var toggle = document.querySelector('.mobile-nav-toggle');
-    var overlay = document.querySelector('.mobile-nav-overlay');
-    var closeBtn = document.querySelector('.mobile-nav-close');
-    if (!toggle || !overlay) return;
-
-    var mobileMQ = window.matchMedia('(max-width: 768px)');
-    function openNav() {
-      if (!mobileMQ.matches) return;
-      overlay.classList.add('open');
-      toggle.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeNav() {
-      overlay.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    }
-
-    toggle.addEventListener('click', openNav);
-    closeBtn.addEventListener('click', closeNav);
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeNav(); });
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeNav(); });
-    document.querySelectorAll('.mobile-nav-item').forEach(function(link) {
-      link.addEventListener('click', closeNav);
-    });
-  })();
-
-  // Scroll reveal
+  // Scroll reveal — content is visible without JS (the .js class gates it).
   (function() {
     var els = document.querySelectorAll('.reveal');
     if (!('IntersectionObserver' in window) ||
@@ -242,76 +143,31 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.12 });
     els.forEach(function(el) { observer.observe(el); });
   })();
 
-  // Active nav link (side rail)
-  (function() {
-    var sections = document.querySelectorAll('section[id]');
-    var navLinks = document.querySelectorAll('[data-nav]');
-    if (!sections.length || !navLinks.length) return;
-
-    var sectionMap = { about: '1', background: '2', publications: '3', tools: '4' };
-    var toggleNum = document.querySelector('.mobile-nav-toggle-num');
-
-    function setActive(id) {
-      navLinks.forEach(function(link) {
-        link.classList.toggle('active', link.getAttribute('data-nav') === id);
-      });
-      if (toggleNum && sectionMap[id]) toggleNum.textContent = sectionMap[id];
-    }
-
-    var obs = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          setActive(entry.target.getAttribute('id'));
-        }
-      });
-    }, { rootMargin: '-40% 0px -60% 0px' });
-    sections.forEach(function(s) { obs.observe(s); });
-
-    // Highlight last section when scrolled to bottom
-    window.addEventListener('scroll', function() {
-      if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 10) {
-        var last = sections[sections.length - 1];
-        if (last) setActive(last.getAttribute('id'));
-      }
-    }, { passive: true });
-  })();
-
-  // Expand/collapse publications
-  (function() {
-    var btn = document.getElementById('toggle-publications');
-    var section = document.getElementById('all-publications');
-    if (!btn || !section) return;
+  // Show/hide toggles: older news, all publications.
+  function bindToggle(btn, panel, openLabel, closedLabel) {
+    if (!btn || !panel) return;
     btn.addEventListener('click', function() {
-      var isHidden = section.hidden;
-      if (isHidden) {
-        section.hidden = false;
-        section.style.opacity = '0';
-        requestAnimationFrame(function() {
-          section.style.transition = 'opacity 0.3s ease';
-          section.style.opacity = '1';
-        });
-      } else {
-        section.style.transition = 'opacity 0.2s ease';
-        section.style.opacity = '0';
-        section.addEventListener('transitionend', function handler() {
-          section.hidden = true;
-          section.style.opacity = '';
-          section.style.transition = '';
-          section.removeEventListener('transitionend', handler);
-        });
-      }
-      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-      btn.textContent = isHidden ? 'Show less \u2191' : 'View all publications \u2193';
+      var open = panel.hidden;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? openLabel : closedLabel;
+      if (open) panel.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
     });
+  }
+  (function() {
+    var newsBtn = document.querySelector('.news-more');
+    bindToggle(newsBtn, document.getElementById('news-older'), 'Show less', 'Show older');
+    var pubBtn = document.getElementById('toggle-publications');
+    if (pubBtn) bindToggle(pubBtn, document.getElementById('all-publications'), 'Show selected only', pubBtn.textContent);
   })();
 
-  // Hero accent-dot \u2014 physics-driven bouncing-ball animation.
-  // CSS keyframes can only lerp between samples (visible kinks at apex/contact);
-  // a per-frame integrator gives a genuinely parabolic trajectory.
+  // Hero accent dot — physics-driven bounce. CSS keyframes can only lerp
+  // between samples (visible kinks at apex/contact); a per-frame integrator
+  // gives a genuinely parabolic trajectory.
   (function() {
     var dot = document.querySelector('.hero-name .accent-dot');
     if (!dot) return;
@@ -320,48 +176,37 @@
     var fs = parseFloat(getComputedStyle(dot).fontSize);
     if (!fs || isNaN(fs)) return;
 
-    // Physics, em-relative, converted to px once.
-    var H0 = 1.5 * fs;             // initial drop height (above rest)
-    var X0 = 0.8 * fs;             // initial horizontal offset (subtle right-angle entry)
-    var e  = 0.82;                 // coefficient of restitution \u2014 high so many visible bounces
-    var g  = 36 * fs;              // gravity, px/s\u00b2
+    var H0 = 1.2 * fs;             // initial drop height (above rest)
+    var X0 = 0.5 * fs;             // initial horizontal offset
+    var e  = 0.8;                  // coefficient of restitution
+    var g  = 36 * fs;              // gravity, px/s^2
 
-    // Total flight time = t1 * (1 + 2e/(1-e)) \u2014 geometric sum of bounce cycles.
     var t1 = Math.sqrt(2 * H0 / g);
     var T  = t1 * (1 + 2 * e / (1 - e));
-    var vx = -X0 / T;              // constant horizontal velocity \u2192 x reaches 0 at t = T
+    var vx = -X0 / T;
 
-    var x = X0;
-    var height = H0;               // height above ground (positive)
-    var vy = 0;                    // positive = upward
-    var startTime = null;
-    var lastTime  = null;
+    var x = X0, height = H0, vy = 0, startTime = null, lastTime = null;
 
     function apply() {
       dot.style.transform = 'translate(' + x.toFixed(2) + 'px, ' + (-height).toFixed(2) + 'px)';
     }
-
     function step(now) {
       if (startTime === null) { startTime = now; lastTime = now; }
       var dt = Math.min(0.032, (now - lastTime) / 1000);
       lastTime = now;
       var elapsed = (now - startTime) / 1000;
-
       vy -= g * dt;
       height += vy * dt;
       x += vx * dt;
-
       if (height < 0) { height = 0; vy = -vy * e; }
-
       if (elapsed < T && (height > 0.1 || Math.abs(vy) > 2 || Math.abs(x) > 0.1)) {
         apply();
         requestAnimationFrame(step);
       } else {
-        dot.style.transform = '';   // settle to natural position
+        dot.style.transform = '';
       }
     }
-
-    apply();                                         // show start state during delay
+    apply();
     setTimeout(function() { requestAnimationFrame(step); }, 400);
   })();
 </script>

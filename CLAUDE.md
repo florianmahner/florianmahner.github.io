@@ -14,21 +14,25 @@ npm run build    # production build to _site/
 Personal academic website. **Eleventy (11ty) v3**, Nunjucks templates, vanilla
 CSS, no client-side framework and no build step beyond 11ty.
 
-- `eleventy.config.js` — config, filters, shortcodes, ignore rules
-- `index.njk` — the whole homepage: Hero, About, Academic Background,
-  Selected Publications, Tools
-- `_includes/base.njk` — layout: nav, footer, inline JS (scroll reveal via
-  IntersectionObserver, active-section tracking)
-- `_includes/pub-row.njk` — `pubRow()` macro; single source for a publication
-  entry, used by both the selected and the expanded list
-- `_data/*.json` — all content: `site`, `education`, `publications`, `repos`,
-  `tools`
+- `eleventy.config.js` — config, filters, shortcodes, font passthrough
+- `index.njk` — the whole homepage: hero (name, About, News card),
+  Selected publications, Background, footer
+- `_includes/base.njk` — homepage layout: head/SEO/JSON-LD, inline JS
+  (scroll reveal, News + publications toggles, bouncing accent dot)
+- `_includes/pub-row.njk` — `pubRow()` macro; one publication card, used by
+  both the selected and the expanded list
+- `_includes/icons.njk` — `socialIcons()` macro; icon-only contact links
+- `_data/*.json` — all content: `site`, `education`, `publications`, `news`,
+  `repos`, `tools`
 - `content/about.md` — About prose, injected via `{% mdfile "about" %}`
 - `css/style.css` — the entire stylesheet
 - `public/` — static assets copied to output root
+- Fonts are self-hosted from `@fontsource-variable/inter` and
+  `@fontsource-variable/jetbrains-mono` (copied to `/fonts/` at build)
 
 Filters/shortcodes: `highlightAuthor` (wraps each author in
-`<span class="author">`, adds `.self` for the site owner), `year`, `mdfile`.
+`<span class="author">`, adds `.self` for the site owner), `mdInline`,
+`monthName`, `yearOf`, `year`, `mdfile`.
 
 ## Deployment
 
@@ -39,74 +43,62 @@ Worker that forces HTTPS and redirects to the canonical host
 
 ## Design system
 
-Swiss-minimal: black text on a warm off-white ground, thin rules, a visible
-column grid, uppercase section labels.
+Soft grey dot-grid ground, white "window" cards with a black 1.5px border and
+a hard violet offset shadow, Inter for text, JetBrains Mono for small labels.
+Friendly and light by default; an automatic dark theme follows the
+reader's system setting (`@media (prefers-color-scheme: dark)` block in
+`css/style.css` — every colour is a token, so that block is the whole theme).
 
-### Typography — read this before touching any type
+### Rules the owner has asked for — keep them
 
-The site uses **TNA**, a variable font with custom axes:
-`wght` 0–100 and `srff` 0–100 (0 = Arial-like, 100 = Times-like).
+- **Content is the owner's wording.** Never paraphrase About, publications
+  or Background; never invent copy, taglines or labels.
+- **No horizontal rules between sections**, no section numbers ("01", "02"),
+  no arrows (→ ↗ ←), no filler text (domain name, entry counts).
+- **Links are violet with no underline**; hover adds a soft violet highlight.
+- **Contact links are icons only**: top right on desktop, footer on phones
+  (≤640px) — never both on the same screen.
+- **All publication cards look the same** — no highlighted/coloured card.
+- News is a card on the right of the hero, not a separate page; older items
+  expand in place ("Show older").
 
-**CSS `font-weight` does nothing here.** Weight comes only from
-`font-variation-settings`. The `--fw-*` tokens still exist but are inert —
-do not reach for them, and do not add new ones. To change weight, use a
-`--vf-*` token.
+### Tokens (`:root` in `css/style.css`)
 
-Everything in the page body is **one size and one weight**:
-`--fs-body` at `--vf-body` (`wght` 0). Hierarchy comes from *spacing*, not
-from size, weight, or colour. The deliberate exceptions are, in full:
+- Colour: `--bg` #eeeff1, `--ink` #111, `--muted`/`--quiet` greys for
+  secondary text, `--accent` #7c3aed (dot, card bars, shadows), `--link`
+  #6d28d9 (text links, 7:1 on white).
+- Type: `--fs-name` (hero), `--fs-heading` (section headings), `--fs-lead`
+  (first About paragraph), `--fs-title` (card titles), `--fs-body`,
+  `--fs-small`, `--fs-mono`. Use these; don't add sizes.
+- Layout: one 12-column grid (`.grid`, `--gap`). Hero is 8 + 4 columns,
+  publication cards span 4, Background cards span 3, so the News card lines
+  up with the third publication card. Breakpoints: 1100px (Background 2-up),
+  960px (hero stacks, publications 2-up), 640px (everything 1-up, icons move
+  to the footer).
 
-| Exception | What |
-|---|---|
-| `--fs-entry` + `--vf-body-medium` | `.pub-title`, `.edu-head` — entry headers; the only list content above body size (22.5px vs 21.25px) |
-| `--vf-body-medium` (`wght` 40) | `.pub-authors .self`, `.about-content strong` — inline emphasis, weight only; a size step would break the line they sit in |
-| `--fs-heading` | the first About paragraph only |
-| `--vf-heading-bold` (`srff` 10) | uppercase UI labels; a genuinely different letterform |
+### Motion
 
-The accent is for links and hover states only. `--accent` (#9333EA) measures
-~5.1:1 on `--bg`, so accent links pass the 4.5:1 minimum — but paper titles
-and other running text stay black by design, not for contrast reasons.
-
-Adding a new size or weight anywhere else will look wrong. Two hard-won
-lessons: identical-size text reads as *larger* when its column is narrower,
-and as *heavier* when it is darker — so before changing a font-size, check
-column width and colour first.
-
-### Colour
-
-All body text is pure `#000`; text colour is never declared, it inherits.
-There are no grey text tokens — `--grey-rule` is for hairlines only, never
-type. The accent (`--accent`, purple) is used for links and hover states.
-
-### Layout
-
-- `--page-w: 75rem` — container, in `rem` so it scales with the type
-- `html { font-size: clamp(1rem, 0.714rem + 0.595vw, 1.25rem) }` — the whole
-  scale; every other value is `rem`, so this one rule resizes the site.
-  Fluid: 100% (16px) at ≤768px viewports, growing linearly to 125% (20px,
-  the desktop reading size) at 1440px. `rem` terms, not `px`, so a reader's
-  own font-size preference and zoom are preserved.
-- `--content-max` bounds **every** text block. About, Background and
-  Publications must share it — no per-section column widths, no indents.
-  A narrower column changes how the type reads.
-- Academic Background and Publications are flat blocks, left-aligned, with
-  no year column. Years are inline (`2022–2026 | PhD …`) or in the footer
-  metadata line.
+The accent dot does a physics bounce on load (JS in `base.njk`); `.reveal`
+elements rise in via IntersectionObserver (gated by the `.js` class so
+no-JS readers see everything); cards lift on hover. All of it is off under
+`prefers-reduced-motion`.
 
 ## Content
 
+- News: add to the **top** of `_data/news.json` (newest first, the file
+  order is the display order). `date` is `YYYY-MM`; `text` is inline
+  markdown, written as a full first-person sentence ending in "!", e.g.
+  "Our paper [Title](url) was accepted to NeurIPS 2026!". The first four
+  show; the rest sit behind "Show older".
 - Publication: add to `_data/publications.json`; `selected: true` features it
-  on the homepage. Keep `venue` short — long names wrap the footer onto a
-  second line; abbreviate (e.g. "Proceedings of ICMLC").
+  on the homepage. Keep `venue` short (e.g. "NeurIPS"); a venue containing
+  "arXiv" renders as a grey preprint label.
 - Education: add to `_data/education.json`. `startLabel` overrides the
-  `startYear–endYear` range for open-ended entries ("From Oct 2026").
-- Project page: add a `.md` or `.njk` file at the root.
+  `startYear–endYear` range for open-ended entries ("Oct 2026–present").
 
 ## Gotchas
 
-- The floating section number is hidden on desktop by a single
-  `.nav-floater { display: none }` rule; delete it to restore. The same
-  element **is** the mobile hamburger below 768px — do not remove the markup.
 - Author names are wrapped per-name and `white-space: nowrap`, so a line
   breaks between authors and never inside one.
 - `_data/education.json` carries a `supervisors` field that nothing renders.
+- `_data/tools.json` and `_data/repos.json` are not rendered anywhere.

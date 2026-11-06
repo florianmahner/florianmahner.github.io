@@ -1,824 +1,328 @@
 /* ==========================================================================
-   Swiss Minimal + Bold Typography
-   Florian P. Mahner - Academic Website
+   Florian P. Mahner — academic website
+   Soft grey dot-grid ground, white "window" cards, Inter + JetBrains Mono.
    ========================================================================== */
 
-/* Font — subsetted Times New Arial variable font (masters never committed)
-   Axes: wght 0–100, srff 0–100 (0=Arial ↔ 100=Times), ital −100…100
-   size-adjust scales the glyphs up to restore a readable apparent size. */
+/* Fonts — self-hosted from @fontsource-variable (see eleventy.config.js). */
 @font-face {
-  font-family: 'TNA';
-  src: url('/fonts/tna-vf.woff2') format('woff2-variations'),
-       url('/fonts/tna-vf.woff2') format('woff2');
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin-opsz-normal.woff2') format('woff2-variations'),
+       url('/fonts/inter-latin-opsz-normal.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
-  size-adjust: 125%;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin-ext-opsz-normal.woff2') format('woff2-variations'),
+       url('/fonts/inter-latin-ext-opsz-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations'),
+       url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/jetbrains-mono-latin-ext-wght-normal.woff2') format('woff2-variations'),
+       url('/fonts/jetbrains-mono-latin-ext-wght-normal.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* Reset */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-/* Custom Properties */
+/* Tokens */
 :root {
-  /* Colors */
-  --black: #000;
-  --white: #fff;
-  --bg: #faf8f3;       /* warm off-white page background */
-  --accent: #9333EA;  /* one step darker than the original #A855F7 — 5.1:1 on --bg, passes 4.5 */
-  --grey-rule: #d0d0d0;  /* hairlines only — never text */
+  --bg: #eeeff1;            /* soft grey ground */
+  --dots: rgba(17, 17, 17, .08);
+  --ink: #111;
+  --muted: #4b4b52;         /* secondary text — 8:1 on white */
+  --quiet: #5b5b63;         /* labels — 6.4:1 on white, 5.6:1 on --bg */
+  --card: #fff;
+  --card-soft: #f6f6f8;
+  --accent: #7c3aed;        /* dot, card bars, shadows */
+  --link: #6d28d9;          /* text links — 7:1 on white */
+  --link-hover: #ede9fe;
+  --line: #111;             /* card borders */
+  --footer: #3f3f46;
 
-  /* Typography — single family, different variation-settings for body vs heading.
-     Serif axis: 0 = Arial, 100 = Times. Weight axis: 0 = regular, 100 = bold. */
-  --font: 'TNA', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --vf-body:         'srff' 50, 'wght' 0;
-  --vf-body-medium:  'srff' 50, 'wght' 40;   /* emphasis only — never the body */
-  --vf-body-bold:    'srff' 50, 'wght' 100;
-  --vf-heading:      'srff' 10, 'wght' 50;
-  --vf-heading-bold: 'srff' 10, 'wght' 100;
-  /* Strict 4-tier type scale. Every font-size in the stylesheet must use one of these. */
-  --fs-title:   clamp(2.25rem, 8.5vw, 6rem);   /* hero name, mobile overlay numbers */
-  --fs-heading: 1.25rem;                       /* item titles (pub/oss/edu) — clear step above body */
-  --fs-body:    1.0625rem;                     /* paragraphs, lead text, default */
-  --fs-entry:   1.125rem;                      /* entry headers (pub title, edu head) */
-  --fs-desc:    0.875rem;                      /* meta, captions, nav labels, footer, view-all */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --fw-light: 300;
-  --fw-regular: 400;
-  --fw-medium: 500;
-  --fw-semibold: 600;
-  --fw-bold: 700;
-  --fw-extrabold: 800;
-  --fw-black: 900;
+  /* Type scale */
+  --fs-name: clamp(3.25rem, 9.5vw, 9rem);
+  --fs-heading: clamp(1.75rem, 2.6vw, 2.5rem);
+  --fs-lead: clamp(1.2rem, 1.6vw, 1.45rem);
+  --fs-title: 1.1875rem;
+  --fs-body: 1.0625rem;
+  --fs-small: .9375rem;
+  --fs-mono: .8125rem;
 
-  /* Spacing */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 2.5rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
-
-  /* Layout — vertical grid lines at 33% and --grid-right (content bound) */
-  --page-w: 75rem;   /* container width; in rem so the column grows with the type */
-  --page-pad-x: clamp(1.5rem, 5vw, 6rem);
-  --col-year: 8rem;  /* fits "2021–2025" at body font-size with breathing room */
-  --grid-right: 76%;  /* right-side content/grid bound — bumped from 72% for wider text */
-  --content-max: calc(var(--grid-right) + var(--page-pad-x) / 3 - var(--space-xl));
-  --rail-w: 0px;  /* side rail removed — keeps the page centered. Restore to 160px if rail is re-enabled. */
-
-  /* Rules */
-  --rule: 1px solid var(--black);
-  --rule-light: 1px solid var(--grey-rule);
+  /* Layout */
+  --page-w: 88rem;
+  --gutter: clamp(1rem, 4vw, 4rem);
+  --gap: 1.75rem;
+  --block-gap: clamp(2.75rem, 4.5vw, 3.75rem);
+  --border: 1.5px solid var(--line);
+  --shadow: 5px 5px 0 var(--accent);
+  --shadow-sm: 3px 3px 0 var(--accent);
+  color-scheme: light;
 }
 
-/* Dark — the same warm palette inverted: near-black paper, off-white ink.
-   Every colour on the site is a token, so this block is the whole theme.
-   --black stays "ink" and --white stays "raised surface"; only their
-   values flip. Accent lifted one step for contrast on the dark ground. */
+/* Dark — follows the reader's system setting. Same design, inverted ground:
+   every colour is a token, so this block is the whole theme. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --black: #ece9e2;
-    --white: #221f1b;
-    --bg: #14120f;
-    --grey-rule: #3b3833;
-    --accent: #b98aff;
+    --bg: #141417;
+    --dots: rgba(255, 255, 255, .07);
+    --ink: #ececf1;
+    --muted: #b4b4bd;
+    --quiet: #9d9da7;
+    --card: #1c1c21;
+    --card-soft: #23232a;
+    --link: #c4b5fd;
+    --link-hover: rgba(167, 139, 250, .18);
+    --line: #4a4a55;
+    --footer: #9d9da7;
+    color-scheme: dark;
   }
 }
 
 /* Base */
-/* Root size sets the whole scale: every type and spacing token is in rem.
-   Fluid: browser default (1rem ≙ 16px) up to phone/tablet-portrait widths,
-   growing linearly to 125% (20px) from 768px → 1440px viewports — the
-   desktop reading size, without a breakpoint jump. The rem terms keep a
-   reader's own font-size preference and zoom working (WCAG 1.4.4); never px. */
-html { font-size: clamp(1rem, 0.714rem + 0.595vw, 1.25rem); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
 body {
+  margin: 0;
   font-family: var(--font);
-  color: var(--black);
-  background: var(--bg);
-  line-height: 1.55;
-  font-variation-settings: var(--vf-body);
-}
-
-/* Headings & UI labels: Arial-leaning via the Serif axis */
-.hero-name,
-.side-rail-num,
-.side-rail-label,
-.nav-link,
-.mobile-nav-num,
-.mobile-nav-name { font-variation-settings: var(--vf-heading-bold); }
-
-/* Bold body copy */
-strong, b { font-variation-settings: var(--vf-body-bold); }
-
-/* Micro-typography — progressive enhancements, all degrade to plain text.
-   balance: even line lengths on short multi-line blocks (titles, heads).
-   pretty: reworks only a paragraph's last lines to kill orphans.
-   hanging-punctuation: opening quotes hang into the margin (Safari). */
-.pub-title, .edu-head, .section-name { text-wrap: balance; }
-p, .pub-authors, .oss-desc, .project-lead { text-wrap: pretty; }
-.about-content { hanging-punctuation: first allow-end; }
-::selection { background: var(--accent); color: var(--white); }
-a { color: inherit; text-decoration: none; }
-
-/* Page Container & Grid Lines */
-.page { max-width: var(--page-w); margin: 0 auto; margin-left: max(var(--rail-w), calc((100vw - var(--page-w)) / 2)); padding: 0 var(--page-pad-x); border-left: none; border-right: var(--rule-light); min-height: 100vh; position: relative; overflow-x: clip; }
-.page::before, .page::after { content: ''; position: absolute; top: 0; bottom: 0; width: 0; border-left: var(--rule-light); pointer-events: none; z-index: 0; }
-.page::before { left: 33.333%; }
-.page::after { left: var(--grid-right); }
-section, header, footer { position: relative; z-index: 1; }
-
-/* Side-Rail Navigation */
-.side-rail {
-  position: fixed;
-  left: max(0px, calc((100vw - var(--page-w)) / 2 - var(--rail-w)));
-  top: 0;
-  bottom: 0;
-  width: var(--rail-w);
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-xl);
-  border-right: var(--rule);
-}
-
-.side-rail-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.5rem 0;
-  position: relative;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-/* Active indicator — red underline */
-.side-rail-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16px;
-  height: 2px;
-  background: transparent;
-  transition: background 0.2s;
-}
-
-.side-rail-item:hover { color: var(--black); }
-.side-rail-item:hover .side-rail-num { color: var(--accent); }
-
-.side-rail-item.active { color: var(--black); }
-.side-rail-item.active .side-rail-num { color: var(--accent); }
-.side-rail-item.active::after { background: var(--accent); }
-
-.side-rail-num {
-  font-size: var(--fs-desc);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  transition: color 0.2s;
-}
-
-.side-rail-label {
-  font-size: var(--fs-desc);
-  letter-spacing: 0;
-  text-transform: uppercase;
-  line-height: 1.15;
-  text-align: center;
-  max-width: 100%;
-}
-
-/* Hero */
-.hero { padding: var(--space-4xl) 0 var(--space-3xl); border-bottom: var(--rule); }
-.hero-name { font-size: var(--fs-title); line-height: 1.05; letter-spacing: -0.035em; max-width: 90%; }
-.hero-name .accent-dot {
-  color: var(--accent);
-  display: inline-block;
-  /* Trajectory is animated by JS in base.njk — true physics simulation
-     (gravity + restitution) integrated each rAF frame, since CSS
-     keyframes can only lerp between samples and produce visible kinks
-     at the apex/ground contacts. */
-}
-
-/* Section */
-/* Symmetric padding: every section has the same air above and below its
-   content, so the gap after each one is identical. */
-.section { padding: var(--space-xl) 0; border-bottom: var(--rule); }
-
-/* Last item in any section drops its trailing space — the section padding
-   provides it. Without this each list contributes a different bottom gap. */
-.section-content > *:last-child { margin-bottom: 0; padding-bottom: 0; }
-
-.section-label {
-  position: relative;
-  margin-bottom: var(--space-lg);
-  overflow: visible;
-}
-
-/* Same letterform as body copy (srff 50), one step up in size. */
-.section-name {
-  position: relative;
-  font-size: var(--fs-entry);
-  font-variation-settings: var(--vf-body-medium);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--black);
-}
-
-.section-rule {
-  display: block;
-  margin-top: var(--space-md);
-  border: none;
-  border-top: var(--rule-light);
-}
-
-/* About — the lead paragraph is the ONLY intentional size step on the page. */
-.about-content > p { max-width: var(--content-max); line-height: 1.65; }
-.about-content > p:first-child { font-size: var(--fs-heading); line-height: 1.5; letter-spacing: -0.01em; }
-.about-content > p:not(:first-child) { margin-top: var(--space-lg); }
-.about-content em { font-style: normal; color: var(--accent); }
-.about-content a { color: var(--accent); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: text-decoration-color 0.15s; }
-.about-content a:hover { text-decoration-color: var(--accent); }
-
-/* Background — no year column. The year sits inline on the header line so
-   every block starts at the same left edge and spans the full text width. */
-.edu-item {
-  /* Bottom-only: adjacent paddings would otherwise stack into a double gap. */
-  padding: 0 0 var(--space-lg);
-  max-width: var(--content-max);
-  font-size: var(--fs-body);
-  line-height: 1.65;
-}
-
-.edu-year {
-  font-variant-numeric: tabular-nums;
-}
-/* Pipe is a real glyph, so it inherits the header's size and weight.
-   Spaces are part of the content string — inline pseudo-element margins
-   collapse unreliably, and there is no whitespace in the source markup. */
-.edu-year::after {
-  content: " | ";
-  white-space: pre;
-}
-
-/* Same header -> detail gap as .pub-authors, so both lists read alike. */
-.edu-content { display: flex; flex-direction: column; gap: var(--space-sm); }
-
-/* Affiliation line — group, institution(s), country as running text. */
-.edu-meta a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.2em; transition: color 0.15s, text-decoration-color 0.15s; }
-.edu-meta a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-
-/* Publications — set at a single size and weight; no bold, no size steps.
-   Hierarchy comes from colour alone: black title, grey metadata. */
-.pub-row {
-  padding: 0.75rem 0;   /* 15px each side -> 30px between rows, matching .edu-item */
-  border-top: var(--rule-light);
-  max-width: var(--content-max);
-  font-size: var(--fs-body);
-  /* Matches the About paragraphs — generous leading is what makes text
-     read as substantial here; the TNA `wght` axis is pinned at 0, so CSS
-     font-weight has no visual effect. */
-  line-height: 1.65;
-}
-/* First row sheds its rule and the padding that goes with it, so the gap
-   under the section label matches every other section. */
-.section-content > .pub-row:first-child { border-top: none; padding-top: 0; }
-
-.pub-year { font-variant-numeric: tabular-nums; }
-
-.pub-col-main { min-width: 0; }
-
-/* Entry headers — the one place list content steps above body size. */
-.pub-title,
-.edu-head {
-  font-size: var(--fs-entry);
-  font-variation-settings: var(--vf-body-medium);
-}
-
-/* Inline emphasis — weight only. These sit inside running text, so a size
-   step here would break the line it lives on. */
-.pub-authors .self,
-.about-content strong { font-variation-settings: var(--vf-body-medium); }
-
-
-.pub-authors {
-  margin-top: var(--space-sm);
-}
-/* Names stay whole; the line wraps between authors, not inside one. */
-.pub-authors .author { white-space: nowrap; }
-/* TNA takes its weight from the `wght` axis, not CSS font-weight. */
-
-/* Footer line: venue + links share one row, separated by hairline pipes. */
-.pub-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 var(--space-md);
-  margin-top: var(--space-sm);
-}
-.pub-foot > * + *::before {
-  content: "";
-  display: inline-block;
-  width: 1px;
-  height: 0.75em;
-  margin-inline-end: var(--space-md);
-  background: var(--grey-rule);
-  vertical-align: -0.05em;
-}
-.pub-foot a {
-  text-decoration: underline; text-decoration-color: transparent;
-  text-underline-offset: 0.2em;
-  transition: color 0.15s, text-decoration-color 0.15s;
-}
-.pub-foot a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-
-/* Open Source */
-.oss-row {
-  display: grid;
-  grid-template-columns: var(--col-year) 1fr;
-  gap: 0 var(--space-xl);
-  padding: var(--space-md) 0;
-  align-items: baseline;
-  font-size: var(--fs-body);
-  line-height: 1.65;
-  max-width: var(--content-max);
-  transition: transform 0.25s ease;
-}
-.oss-row:first-child { padding-top: 0; }
-.oss-row:hover { transform: translateX(4px); }
-
-.oss-lang {
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s;
-}
-.oss-row:hover .oss-lang { color: var(--accent); }
-
-.oss-body { min-width: 0; }
-
-.oss-name {
-  color: var(--black);
-}
-.oss-name a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
-.oss-name a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-
-.oss-desc {
-  line-height: 1.5;
-  margin-top: 0.15rem;
-}
-
-.oss-meta {
-  margin-top: 0.15rem;
-}
-
-/* Tools */
-.tools-grid { display: flex; flex-wrap: wrap; gap: var(--space-md) var(--space-lg); max-width: var(--content-max); }
-.tool-chip { display: inline-flex; align-items: baseline; gap: var(--space-sm); padding: 0.25rem 0; font-size: var(--fs-body); transition: color 0.2s, transform 0.2s; }
-.tool-chip:hover { color: var(--accent); transform: translateY(-2px); }
-.tool-name { color: var(--black); }
-
-/* Expand / Collapse Publications */
-.view-all-toggle {
-  background: none; border: none;
-  font: inherit; font-size: var(--fs-desc);
-  text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
-  margin-top: var(--space-lg); margin-bottom: 0; transition: color 0.15s;
-}
-.view-all-toggle:hover { color: var(--accent); }
-.expanded-publications { margin-top: 0; }
-.expanded-publications[hidden] { display: none; }
-
-/* View All Link */
-.view-all { margin-top: var(--space-lg); font-size: var(--fs-desc); }
-.view-all a { color: var(--accent); }
-.view-all a:hover { text-decoration: underline; }
-
-/* Footer */
-.footer { padding: var(--space-lg) 0; border-top: var(--rule); display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: var(--space-md); max-width: var(--content-max); }
-.footer-left,
-.footer-right { font-size: var(--fs-desc); }
-.footer-right a { margin-inline-start: var(--space-lg); }
-.footer-right a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.15em; transition: color 0.15s, text-decoration-color 0.15s; }
-.footer-right a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-
-/* Floating Navigation (top-right number + hover TOC).
-   Anchored to the top of the viewport and to the page's right gutter, so it
-   reads as part of the layout rather than floating at an arbitrary height.
-
-   DISABLED ON DESKTOP — the section number read as clutter. The markup and
-   all styles below are intact; the mobile hamburger (same element, under the
-   768px breakpoint) still uses them. To bring the desktop number back, delete
-   the `.nav-floater { display: none }` rule directly below. */
-.nav-floater { display: none; }
-
-.nav-floater {
-  position: fixed;
-  top: var(--space-lg);
-  /* Right edge of the page container, clamped to the viewport on narrow screens. */
-  right: max(var(--space-md), calc((100vw - var(--page-w)) / 2 + var(--page-pad-x)));
-  z-index: 200;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.mobile-nav-toggle {
-  background: none;
-  border: none;
-  padding: 0;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.mobile-nav-toggle-num {
-  /* Standalone graphic marker, not body copy — sits outside the 4-tier text scale. */
-  font-size: 2rem;
-  font-variant-numeric: tabular-nums;
-  font-variation-settings: var(--vf-heading-bold);
-  color: var(--accent);
-  line-height: 1;
-  pointer-events: none;
-  transition: color 0.15s;
-}
-
-/* Desktop hover-revealed TOC dropdown */
-.desktop-toc {
-  display: flex;
-  flex-direction: column;
-  margin-top: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--white);
-  border: 2px solid var(--black);
-  box-shadow: 3px 3px 0 var(--black);
-  min-width: 12rem;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-4px);
-  transition: opacity 180ms ease-out, transform 180ms ease-out, visibility 180ms;
-  pointer-events: none;
-}
-
-.nav-floater:hover .desktop-toc,
-.nav-floater:focus-within .desktop-toc {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-  pointer-events: auto;
-}
-
-.desktop-toc-item {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  padding: 0.4rem 0;
-  font-size: var(--fs-desc);
-  font-variation-settings: var(--vf-heading-bold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-bottom: var(--rule-light);
-  transition: color 0.15s;
-}
-.desktop-toc-item:last-child { border-bottom: none; }
-.desktop-toc-item:hover { color: var(--black); }
-.desktop-toc-item:hover .dt-num { color: var(--accent); }
-.desktop-toc-item.active { color: var(--black); }
-.desktop-toc-item.active .dt-num { color: var(--accent); }
-
-.dt-num {
-  font-variant-numeric: tabular-nums;
-  min-width: 1.25rem;
-  transition: color 0.15s;
-}
-.dt-name { letter-spacing: 0.06em; }
-
-.mobile-nav-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  background: var(--white);
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--space-3xl) var(--space-xl);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
-}
-.mobile-nav-overlay.open { opacity: 1; visibility: visible; }
-
-.mobile-nav-close {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
-  background: none;
-  border: none;
-  font: inherit;
-  font-size: var(--fs-heading);
-  cursor: pointer;
-  line-height: 1;
-  padding: 0.25rem 0.5rem;
-  transition: color 0.15s;
-}
-.mobile-nav-close:hover { color: var(--black); }
-
-.mobile-nav-toc {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.mobile-nav-item {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-lg);
-  text-decoration: none;
-  padding: var(--space-sm) 0;
-  border-bottom: var(--rule-light);
-  transition: color 0.15s;
-}
-.mobile-nav-item:last-child { border-bottom: none; }
-.mobile-nav-item:hover, .mobile-nav-item.active { color: var(--black); }
-.mobile-nav-item.active .mobile-nav-num { color: var(--accent); }
-
-.mobile-nav-num {
-  font-size: var(--fs-title);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  min-width: 2.5rem;
-  transition: color 0.15s;
-}
-
-.mobile-nav-name {
-  font-size: var(--fs-heading);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* Scroll Reveal */
-.reveal {
-  opacity: 0;
-  transform: translateY(8px) scale(0.96);
-  transition:
-    opacity 500ms cubic-bezier(0.2, 0.7, 0.1, 1),
-    transform 500ms cubic-bezier(0.2, 0.7, 0.1, 1);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* Hover accent: accent bar slides in from the left along the row's rule.
-   Only rows that HAVE a rule get one — .edu-item has no border, so a bar
-   there would float against nothing. It uses the year-column colour shift
-   as its hover cue instead. */
-.pub-row,
-.oss-row { position: relative; }
-
-.pub-row::after,
-.oss-row::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: 100%;
-  height: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 220ms ease-out;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.pub-row:hover::after,
-.oss-row:hover::after { transform: scaleX(1); }
-
-/* Stagger — children of .reveal.reveal-stagger animate in sequence */
-.reveal-stagger > * {
-  opacity: 0;
-  transform: translateY(8px) scale(0.96);
-  transition:
-    opacity 500ms cubic-bezier(0.2, 0.7, 0.1, 1),
-    transform 500ms cubic-bezier(0.2, 0.7, 0.1, 1);
-}
-.reveal-stagger.visible > * {
-  opacity: 1;
-  transform: none;
-}
-.reveal-stagger.visible > *:nth-child(1)  { transition-delay: 0ms; }
-.reveal-stagger.visible > *:nth-child(2)  { transition-delay: 80ms; }
-.reveal-stagger.visible > *:nth-child(3)  { transition-delay: 160ms; }
-.reveal-stagger.visible > *:nth-child(4)  { transition-delay: 240ms; }
-.reveal-stagger.visible > *:nth-child(5)  { transition-delay: 320ms; }
-.reveal-stagger.visible > *:nth-child(6)  { transition-delay: 400ms; }
-.reveal-stagger.visible > *:nth-child(7)  { transition-delay: 480ms; }
-.reveal-stagger.visible > *:nth-child(8)  { transition-delay: 560ms; }
-.reveal-stagger.visible > *:nth-child(9)  { transition-delay: 640ms; }
-.reveal-stagger.visible > *:nth-child(n+10) { transition-delay: 720ms; }
-
-/* Scroll Targets */
-section[id] { scroll-margin-top: var(--space-3xl); }
-
-/* Focus Visible */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* ==========================================================================
-   Responsive
-   ========================================================================== */
-
-@media (max-width: 768px) {
-  :root {
-    /* Grid lines hidden on mobile — no 66% constraint */
-    --content-max: none;
-  }
-
-  .page { margin-left: 0; border-left: var(--rule); }
-  .page::before, .page::after { display: none; }
-  .hero { padding: 3.5rem 0 var(--space-2xl); }
-
-  .oss-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-xs);
-  }
-
-  /* Hide desktop side rail + hover TOC; show mobile hamburger overlay */
-  .side-rail { display: none; }
-  /* Re-enables the floater as the hamburger button (hidden on desktop). */
-  .nav-floater {
-    display: flex;
-    top: var(--space-md);
-    right: var(--page-pad-x);
-    left: auto;
-    align-items: flex-end;
-  }
-  .desktop-toc { display: none !important; }
-  .mobile-nav-overlay { display: flex; }
-
-  .footer { flex-direction: column; align-items: flex-start; }
-  .footer-right a { margin-inline-start: 0; margin-inline-end: var(--space-lg); }
-}
-
-@media (max-width: 480px) {
-  .hero-name { max-width: 100%; overflow-wrap: break-word; }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Print */
-@media print {
-  body { color: black; background: white; }
-  a { text-decoration: underline; }
-  .side-rail, .nav-floater, .mobile-nav-overlay, .footer-right { display: none !important; }
-  .page { border: none; margin-left: auto; }
-  .page::before, .page::after { display: none; }
-  .pub-row, .oss-row, .edu-item { break-inside: avoid; }
-}
-
-/* ==========================================================================
-   Project Pages — /projects/<slug>/
-   Same tokens as the homepage. No new visual language.
-   ========================================================================== */
-
-.page-project { padding-top: var(--space-2xl); padding-bottom: var(--space-3xl); }
-
-.project-back {
-  display: inline-block;
-  font-size: var(--fs-desc);
-  margin-bottom: var(--space-2xl);
-  transition: color 0.15s;
-}
-.project-back:hover { color: var(--accent); }
-
-.project-header { max-width: var(--content-max); margin-bottom: var(--space-3xl); }
-
-.project-venue {
-  font-size: var(--fs-desc);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: var(--space-md);
-}
-
-.project-title {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  font-variation-settings: var(--vf-heading-bold);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 0 0 var(--space-lg);
-}
-
-.project-authors {
-  font-size: var(--fs-body);
-  line-height: 1.55;
-  margin-bottom: var(--space-xs);
-}
-.project-authors .self { color: var(--black); font-variation-settings: var(--vf-body-bold); }
-
-.project-equal {
-  font-size: var(--fs-desc);
-  font-style: italic;
-  margin-bottom: var(--space-lg);
-}
-
-.project-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
-}
-.project-links a {
-  display: inline-block;
-  padding: 0.4rem 0.9rem;
-  border: 2px solid var(--black);
-  background: var(--bg);
-  font-size: var(--fs-desc);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--black);
-  transition: background 0.15s, color 0.15s;
-}
-.project-links a:hover { background: var(--black); color: var(--bg); }
-
-.project-body { max-width: var(--content-max); }
-
-.project-tldr {
-  font-size: var(--fs-heading);
-  line-height: 1.55;
-  letter-spacing: -0.005em;
-  color: var(--black);
-  margin: 0 0 var(--space-2xl);
-  padding-bottom: var(--space-xl);
-  border-bottom: var(--rule-light);
-}
-.project-tldr em {
-  font-style: normal;
-  color: var(--accent);
-}
-
-.project-figure {
-  margin: 0 0 var(--space-2xl);
-}
-.project-figure img {
-  display: block;
-  width: 100%;
-  height: auto;
-  background: var(--white);
-  border: 1px solid var(--grey-rule);
-}
-.project-figure figcaption {
-  margin-top: var(--space-md);
-  font-size: var(--fs-desc);
-  line-height: 1.55;
-}
-.project-figure-hero { margin-bottom: var(--space-3xl); }
-
-.project-section {
-  margin-bottom: var(--space-3xl);
-}
-.project-section .section-name {
-  font-size: var(--fs-body);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.project-lead {
   font-size: var(--fs-body);
   line-height: 1.6;
-  max-width: 56ch;
-  margin: 0 0 var(--space-xl);
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--dots) 1px, transparent 1.2px);
+  background-size: 16px 16px;
+  font-optical-sizing: auto;
 }
-.project-lead em {
-  font-style: normal;
-  color: var(--accent);
-}
+h1, h2, h3, p { margin: 0; }
+p, .pub-authors { text-wrap: pretty; }
+.pub-title, .edu-degree, .block-heading { text-wrap: balance; }
+::selection { background: var(--accent); color: #fff; }
 
-.project-bibtex {
+a {
+  color: var(--link);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 3px;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+a:hover { background: var(--link-hover); box-shadow: 0 0 0 2px var(--link-hover); }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.mono { font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: .01em; }
+
+/* Page + 12-column grid. Every block shares the same columns, so the News
+   card lines up with the third publication card and the Background cards. */
+.page {
+  max-width: calc(var(--page-w) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 1.25rem var(--gutter) 2rem;
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+  row-gap: 1.5rem;
+}
+.span-12 { grid-column: span 12; }
+.span-8 { grid-column: span 8; }
+.span-4 { grid-column: span 4; }
+.pub-card { grid-column: span 4; }
+.edu-card { grid-column: span 3; }
+
+/* Contact icons */
+.top-links, .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -11px; }
+.footer-links { display: none; }
+.icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--ink);
+  border-radius: 6px;
+}
+.icon-link:hover { color: var(--accent); background: none; box-shadow: none; }
+.icon-link svg { display: block; }
+
+/* Hero */
+.hero { margin-top: clamp(1.5rem, 3vw, 2.5rem); align-items: start; }
+.hero-name {
+  font-size: var(--fs-name);
+  font-weight: 700;
+  letter-spacing: -.055em;
+  line-height: .86;
+}
+.accent-dot { display: inline-block; color: var(--accent); will-change: transform; }
+.about { max-width: 42rem; }
+.about p { margin-top: 1.1rem; }
+.about p:first-child {
+  margin-top: 2rem;
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+  letter-spacing: -.012em;
+}
+.about strong { font-weight: 600; }
+
+/* Cards ("windows") */
+.card {
+  background: var(--card);
+  border: var(--border);
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card.lift:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--accent); }
+.card-bar {
   margin: 0;
-  padding: var(--space-md) var(--space-lg);
-  background: var(--white);
-  border: 1px solid var(--grey-rule);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: var(--fs-desc);
-  line-height: 1.55;
-  overflow-x: auto;
-  white-space: pre;
+  padding: .45rem .8rem;
+  background: var(--accent);
+  color: #fff;
+  border-bottom: var(--border);
+  font-weight: 500;
 }
 
-@media (max-width: 768px) {
-  .project-title { font-size: 1.4rem; }
-  .project-tldr { font-size: var(--fs-body); }
-  .project-links a { padding: 0.3rem 0.7rem; }
+/* News */
+.news-list { padding: .2rem 0 .8rem; }
+.news-year { padding: .9rem 1.1rem .1rem; color: var(--quiet); font-weight: 500; }
+.news-item { padding: .45rem 1.1rem; font-size: var(--fs-small); line-height: 1.5; }
+.news-item strong { font-weight: 600; }
+.news-more, .text-button {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  color: var(--link);
+  cursor: pointer;
 }
+.news-more {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  text-align: left;
+  background: var(--card-soft);
+  border: 0;
+  border-top: var(--border);
+}
+.news-more:hover { background: var(--link-hover); }
+
+/* Sections below the hero */
+.block { margin-top: var(--block-gap); }
+.block-heading {
+  font-size: var(--fs-heading);
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.1;
+}
+.block-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  color: var(--quiet);
+}
+.text-button {
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.text-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+#all-publications { row-gap: 1.5rem; }
+#all-publications[hidden] { display: none; }
+
+/* Publication card */
+.pub-card { display: flex; flex-direction: column; gap: .6rem; padding: 1.25rem 1.35rem; }
+.pub-venue { color: var(--link); }
+.pub-venue.is-preprint { color: var(--quiet); }
+.pub-title { font-size: var(--fs-title); font-weight: 650; line-height: 1.35; letter-spacing: -.015em; }
+.pub-authors { font-size: var(--fs-small); color: var(--muted); }
+.author { white-space: nowrap; }
+.author.self { color: var(--ink); font-weight: 600; }
+.pub-links { margin-top: auto; padding-top: .5rem; display: flex; gap: 1rem; }
+
+/* Background card */
+.edu-card { padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
+.edu-card.lift:hover { box-shadow: 5px 5px 0 var(--accent); }
+.edu-years { color: var(--link); }
+.edu-degree { margin-top: .3rem; font-size: var(--fs-body); font-weight: 600; line-height: 1.4; }
+.edu-meta { font-size: var(--fs-small); color: var(--muted); }
+
+/* Footer */
+.footer {
+  margin-top: 3.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  color: var(--footer);
+}
+
+/* Motion — reveal only when JS runs and the reader hasn't asked for less. */
+.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.js .reveal.visible { opacity: 1; transform: none; }
+.js .hero .about.reveal { transition-delay: .15s; }
+.js .hero .news.reveal { transition-delay: .3s; }
+.js .card.reveal.visible { transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .2s ease, box-shadow .2s ease; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .edu-card { grid-column: span 6; }
+}
+@media (max-width: 960px) {
+  .span-8, .span-4 { grid-column: span 12; }
+  .pub-card { grid-column: span 6; }
+  .hero { row-gap: 2.5rem; }
+}
+@media (max-width: 640px) {
+  :root { --gap: 1.25rem; }
+  .pub-card, .edu-card { grid-column: span 12; }
+  .top-links { display: none; }
+  .footer-links { display: flex; }
+  .hero { margin-top: 2.5rem; }
+  .footer { flex-direction: column-reverse; align-items: flex-start; }
+  .footer-links { justify-content: flex-start; margin: 0 0 0 -11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .card, a { transition: none; }
+}
+@media print {
+  body { background: #fff; }
+  .card { box-shadow: none; }
+  .top-links, .footer-links, .news-more, .text-button { display: none; }
+  #news-older, #all-publications { display: block !important; }
+}
+

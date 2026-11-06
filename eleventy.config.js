@@ -30,6 +30,20 @@ export default function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "public": "/" });
   eleventyConfig.addPassthroughCopy("css");
 
+  // Self-hosted variable fonts from @fontsource-variable/* — no third-party
+  // font CDN. Inter carries wght + opsz; JetBrains Mono carries wght.
+  const fonts = {
+    inter: ["inter-latin-opsz-normal", "inter-latin-ext-opsz-normal"],
+    "jetbrains-mono": ["jetbrains-mono-latin-wght-normal", "jetbrains-mono-latin-ext-wght-normal"]
+  };
+  for (const [pkg, files] of Object.entries(fonts)) {
+    for (const f of files) {
+      eleventyConfig.addPassthroughCopy({
+        [`node_modules/@fontsource-variable/${pkg}/files/${f}.woff2`]: `fonts/${f}.woff2`
+      });
+    }
+  }
+
   // Highlight author name in author list. Each name is wrapped in its own
   // span so a name never breaks mid-way across two lines — lines wrap
   // between authors instead.
@@ -41,6 +55,15 @@ export default function(eleventyConfig) {
       return '<span class="' + cls + '">' + esc(a) + '</span>';
     }).join(', ');
   });
+
+  // Inline markdown (links, emphasis) for one-line strings such as news items.
+  eleventyConfig.addFilter("mdInline", str => str ? md.renderInline(str) : "");
+
+  // News dates are "YYYY-MM" (or "YYYY-MM-DD").
+  const MONTHS = ["January","February","March","April","May","June","July",
+                  "August","September","October","November","December"];
+  eleventyConfig.addFilter("monthName", d => MONTHS[+String(d).split("-")[1] - 1] || "");
+  eleventyConfig.addFilter("yearOf", d => String(d).slice(0, 4));
 
   // Current year shortcode
   eleventyConfig.addShortcode("year", () => `${new Date().getFullYear()}`);
