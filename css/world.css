@@ -315,3 +315,26 @@ main { position: relative; z-index: 1; }
 .world .w-news .tc.on { display: inline; }
 .world .w-news .news-list p:not(:has(.tc.on)) { display: none; }
 .world .w-news .w-close { display: none; }
+
+/* ---- tighter rhythm --------------------------------------------------------------------- */
+/* The first paragraph owns the opening screen; the rest follow closer. */
+.w-step { min-height: 72vh; }
+.w-step:first-child { min-height: 100vh; }
+.world .ch { min-height: 0; padding-top: 12vh; padding-bottom: 12vh; }
+.world .ch-about, .world .ch-news, .world .ch-pubs { padding-top: 0; padding-bottom: 0; }
+.world .ch-news > .w-nscroll { height: 220vh; }
+.world .w-hscroll { height: calc(var(--n) * 70vh + 30vh); }
+
+/* The closing line of About is an invitation: same words, quieter size, with
+   "reach out" as an email link and the contact icons right under it. */
+.w-step.w-reach { min-height: 56vh; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1rem; }
+.world .w-about .w-reach p { font-size: var(--fs-lead); font-weight: 500; letter-spacing: -.01em; color: var(--ink); }
+.w-reach .name-links { display: flex; margin-left: -11px; }
+
+/* printed log: text is laid out from the top of the strip and revealed as the
+   paper feeds out; once the strip is at full height, the text slides up */
+.world .w-npin .w-news { justify-content: flex-start; }
+.world .w-npin .w-news > * { transform: translateY(calc(-1 * var(--feed, 0px))); }
+
+/* the fixed header gets a soft fade of page colour so text slides under it cleanly */
+.w-top { background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 0%, transparent)); }

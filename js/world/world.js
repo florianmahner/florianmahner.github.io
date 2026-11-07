@@ -114,6 +114,29 @@ function showLog(k) {
   log.list.scrollTop = log.list.scrollHeight; // like a terminal, the newest line stays in view
 }
 
+function invite(p) {
+  const step = p.parentElement;
+  step.classList.add('w-reach');
+  const mail = document.querySelector('.w-top a[href^="mailto:"]');
+  // wrap the words "reach out" (they are split into word spans by now)
+  const words = [...p.querySelectorAll('.wd')];
+  const i = words.findIndex((w, k) => w.textContent === 'reach' && words[k + 1] && words[k + 1].textContent.startsWith('out'));
+  if (mail && i >= 0) {
+    const a = document.createElement('a');
+    a.href = mail.getAttribute('href');
+    words[i].before(a);
+    a.append(words[i], words[i].nextSibling, words[i + 1]);
+    // keep the full stop outside the link
+    const last = words[i + 1].querySelector('span');
+    if (last && last.textContent.endsWith('.')) {
+      last.textContent = last.textContent.slice(0, -1);
+      a.after(document.createTextNode('.'));
+    }
+  }
+  const icons = document.querySelector('.w-top .name-links');
+  if (icons) step.appendChild(icons.cloneNode(true));
+}
+
 function setupText() {
   const about = $$('.w-about p');
   about.forEach(p => {
@@ -124,6 +147,9 @@ function setupText() {
     splitWords(p);
     scrubs.push({ el: p, words: [...p.querySelectorAll('.wd')], lit: -1 });
   });
+  // the closing invitation: "reach out" becomes an email link, icons follow
+  const lastP = about[about.length - 1];
+  if (lastP && /reach out/.test(lastP.textContent)) invite(lastP);
   $$('.news-item').forEach((p, i) => p.style.setProperty('--d', `${(i % 6) * 70}ms`));
   $$('.w-pub, .w-edu').forEach(el => {
     for (const c of el.children) if (!c.hasAttribute('data-split')) { c.setAttribute('data-rise', ''); c.style.setProperty('--d', '160ms'); }
@@ -710,7 +736,7 @@ function frame(now) {
   renderer.render(scene, camera);
 }
 
-let lapW = 0;
+let lapW = 0, contentPx = 0, feedPx = 0;
 function placePrinter(dt) {
   const w = (state.a === 'news' ? 1 - state.t : 0) + (state.b === 'news' ? state.t : 0);
   lapW += (w - lapW) * (1 - Math.exp(-dt * 5));
@@ -726,8 +752,14 @@ function placePrinter(dt) {
   if (newsWin) {
     const dist = camera.position.distanceTo(printer.position);
     const worldPerPx = (2 * dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) / vh;
-    const want = log.shown > 0 ? Math.min(small ? 3.4 : 3.1, (newsWin.scrollHeight + 18) * worldPerPx) : 0.001;
-    paperH += (want - paperH) * (1 - Math.exp(-dt * 10));
+    // the paper feeds out continuously toward the height of what is printed;
+    // text rides on it, so new lines emerge from the slot instead of popping
+    contentPx = newsWin.scrollHeight;
+    const maxH = small ? 3.4 : 3.1;
+    const want = log.shown > 0 ? Math.min(maxH, (contentPx + 14) * worldPerPx) : 0.001;
+    paperH += (want - paperH) * (1 - Math.exp(-dt * 4.5));
+    feedPx += (Math.max(0, contentPx + 14 - maxH / worldPerPx) - feedPx) * (1 - Math.exp(-dt * 4.5));
+    newsWin.style.setProperty('--feed', `${feedPx.toFixed(1)}px`);
   }
   shapePaper(paperH);
   // fit the HTML onto the strip as the camera sees it (the flat lower part)
