@@ -383,7 +383,10 @@ a:focus-visible, button:focus-visible {
   .swipe {
     grid-column: span 12;
     display: flex; gap: 1rem; align-items: stretch;
-    overflow-x: auto; overscroll-behavior-x: contain;
+    /* Horizontal only: the row can never scroll (or wiggle) vertically, so a
+       slightly diagonal swipe moves sideways and vertical swipes go to the page. */
+    overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
     scroll-snap-type: x mandatory; scroll-padding-left: var(--gutter);
     margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 10px;
     scrollbar-width: none;
