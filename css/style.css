@@ -486,3 +486,4 @@ html[data-scene="flow"] #stage { display: none; }
   .news .news-list { max-height: 20rem; }
 }
 .pub-more[hidden] { display: none; }
+.foot-links { display: inline-flex; gap: 1.5rem; align-items: baseline; }

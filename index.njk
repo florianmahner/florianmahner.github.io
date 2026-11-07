@@ -55,7 +55,8 @@ title: Florian P. Mahner
     </div>
     {% endif %}
     <p class="block-foot span-12 mono">
-      {% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">All {{ publications.length }} publications</button>{% endif %}
+      <span class="foot-links">{% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">show more</button>{% endif %}
+      {% if site.social.scholar %}<a class="pub-scholar" href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}</span>
       <span>* equal contribution</span>
     </p>
   </section>
