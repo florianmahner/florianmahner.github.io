@@ -183,8 +183,9 @@ a:focus-visible, button:focus-visible {
 .edu-card { grid-column: span 3; }
 
 /* Contact icons */
-.top-links { display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -11px; }
-.name-links { display: none; }
+/* Contact icons sit in a row under the name; the -11px aligns the first
+   icon's glyph (not its 44px tap area) with the text edge. */
+.name-links { display: flex; flex-wrap: wrap; margin: .75rem 0 0 -11px; }
 .icon-link {
   display: inline-flex;
   align-items: center;
@@ -199,14 +200,14 @@ a:focus-visible, button:focus-visible {
 
 /* Hero — name on one line, then About (8 cols) beside the News card (4). */
 .hero-name {
-  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
   font-size: var(--fs-name);
   font-weight: 700;
   letter-spacing: -.045em;
   line-height: 1;
   color: var(--strong);
 }
-.hero { margin-top: 2.25rem; align-items: start; }
+.hero { margin-top: 1.5rem; align-items: start; }
 .accent-dot { display: inline-block; position: relative; color: var(--accent); }
 .hero-name { width: fit-content; max-width: 100%; }
 
@@ -308,7 +309,13 @@ a:focus-visible, button:focus-visible {
 #all-publications[hidden] { display: none; }
 
 /* Publication card */
-.pub-card { display: flex; flex-direction: column; gap: .5rem; padding: 1.05rem 1.25rem 1.15rem; }
+/* Cards in a row share their inner rows (subgrid): venue line, title and
+   authors line up across the row, whatever each title's length. */
+.pub-card {
+  display: grid; grid-row: span 3; grid-template-rows: subgrid;
+  row-gap: .5rem; align-content: start;
+  padding: 1.05rem 1.25rem 1.15rem;
+}
 .pub-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
 .pub-venue { color: var(--quiet); }
 .pub-title { color: var(--strong); font-size: var(--fs-title); font-weight: 650; line-height: 1.35; letter-spacing: -.015em; }
@@ -318,7 +325,10 @@ a:focus-visible, button:focus-visible {
 .pub-links { display: flex; gap: .9rem; flex-shrink: 0; }
 
 /* Background card */
-.edu-card { padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
+.edu-card {
+  display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start;
+  padding: 1rem 1.1rem; box-shadow: var(--shadow-sm);
+}
 .edu-card.lift:hover { box-shadow: var(--shadow); }
 .edu-years { color: var(--quiet); }
 .edu-degree { color: var(--strong); margin-top: .3rem; font-size: var(--fs-body); font-weight: 600; line-height: 1.4; }
@@ -366,9 +376,7 @@ a:focus-visible, button:focus-visible {
   .swipe::-webkit-scrollbar { display: none; }
   .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; }
   .swipe > .edu-card { flex-basis: 72%; }
-  /* Phones: contact icons sit in a row under the name, not top right. */
-  .top-links { display: none; }
-  .name-links { display: flex; flex-wrap: wrap; margin: .75rem 0 0 -11px; }
+  .swipe > .card { grid-row: auto; grid-template-rows: none; }   /* flex row: no shared rows */
   .hero-name { margin-top: 2.25rem; }
   .hero { margin-top: 1rem; }
 }
@@ -381,7 +389,7 @@ a:focus-visible, button:focus-visible {
 @media print {
   body { background: #fff; }
   .card { box-shadow: none; }
-  .top-links, .name-links, .news-more, .text-button, .bg-canvas, .motion-panel { display: none; }
+  .name-links, .news-more, .text-button, .bg-canvas, .motion-panel { display: none; }
   #news-older, #all-publications { display: block !important; }
 }
 

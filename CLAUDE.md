@@ -57,8 +57,8 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
 - **No horizontal rules between sections**, no section numbers ("01", "02"),
   no arrows (→ ↗ ←), no filler text (domain name, entry counts).
 - **Links are violet with no underline**; hover adds a soft violet highlight.
-- **Contact links are icons only**: top right on desktop, in a row under the
-  name on phones (≤640px) — never twice on the same screen.
+- **Contact links are icons only**, in one row under the name on every
+  screen size.
 - **All publication cards look the same** — no highlighted/coloured card.
 - News is a card titled `news.log` on the right of the hero, not a separate
   page; older items expand in place (`show older`, same mono style).
@@ -80,8 +80,7 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
   hero is 8 + 4 columns,
   publication cards span 4, Background cards span 3, so the News card lines
   up with the third publication card. Breakpoints: 1100px (Background 2-up),
-  960px (hero stacks, publications 2-up), 640px (icons move under the name;
-  selected publications and Background become sideways-swipe rows via
+  960px (hero stacks, publications 2-up), 640px (selected publications and Background become sideways-swipe rows via
   `.swipe`, which is `display: contents` on larger screens).
 
 ### Motion
