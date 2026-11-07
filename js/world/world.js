@@ -739,7 +739,8 @@ function frame(now) {
   renderer.render(scene, camera);
 }
 
-let lapW = 0, contentPx = 0, feedPx = 0;
+let lapW = 0, contentPx = 0, feedPx = 0, newsPs = 0;
+const newsBar = document.querySelector('.w-news .card-bar');
 function placePrinter(dt) {
   const w = (state.a === 'news' ? 1 - state.t : 0) + (state.b === 'news' ? state.t : 0);
   lapW += (w - lapW) * (1 - Math.exp(-dt * 5));
@@ -750,14 +751,17 @@ function placePrinter(dt) {
   printer.position.z -= (1 - lapW) * 6; // it arrives from the back
   printer.rotation.y = lean.x * 0.1 + Math.sin(t * 0.35) * 0.03;
   // scroll prints: letters appear, the strip grows to fit what is printed
-  showLog((newsP - 0.1) / 0.72);
+  // typing follows the scroll through a soft ease, so it never jumps per wheel tick
+  newsPs += (newsP - newsPs) * (1 - Math.exp(-dt * 7));
+  showLog((newsPs - 0.1) / 0.72);
   printer.updateMatrixWorld(true);
   if (newsWin) {
     const dist = camera.position.distanceTo(printer.position);
     const worldPerPx = (2 * dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) / vh;
     // the paper feeds out continuously toward the height of what is printed;
     // text rides on it, so new lines emerge from the slot instead of popping
-    contentPx = newsWin.scrollHeight;
+    // height of what is printed so far (not the window's own height)
+    contentPx = (newsBar ? newsBar.offsetHeight : 0) + (log.list ? log.list.offsetHeight : 0) + 12;
     const maxH = small ? 3.4 : 3.1;
     const want = log.shown > 0 ? Math.min(maxH, (contentPx + 14) * worldPerPx) : 0.001;
     paperH += (want - paperH) * (1 - Math.exp(-dt * 4.5));
