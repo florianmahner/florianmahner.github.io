@@ -6,7 +6,8 @@
     "dev": "eleventy --serve",
     "build": "eleventy",
     "analytics": "node --env-file-if-exists=.env.local analytics/run.js",
-    "test:analytics": "node --test analytics/*.test.js"
+    "test:analytics": "node --test analytics/*.test.js",
+    "check-links": "eleventy --quiet && node scripts/check-links.mjs"
   },
   "dependencies": {
     "google-auth-library": "^11.0.2",
