@@ -314,25 +314,16 @@ a:focus-visible, button:focus-visible {
 #all-publications[hidden] { display: none; }
 
 /* Publication card */
-/* Cards in a row share their inner rows (subgrid): venue, title, authors and
-   links line up across the row, whatever each title's length. */
-.pub-card {
-  display: grid; grid-row: span 4; grid-template-rows: subgrid;
-  row-gap: .6rem; align-content: start;
-  padding: 1.25rem 1.35rem;
-}
+.pub-card { display: flex; flex-direction: column; gap: .6rem; padding: 1.25rem 1.35rem; }
 .pub-venue { color: var(--quiet); }
 .pub-title { color: var(--strong); font-size: var(--fs-title); font-weight: 650; line-height: 1.35; letter-spacing: -.015em; }
 .pub-authors { font-size: var(--fs-small); color: var(--muted); }
 .author { white-space: nowrap; }
 .author.self { color: var(--strong); font-weight: 600; }
-.pub-links { padding-top: .5rem; display: flex; gap: 1rem; align-self: end; }
+.pub-links { margin-top: auto; padding-top: .5rem; display: flex; gap: 1rem; }
 
 /* Background card */
-.edu-card {
-  display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start;
-  padding: 1rem 1.1rem; box-shadow: var(--shadow-sm);
-}
+.edu-card { padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
 .edu-card.lift:hover { box-shadow: var(--shadow); }
 .edu-years { color: var(--quiet); }
 .edu-degree { color: var(--strong); margin-top: .3rem; font-size: var(--fs-body); font-weight: 600; line-height: 1.4; }
@@ -380,8 +371,6 @@ a:focus-visible, button:focus-visible {
   .swipe::-webkit-scrollbar { display: none; }
   .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; }
   .swipe > .edu-card { flex-basis: 72%; }
-  .swipe > .card { grid-row: auto; grid-template-rows: none; }   /* flex row: no shared rows */
-  .swipe > .pub-card { grid-template-rows: auto auto 1fr auto; }   /* links pinned to the bottom */
   .name-row { flex-direction: column; align-items: flex-start; gap: .75rem; margin-top: 2.25rem; }
   .name-links { margin: 0 0 0 -11px; }
   .hero { margin-top: 1rem; }
