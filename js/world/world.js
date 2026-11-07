@@ -814,7 +814,7 @@ function frame(now) {
     // keep every object fully on screen, whatever the window size
     {
       const zc = Math.max(1, camera.position.z - ta.z);
-      const hh = zc * tanHalf, hw = hh * aspect, rr = 0.6 * Math.max(sc, 0.3);
+      const hh = zc * tanHalf, hw = hh * aspect, rr = 0.8 * Math.max(sc, 0.3) + 0.15;
       ta.x = clamp(ta.x, -hw + rr, hw - rr);
       ta.y = clamp(ta.y, -hh + rr + 0.15, hh - rr - 0.35); // room for the header
     }
