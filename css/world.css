@@ -516,3 +516,8 @@ main { position: relative; z-index: 1; }
   .world .w-about .w-step-two > .w-col:first-child p { break-inside: avoid; }
   .world .w-about .w-step-two > .w-col:first-child p:nth-child(2) { break-before: column; margin-top: 0; }
 }
+
+/* the second screen is held in a taller stage while research and news play in */
+.world .w-stage { height: 220vh; }
+.world .w-stage > .w-step-two { position: sticky; top: 0; height: 100vh; min-height: 0; padding: 0; align-content: center; }
+.world .w-step-two > .w-col { will-change: transform, opacity; }

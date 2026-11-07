@@ -193,7 +193,8 @@ function setupText() {
     const two = document.createElement('div'); two.className = 'w-step w-step-two';
     const colA = document.createElement('div'), colB = document.createElement('div'), colC = document.createElement('div');
     colA.className = colB.className = 'w-col'; colC.className = 'w-col w-col-news';
-    host.prepend(one); one.after(two); two.append(colA, colC);
+    const stage = document.createElement('div'); stage.className = 'w-stage';
+    host.prepend(one); one.after(stage); stage.appendChild(two); two.append(colA, colC);
     // research (both paragraphs and the invitation) on the left, news.log on the right
     about.forEach((p, k) => (k === 0 ? one : colA).appendChild(p));
     const win = document.querySelector('.w-news'), sec = document.querySelector('.ch-news');
@@ -431,7 +432,9 @@ const forms = {
     const sc = narrow ? c[3] * 0.58 : c[3]; // smaller on tall narrow screens
     const rows = rects.newsRows;
     markerOn[i] = false;
-    if (rows && rows.length && k > 0) {
+    const km = stageEl ? newsReveal : k;
+    if (rows && rows.length && km > 0) {
+      const k = km; // within this branch, alignment follows the news reveal
       // every object joins one column in front of the news: one per item,
       // the rest continue the column below the list, a little smaller
       const D = 9.5;
@@ -528,6 +531,8 @@ const trackPapers = track ? [...track.children].map(el => ({ el, title: el.query
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
 const newsItems = [...document.querySelectorAll('.w-col-news .news-item')];
+const stageEl = document.querySelector('.w-stage'), researchCol = document.querySelector('.w-step-two > .w-col:first-child');
+let newsReveal = 0;
 const newsMoreBtn = document.querySelector('.w-col-news .news-more');
 const newsBox = document.querySelector('.w-col-news .news-list');
 const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
@@ -547,12 +552,17 @@ function readPage() {
   const centers = rectsCh.map(r => r.top + r.height / 2);
   let i = 0;
   while (i < chapters.length - 1 && centers[i + 1] < mid) i++;
-  const j = Math.min(i + 1, chapters.length - 1);
+  let j = Math.min(i + 1, chapters.length - 1);
   const span = centers[j] - centers[i];
   state.a = chapters[i].name; state.b = chapters[j].name;
   // hold each arrangement while its chapter fills the screen, blend in the gap between
   const raw = span > 0 ? clamp((mid - centers[i]) / span, 0, 1) : 0;
   state.t = smoother(clamp((raw - 0.25) / 0.5, 0, 1));
+  // while the About stage is held, stay fully in the About arrangement
+  if (stageEl) {
+    const sr = stageEl.getBoundingClientRect();
+    if (sr.top <= 1 && sr.bottom >= vh - 1) { state.a = state.b = 'about'; state.t = 0; i = j = chapters.findIndex(c => c.name === 'about'); }
+  }
   const prog = r => clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
@@ -562,11 +572,22 @@ function readPage() {
   rects.newsBox = newsBox ? newsBox.getBoundingClientRect() : null;
   if (newsWin && newsWin.closest('.w-step-two')) {
     const r = newsWin.getBoundingClientRect();
-    // news.log stays hidden until its screen arrives, then rises in and types
+    // staged: first only the research text, then it steps back a little and
+    // news.log slides in from the right while the objects line up beside it
+    const st = stageEl ? stageEl.getBoundingClientRect() : null;
+    const sp = st ? clamp(-st.top / Math.max(1, st.height - vh), 0, 1) : 1;
+    newsReveal = smoother(clamp((sp - 0.25) / 0.45, 0, 1));
     const col = newsWin.closest('.w-col-news');
-    const arrive = clamp((vh * 0.85 - r.top) / (vh * 0.3), 0, 1);
-    if (col) { col.style.opacity = smoother(arrive).toFixed(3); col.style.transform = `translateY(${((1 - smoother(arrive)) * 40).toFixed(1)}px)`; }
-    showLog(clamp((vh * 0.75 - r.top) / (vh * 0.5), 0, 1));
+    if (col) {
+      col.style.opacity = newsReveal.toFixed(3);
+      col.style.transform = `translateX(${((1 - newsReveal) * 80).toFixed(1)}px)`;
+      col.style.pointerEvents = newsReveal > 0.5 ? '' : 'none';
+    }
+    if (researchCol) {
+      researchCol.style.opacity = (1 - newsReveal * 0.35).toFixed(3);
+      researchCol.style.transform = `translateX(${(-newsReveal * 24).toFixed(1)}px)`;
+    }
+    showLog(1);
   }
   if (ns) {
     const r = ns.getBoundingClientRect();
@@ -768,8 +789,13 @@ function armSnap() {
   snapTimer = setTimeout(() => {
     if (glide.on) return;
     const y0 = se.scrollTop, stops = [];
+    // the stage: research alone, and with news.log in
+    if (stageEl) {
+      const r = stageEl.getBoundingClientRect(), span = r.height - vh;
+      if (span > 0) { stops.push(y0 + r.top); stops.push(y0 + r.top + span); }
+    }
     // each About paragraph centred on screen
-    for (const st of document.querySelectorAll('.w-step')) {
+    for (const st of document.querySelectorAll('.w-step:not(.w-step-two)')) {
       const r = st.getBoundingClientRect();
       stops.push(y0 + r.top + r.height / 2 - vh / 2);
     }
