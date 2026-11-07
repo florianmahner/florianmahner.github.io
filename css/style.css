@@ -300,6 +300,9 @@ a:focus-visible, button:focus-visible {
   border: 0;
 }
 .text-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Card rows. On desktop .swipe is transparent to the 12-column grid; on
+   phones it becomes a sideways-scrolling row with the next card peeking in. */
+.swipe { display: contents; }
 #all-publications { row-gap: 1.5rem; }
 #all-publications[hidden] { display: none; }
 
@@ -349,6 +352,18 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 640px) {
   :root { --gap: 1.25rem; }
   .pub-card, .edu-card { grid-column: span 12; }
+  /* Phones: publications and background scroll sideways, one card tall. */
+  .swipe {
+    grid-column: span 12;
+    display: flex; gap: 1rem; align-items: stretch;
+    overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory; scroll-padding-left: var(--gutter);
+    margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 10px;
+    scrollbar-width: none;
+  }
+  .swipe::-webkit-scrollbar { display: none; }
+  .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; }
+  .swipe > .edu-card { flex-basis: 72%; }
   /* Phones: contact icons sit in a row under the name, not top right. */
   .top-links { display: none; }
   .name-links { display: flex; flex-wrap: wrap; margin: .75rem 0 0 -11px; }

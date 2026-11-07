@@ -49,7 +49,9 @@ title: Florian P. Mahner
   {% set rest = publications | rejectattr("selected") %}
   <section class="grid block" aria-labelledby="publications-heading">
     <h2 class="block-heading span-12" id="publications-heading">Selected publications</h2>
-    {% for pub in selected %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
+    <div class="swipe">
+      {% for pub in selected %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
+    </div>
     <div id="all-publications" class="grid span-12" hidden>
       {% for pub in rest %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
     </div>
@@ -61,13 +63,15 @@ title: Florian P. Mahner
 
   <section class="grid block" aria-labelledby="background-heading">
     <h2 class="block-heading span-12" id="background-heading">Background</h2>
-    {% for edu in education %}
-    <div class="card edu-card lift reveal">
-      <p class="edu-years mono">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}–{{ edu.endYear }}{% endif %}</p>
-      <h3 class="edu-degree">{{ edu.degree }} {{ edu.field }}</h3>
-      <p class="edu-meta">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
+    <div class="swipe">
+      {% for edu in education %}
+      <div class="card edu-card lift reveal">
+        <p class="edu-years mono">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}–{{ edu.endYear }}{% endif %}</p>
+        <h3 class="edu-degree">{{ edu.degree }} {{ edu.field }}</h3>
+        <p class="edu-meta">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </section>
 
   <footer class="footer">

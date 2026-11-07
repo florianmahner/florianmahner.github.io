@@ -80,8 +80,9 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
   hero is 8 + 4 columns,
   publication cards span 4, Background cards span 3, so the News card lines
   up with the third publication card. Breakpoints: 1100px (Background 2-up),
-  960px (hero stacks, publications 2-up), 640px (everything 1-up, icons move
-  under the name).
+  960px (hero stacks, publications 2-up), 640px (icons move under the name;
+  selected publications and Background become sideways-swipe rows via
+  `.swipe`, which is `display: contents` on larger screens).
 
 ### Motion
 
