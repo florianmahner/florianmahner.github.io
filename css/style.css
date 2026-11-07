@@ -214,12 +214,11 @@ a:focus-visible, button:focus-visible {
 .accent-dot { display: inline-block; position: relative; color: var(--accent); }
 .hero-name { width: fit-content; max-width: 100%; }
 
-/* Name intro (js/motion.js): the name types in, the dot blinks once like a
-   cursor, then JS hops it with squash-and-stretch and adds .ring on landing. */
-.intro-type-hop .hero-name { animation: name-type .85s steps(17, end) .15s both; }
-.intro-type-hop .accent-dot { animation: dot-blink .5s step-end 1s both; }
-@keyframes name-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes dot-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+/* Name intro (js/motion.js): the name is static; the dot pops in (CSS, on
+   the separate `scale` property so it never fights the JS transform), then
+   JS hops it with squash-and-stretch and adds .ring on landing. */
+.intro-hop .accent-dot { transform-origin: 50% 82%; animation: dot-pop .45s cubic-bezier(.2, .9, .3, 1.5) .3s both; }
+@keyframes dot-pop { from { opacity: 0; scale: .15; } to { opacity: 1; scale: 1; } }
 .accent-dot.ring::after {
   content: ''; position: absolute; left: 50%; bottom: .17em;
   width: .2em; height: .2em; margin-left: -.1em; border-radius: 50%;

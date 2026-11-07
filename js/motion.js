@@ -6,8 +6,8 @@
      dots inside a patch brighten and swell a little. Drawn on one fixed canvas behind the page, colours read
      from the CSS tokens so light and dark mode just work.
 
-   Intro (<html data-intro>): "type-hop" | "none"
-     The name types in, the dot after "P" blinks once like a cursor, crouches,
+   Intro (<html data-intro>): "hop" | "none"
+     The name is there from the start; the dot after "P" pops in, crouches,
      hops, lands with squash-and-stretch and sends out one soft ring.
 
    Both are skipped for prefers-reduced-motion; the grid pauses in background
@@ -123,19 +123,19 @@
     raf = requestAnimationFrame(loop);
   }
 
-  // ---- name intro: type, blink, hop, squash, ring ---------------------------
+  // ---- name intro: dot pops in, hops, squashes, rings -----------------------
   var playing = null;
   function playIntro(name) {
     var h1 = document.querySelector('.hero-name');
     var el = h1 && h1.querySelector('.accent-dot');
     playing = null;
-    root.classList.remove('intro-type-hop');
+    root.classList.remove('intro-hop');
     if (el) { el.style.transform = ''; el.classList.remove('ring'); }
-    if (!el || name !== 'type-hop' || calm.matches || document.hidden) return;
-    void h1.offsetWidth;                                  // restart the CSS typing
-    root.classList.add('intro-type-hop');
+    if (!el || name !== 'hop' || calm.matches || document.hidden) return;
+    void h1.offsetWidth;                                  // restart the CSS pop-in
+    root.classList.add('intro-hop');
     var token = playing = {};
-    setTimeout(function () { if (playing === token) hop(el, token); }, 1500);
+    setTimeout(function () { if (playing === token) hop(el, token); }, 950);
   }
 
   // Heights and speeds are in em of the name's size, so the motion scales with
@@ -197,7 +197,7 @@
     var replay = document.createElement('button');
     replay.type = 'button';
     replay.textContent = 'replay intro';
-    replay.addEventListener('click', function () { window.scrollTo({ top: 0 }); playIntro('type-hop'); });
+    replay.addEventListener('click', function () { window.scrollTo({ top: 0 }); playIntro('hop'); });
     box.appendChild(toggle); box.appendChild(replay);
     document.body.appendChild(box);
     return { update: function () { toggle.textContent = on ? 'grid: breathe' : 'grid: static'; toggle.setAttribute('aria-pressed', on ? 'true' : 'false'); } };

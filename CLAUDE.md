@@ -91,9 +91,9 @@ All motion lives in `js/motion.js`, configured by `background` and `intro` in
 - `background: "breathe"` — a slow wave rolls across the dot grid, drawn on a
   fixed canvas at 30 fps; colours come from `--dots`, so dark mode just works.
   `"none"` keeps the static CSS dots.
-- `intro: "type-hop"` — the name types in (CSS clip-path steps), the dot blinks
-  once like a cursor, then hops with squash-and-stretch and sends out one ring
-  (`.accent-dot.ring`). `"none"` shows it at rest.
+- `intro: "hop"` — the name is static; the dot pops in, then hops with
+  squash-and-stretch and sends out one ring (`.accent-dot.ring`). `"none"`
+  shows it at rest. (A typing reveal of the name was tried and removed.)
 - `.reveal` elements rise in via IntersectionObserver (`base.njk`, gated by
   the `.js` class so no-JS readers see everything); cards lift on hover.
 - Everything is off under `prefers-reduced-motion`; the grid pauses in hidden
