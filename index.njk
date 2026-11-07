@@ -19,17 +19,16 @@ title: Florian P. Mahner
 <main class="page" id="top">
   <div class="top-links">{{ icons.socialIcons(site) }}</div>
 
+  <h1 class="hero-name reveal" id="name">Florian P<span class="accent-dot">.</span> Mahner</h1>
+
   <div class="grid hero">
-    <section class="span-8" aria-labelledby="name">
-      <h1 class="hero-name reveal" id="name">Florian P<span class="accent-dot">.</span><br>Mahner</h1>
-      <div class="about reveal">
-        {% mdfile "about" %}
-      </div>
+    <section class="span-8 about reveal" aria-labelledby="name">
+      {% mdfile "about" %}
     </section>
 
     {% if news and news.length %}
     <aside class="card news span-4 reveal" aria-labelledby="news-heading">
-      <h2 class="card-bar mono" id="news-heading">News</h2>
+      <h2 class="card-bar mono" id="news-heading">news.log</h2>
       <div class="news-list">
         {{ newsItems(news.slice(0, NEWS_VISIBLE), "") }}
         {% if news.length > NEWS_VISIBLE %}
@@ -39,7 +38,7 @@ title: Florian P. Mahner
         {% endif %}
       </div>
       {% if news.length > NEWS_VISIBLE %}
-      <button class="news-more mono" type="button" aria-expanded="false" aria-controls="news-older">Show older</button>
+      <button class="news-more mono" type="button" aria-expanded="false" aria-controls="news-older">show older</button>
       {% endif %}
     </aside>
     {% endif %}

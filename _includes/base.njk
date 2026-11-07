@@ -22,7 +22,7 @@
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="theme-color" content="#eeeff1" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#141417" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)">
   <link rel="preload" href="/fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js')</script>
   <link rel="stylesheet" href="/css/style.css">
@@ -160,111 +160,9 @@
   }
   (function() {
     var newsBtn = document.querySelector('.news-more');
-    bindToggle(newsBtn, document.getElementById('news-older'), 'Show less', 'Show older');
+    bindToggle(newsBtn, document.getElementById('news-older'), 'show less', 'show older');
     var pubBtn = document.getElementById('toggle-publications');
     if (pubBtn) bindToggle(pubBtn, document.getElementById('all-publications'), 'Show selected only', pubBtn.textContent);
-  })();
-
-  // Living dot grid — the background dots flow toward the cursor and swirl
-  // around it (a soft point attractor), then spring back. Desktop pointers
-  // only; touch devices and reduced-motion readers keep the static CSS dots.
-  (function() {
-    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-    var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!fine.matches || calm.matches) return;
-
-    var canvas = document.createElement('canvas');
-    canvas.className = 'dot-field';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.prepend(canvas);
-    document.documentElement.classList.add('dots-live');
-    var ctx = canvas.getContext('2d');
-
-    var GAP = 16, SIGMA = 120, PULL = 0.32, SWIRL = 0.22, BASE_R = 1;
-    var w = 0, h = 0, dpr = 1, dotColor = '', accent = '';
-    var mouse = { x: -1e4, y: -1e4 }, eased = { x: -1e4, y: -1e4 };
-    var strength = 0, target = 0, running = false, t0 = performance.now();
-
-    function readColors() {
-      var cs = getComputedStyle(document.documentElement);
-      dotColor = cs.getPropertyValue('--dots').trim() || 'rgba(17,17,17,.08)';
-      accent = cs.getPropertyValue('--accent').trim() || '#7c3aed';
-    }
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth; h = window.innerHeight;
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw(performance.now());
-    }
-
-    function draw(now) {
-      ctx.clearRect(0, 0, w, h);
-      var oy = -(window.scrollY % GAP);         // dots scroll with the page
-      var mx = eased.x, my = eased.y, reach = SIGMA * 3;
-      var s2 = 2 * SIGMA * SIGMA, k = strength;
-      var swirl = SWIRL * (0.75 + 0.25 * Math.sin((now - t0) / 1400));
-      var hot = [];
-
-      ctx.fillStyle = dotColor;
-      ctx.beginPath();
-      for (var y = GAP / 2 + oy; y < h + GAP; y += GAP) {
-        for (var x = GAP / 2; x < w + GAP; x += GAP) {
-          var dx = mx - x, dy = my - y;
-          if (k > 0.001 && dx < reach && dx > -reach && dy < reach && dy > -reach) {
-            var f = k * Math.exp(-(dx * dx + dy * dy) / s2);
-            if (f > 0.002) {
-              var px = x + PULL * f * dx - swirl * f * dy;
-              var py = y + PULL * f * dy + swirl * f * dx;
-              if (f > 0.12) { hot.push(px, py, f); continue; }
-              ctx.moveTo(px + BASE_R, py); ctx.arc(px, py, BASE_R + f, 0, 6.2832);
-              continue;
-            }
-          }
-          ctx.moveTo(x + BASE_R, y); ctx.arc(x, y, BASE_R, 0, 6.2832);
-        }
-      }
-      ctx.fill();
-
-      if (hot.length) {
-        ctx.fillStyle = accent;
-        for (var i = 0; i < hot.length; i += 3) {
-          ctx.globalAlpha = Math.min(1, hot[i + 2] * 0.9);
-          ctx.beginPath();
-          ctx.arc(hot[i], hot[i + 1], BASE_R + hot[i + 2] * 1.3, 0, 6.2832);
-          ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-      }
-    }
-
-    function tick(now) {
-      eased.x += (mouse.x - eased.x) * 0.12;
-      eased.y += (mouse.y - eased.y) * 0.12;
-      strength += (target - strength) * 0.06;
-      draw(now);
-      var moving = Math.abs(mouse.x - eased.x) + Math.abs(mouse.y - eased.y) > 0.3;
-      if (moving || Math.abs(target - strength) > 0.002 || strength > 0.002) {
-        requestAnimationFrame(tick);
-      } else {
-        running = false;
-      }
-    }
-    function wake() { if (!running) { running = true; requestAnimationFrame(tick); } }
-
-    window.addEventListener('pointermove', function(e) {
-      if (e.pointerType && e.pointerType !== 'mouse') return;
-      if (strength < 0.01) { eased.x = e.clientX; eased.y = e.clientY; }
-      mouse.x = e.clientX; mouse.y = e.clientY; target = 1; wake();
-    }, { passive: true });
-    document.documentElement.addEventListener('pointerleave', function() { target = 0; wake(); });
-    window.addEventListener('blur', function() { target = 0; wake(); });
-    window.addEventListener('scroll', function() { if (!running) draw(performance.now()); }, { passive: true });
-    window.addEventListener('resize', resize);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() { readColors(); draw(performance.now()); });
-
-    readColors();
-    resize();
   })();
 
   // Hero accent dot — physics-driven bounce. CSS keyframes can only lerp
@@ -274,11 +172,12 @@
     var dot = document.querySelector('.hero-name .accent-dot');
     if (!dot) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (document.hidden) return;   // background tab: rAF is paused, so skip it
 
     var fs = parseFloat(getComputedStyle(dot).fontSize);
     if (!fs || isNaN(fs)) return;
 
-    var H0 = 1.2 * fs;             // initial drop height (above rest)
+    var H0 = 1.6 * fs;             // initial drop height (above rest)
     var X0 = 0.5 * fs;             // initial horizontal offset
     var e  = 0.8;                  // coefficient of restitution
     var g  = 36 * fs;              // gravity, px/s^2

@@ -28,7 +28,7 @@ CSS, no client-side framework and no build step beyond 11ty.
 - `css/style.css` — the entire stylesheet
 - `public/` — static assets copied to output root
 - Fonts are self-hosted from `@fontsource-variable/inter` and
-  `@fontsource-variable/jetbrains-mono` (copied to `/fonts/` at build)
+  `@fontsource-variable/geist-mono` (copied to `/fonts/` at build)
 
 Filters/shortcodes: `highlightAuthor` (wraps each author in
 `<span class="author">`, adds `.self` for the site owner), `mdInline`,
@@ -44,9 +44,9 @@ Worker that forces HTTPS and redirects to the canonical host
 ## Design system
 
 Soft grey dot-grid ground, white "window" cards with a black 1.5px border and
-a hard violet offset shadow, Inter for text, JetBrains Mono for small labels.
-Friendly and light by default; an automatic dark theme follows the
-reader's system setting (`@media (prefers-color-scheme: dark)` block in
+a hard steel-blue offset shadow, Inter for text, Geist Mono for small labels
+(news.log, show older, dates, venues, PDF/Web links). Light by default; an
+automatic deep-warm dark theme follows the reader's system setting (`@media (prefers-color-scheme: dark)` block in
 `css/style.css` — every colour is a token, so that block is the whole theme).
 
 ### Rules the owner has asked for — keep them
@@ -59,18 +59,25 @@ reader's system setting (`@media (prefers-color-scheme: dark)` block in
 - **Contact links are icons only**: top right on desktop, footer on phones
   (≤640px) — never both on the same screen.
 - **All publication cards look the same** — no highlighted/coloured card.
-- News is a card on the right of the hero, not a separate page; older items
-  expand in place ("Show older").
+- News is a card titled `news.log` on the right of the hero, not a separate
+  page; older items expand in place (`show older`, same mono style).
+- The name sits on one line, medium size, above the About/News row.
+- Violet is only for links and the dot after the name — never card chrome.
+- Dark mode: cards are lighter than the page and the offset shadow darker
+  (black), or the 3D window look goes flat. Text is warm off-white, never #fff.
+- No cursor-driven background animation (tried and removed).
 
 ### Tokens (`:root` in `css/style.css`)
 
-- Colour: `--bg` #eeeff1, `--ink` #111, `--muted`/`--quiet` greys for
-  secondary text, `--accent` #7c3aed (dot, card bars, shadows), `--link`
-  #6d28d9 (text links, 7:1 on white).
+- Colour: `--bg` #eeeff1, `--ink` (body) and `--strong` (name, headings,
+  lead), `--muted`/`--quiet` greys for secondary text and labels, `--card`,
+  `--bar` (card title strips), `--line` (borders), `--shadow-color` (steel
+  #b2c1d9 light, #000 dark), `--accent` (the dot), `--link` #6d28d9.
 - Type: `--fs-name` (hero), `--fs-heading` (section headings), `--fs-lead`
   (first About paragraph), `--fs-title` (card titles), `--fs-body`,
   `--fs-small`, `--fs-mono`. Use these; don't add sizes.
-- Layout: one 12-column grid (`.grid`, `--gap`). Hero is 8 + 4 columns,
+- Layout: one 12-column grid (`.grid`, `--gap`). Under the one-line name the
+  hero is 8 + 4 columns,
   publication cards span 4, Background cards span 3, so the News card lines
   up with the third publication card. Breakpoints: 1100px (Background 2-up),
   960px (hero stacks, publications 2-up), 640px (everything 1-up, icons move
@@ -78,7 +85,8 @@ reader's system setting (`@media (prefers-color-scheme: dark)` block in
 
 ### Motion
 
-The accent dot does a physics bounce on load (JS in `base.njk`); `.reveal`
+The accent dot does a physics bounce on load (JS in `base.njk`, skipped in a
+background tab); `.reveal`
 elements rise in via IntersectionObserver (gated by the `.js` class so
 no-JS readers see everything); cards lift on hover. All of it is off under
 `prefers-reduced-motion`.

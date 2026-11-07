@@ -31,10 +31,10 @@ export default function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("css");
 
   // Self-hosted variable fonts from @fontsource-variable/* — no third-party
-  // font CDN. Inter carries wght + opsz; JetBrains Mono carries wght.
+  // font CDN. Inter carries wght + opsz; Geist Mono carries wght.
   const fonts = {
     inter: ["inter-latin-opsz-normal", "inter-latin-ext-opsz-normal"],
-    "jetbrains-mono": ["jetbrains-mono-latin-wght-normal", "jetbrains-mono-latin-ext-wght-normal"]
+    "geist-mono": ["geist-mono-latin-wght-normal", "geist-mono-latin-ext-wght-normal"]
   };
   for (const [pkg, files] of Object.entries(fonts)) {
     for (const f of files) {
