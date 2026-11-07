@@ -521,3 +521,5 @@ main { position: relative; z-index: 1; }
 .world .w-stage { height: 220vh; }
 .world .w-stage > .w-step-two { position: sticky; top: 0; height: 100vh; min-height: 0; padding: 0; align-content: center; }
 .world .w-step-two > .w-col { will-change: transform, opacity; }
+
+.w-top .w-switch { position: absolute; top: 1.1rem; right: max(var(--gutter), env(safe-area-inset-right)); }

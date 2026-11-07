@@ -487,3 +487,6 @@ html[data-scene="flow"] #stage { display: none; }
 }
 .pub-more[hidden] { display: none; }
 .foot-links { display: inline-flex; gap: 1.5rem; align-items: baseline; }
+
+/* switch between the classic and the 3D view */
+.view-switch { color: var(--link); }
