@@ -411,7 +411,7 @@ const forms = {
     // spread across the free bands above and below the text instead
     const narrow = aspect < 0.9;
     const ax = narrow ? -0.8 + ((i * 0.618) % 1) * 1.6 : 0.62 + (c[0] - 0.25) * 0.5;
-    const ay = narrow ? (i % 2 ? 0.52 + ((i * 0.37) % 1) * 0.28 : -0.5 - ((i * 0.53) % 1) * 0.32) : c[1];
+    const ay = narrow ? (i % 2 ? 0.42 + ((i * 0.37) % 1) * 0.42 : -0.42 - ((i * 0.53) % 1) * 0.46) : c[1];
     // second screen: loose groups in the free space above and below the text,
     // at different depths, never one straight line
     const top = i % 3 === 0;
@@ -419,7 +419,8 @@ const forms = {
     const by = top ? 0.7 + ((i * 0.37) % 1) * 0.12 : -0.62 - ((i * 0.53) % 1) * 0.28;
     const bd = 10 + ((i * 0.71) % 1) * 8;
     screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
-    return c[3] + (0.75 - c[3]) * k;
+    const sc = narrow ? c[3] * 0.58 : c[3]; // smaller on tall narrow screens
+    return sc + ((narrow ? 0.5 : 0.75) - sc) * k;
   },
   news(i, t, p, out) {
     // they dance around the news.log window: an orbit just outside its edges,
