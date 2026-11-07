@@ -468,3 +468,7 @@ main { position: relative; z-index: 1; }
 .w-edu .edu-meta { margin-inline: auto; }
 .world.rows-live .w-edu { opacity: .32; }
 .world.rows-live .w-edu.on { opacity: 1; }
+
+/* header: the name at the very top, the contact icons in a row below it */
+.w-top { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: .15rem; padding-top: .9rem; padding-bottom: 1.4rem; }
+.w-top .name-links { margin: 0 0 0 -11px; }
