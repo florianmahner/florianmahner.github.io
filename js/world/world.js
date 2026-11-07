@@ -291,7 +291,7 @@ const objs = kinds.map((make, i) => {
     mesh,
     pos: new THREE.Vector3(0, 0, -30), vel: new THREE.Vector3(),
     scale: 0.001, rot: new THREE.Euler(i * 0.9, i * 1.7, i * 0.4),
-    spin: new THREE.Vector3(0.11 + (i % 3) * 0.05, 0.17 + (i % 4) * 0.04, 0.07), // each turns at its own pace
+    spin: new THREE.Vector3(0.05 + (i % 3) * 0.025, 0.08 + (i % 4) * 0.02, 0.03), // each turns at its own pace
     phase: i * 1.37,
   };
 });
@@ -745,7 +745,7 @@ if (toggle && more) {
     const open = more.hidden;
     more.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.textContent = open ? 'Show selected only' : label;
+    toggle.textContent = open ? 'show less' : label;
     if (open) more.querySelectorAll('[data-split], [data-rise]').forEach(el => el.classList.add('in'));
     pubRows = visiblePubs();
   });
@@ -874,12 +874,12 @@ function frame(now) {
 
   lean.x += (lean.tx - lean.x) * (1 - Math.exp(-dt * 3));
   lean.y += (lean.ty - lean.y) * (1 - Math.exp(-dt * 3));
-  camera.position.set(lean.x * 0.55, -lean.y * 0.35, 0);
+  camera.position.set(lean.x * 0.3, -lean.y * 0.2, 0);
   camera.lookAt(lean.x * 0.15, -lean.y * 0.1, -10);
   camera.updateMatrixWorld();
 
   // text bends a touch with scroll speed
-  const skew = clamp(scrollV * -0.0009, -2.2, 2.2);
+  const skew = clamp(scrollV * -0.0003, -0.8, 0.8);
   if (Math.abs(skew - lastSkew) > 0.01) { root.style.setProperty('--skew', `${skew.toFixed(2)}deg`); lastSkew = skew; }
   const speed = Math.min(Math.abs(scrollV), 4000);
 
@@ -890,7 +890,7 @@ function frame(now) {
     ta.lerp(tb, state.t);
     const sc = sa + (sb - sa) * state.t;
     // fast scrolling scatters them a little; they gather again when you stop
-    ta.x *= 1 + speed * 0.00006; ta.y *= 1 + speed * 0.00004;
+    ta.x *= 1 + speed * 0.000012; ta.y *= 1 + speed * 0.000008;
     // the cursor pushes objects aside (measured on screen, applied in depth)
     if (pointerOn && grab.i < 0) {
       pv.copy(o.pos).project(camera);
@@ -904,8 +904,8 @@ function frame(now) {
       }
     }
     // gentle float, so nothing is ever perfectly still
-    ta.x += Math.sin(t * 0.6 + o.phase) * 0.08;
-    ta.y += Math.sin(t * 0.8 + o.phase * 1.3) * 0.1;
+    ta.x += Math.sin(t * 0.4 + o.phase) * 0.04;
+    ta.y += Math.sin(t * 0.5 + o.phase * 1.3) * 0.05;
     // keep every object fully on screen, whatever the window size
     // (markers follow their news item, even when it scrolls off)
     if (!markerOn[i]) {
@@ -934,8 +934,8 @@ function frame(now) {
     }
     o.scale += (sc * (i === hovered ? 1.18 : 1) - o.scale) * (1 - Math.exp(-dt * (i === hovered ? 9 : 4)));
     // turn: own pace, faster for the paper in front, a kick from scrolling
-    const boost = (state.a === 'pubs' || state.b === 'pubs') && i === state.pubActive ? 3.2 : 1;
-    o.rot.x += o.spin.x * dt * boost + scrollV * 0.00004;
+    const boost = (state.a === 'pubs' || state.b === 'pubs') && i === state.pubActive ? 1.6 : 1;
+    o.rot.x += o.spin.x * dt * boost + scrollV * 0.00001;
     o.rot.y += o.spin.y * dt * boost;
     o.rot.z += o.spin.z * dt;
     o.mesh.position.copy(o.pos);
