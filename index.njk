@@ -33,17 +33,10 @@ title: Florian P. Mahner
     {% if news and news.length %}
     <aside class="card news span-4 reveal" aria-labelledby="news-heading">
       <h2 class="card-bar mono" id="news-heading">news.log</h2>
-      <div class="news-list">
-        {{ newsItems(news.slice(0, NEWS_VISIBLE), "") }}
-        {% if news.length > NEWS_VISIBLE %}
-        <div id="news-older" hidden>
-          {{ newsItems(news.slice(NEWS_VISIBLE), news[NEWS_VISIBLE - 1].date | yearOf) }}
-        </div>
-        {% endif %}
+      {# all news in one list that scrolls inside the card #}
+      <div class="news-list" tabindex="0">
+        {{ newsItems(news, "") }}
       </div>
-      {% if news.length > NEWS_VISIBLE %}
-      <button class="news-more mono" type="button" aria-expanded="false" aria-controls="news-older">show older</button>
-      {% endif %}
     </aside>
     {% endif %}
   </div>
@@ -55,11 +48,13 @@ title: Florian P. Mahner
     <div class="swipe">
       {% for pub in selected %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
     </div>
-    <div id="all-publications" class="grid span-12" hidden>
+    {# the other papers: a row of the same cards that scrolls sideways #}
+    {% if rest.length %}
+    <div class="pub-more span-12" tabindex="0" aria-label="More publications">
       {% for pub in rest %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
     </div>
+    {% endif %}
     <p class="block-foot span-12 mono">
-      {% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">All {{ publications.length }} publications</button>{% endif %}
       <span>* equal contribution</span>
     </p>
   </section>

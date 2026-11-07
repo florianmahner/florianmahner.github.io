@@ -457,3 +457,31 @@ html[data-scene="flow"] #stage { display: none; }
   #news-older, #all-publications { display: block !important; }
 }
 
+
+/* news.log: all news in one list that scrolls inside the card, with a soft
+   fade at the bottom edge instead of a "show older" button */
+.news .news-list {
+  max-height: 25rem; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: var(--quiet) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+  padding-bottom: 1.6rem;
+}
+
+/* the other papers: a row of the same cards under the selected three that
+   scrolls sideways; the next card peeks in at the right edge */
+.pub-more {
+  display: flex; gap: var(--gap); margin-top: .25rem;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity;
+  padding: 2px 8px 12px 2px; /* room for the card shadow */
+  scrollbar-width: thin; scrollbar-color: var(--quiet) transparent;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 4rem), transparent);
+          mask-image: linear-gradient(to right, #000 calc(100% - 4rem), transparent);
+}
+.pub-more > .card { flex: 0 0 calc((100% - 2 * var(--gap)) / 3.2); scroll-snap-align: start; }
+.js .pub-more > .reveal { opacity: 1; transform: none; transition: none; }
+@media (max-width: 960px) { .pub-more > .card { flex-basis: calc((100% - var(--gap)) / 2.15); } }
+@media (max-width: 640px) {
+  .pub-more > .card { flex-basis: 84%; }
+  .news .news-list { max-height: 20rem; }
+}
