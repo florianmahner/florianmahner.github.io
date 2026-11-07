@@ -115,8 +115,6 @@ function showLog(k) {
 }
 
 function invite(p) {
-  const step = p.parentElement;
-  step.classList.add('w-reach');
   const mail = document.querySelector('.w-top a[href^="mailto:"]');
   // wrap the words "reach out" (they are split into word spans by now)
   const words = [...p.querySelectorAll('.wd')];
@@ -133,21 +131,26 @@ function invite(p) {
       a.after(document.createTextNode('.'));
     }
   }
-  const icons = document.querySelector('.w-top .name-links');
-  if (icons) step.appendChild(icons.cloneNode(true));
 }
 
 function setupText() {
   const about = $$('.w-about p');
+  // two screens: the opening paragraph alone, then the research paragraphs
+  // side by side, the invitation closing the second column
+  const host = about[0] && about[0].parentElement;
+  if (host) {
+    const one = document.createElement('div'); one.className = 'w-step';
+    const two = document.createElement('div'); two.className = 'w-step w-step-two';
+    const colA = document.createElement('div'), colB = document.createElement('div');
+    colA.className = colB.className = 'w-col';
+    host.prepend(one); one.after(two); two.append(colA, colB);
+    about.forEach((p, k) => (k === 0 ? one : k === 1 ? colA : colB).appendChild(p));
+  }
   about.forEach(p => {
-    const step = document.createElement('div');
-    step.className = 'w-step';
-    p.before(step); step.appendChild(p);
     p.setAttribute('data-scrub', '');
     splitWords(p);
     scrubs.push({ el: p, words: [...p.querySelectorAll('.wd')], lit: -1 });
   });
-  // the closing invitation: "reach out" becomes an email link, icons follow
   const lastP = about[about.length - 1];
   if (lastP && /reach out/.test(lastP.textContent)) invite(lastP);
   $$('.news-item').forEach((p, i) => p.style.setProperty('--d', `${(i % 6) * 70}ms`));

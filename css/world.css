@@ -338,3 +338,11 @@ main { position: relative; z-index: 1; }
 
 /* the fixed header gets a soft fade of page colour so text slides under it cleanly */
 .w-top { background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 0%, transparent)); }
+
+/* About in two screens: the opening paragraph, then the two research
+   paragraphs side by side (the invitation ends the second column). */
+.world .ch-about > .w-about { width: min(100%, 76rem); }
+.w-step-two { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-content: center; align-items: start; }
+.world .w-about .w-step-two p { font-size: var(--fs-lead); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; max-width: none; }
+.w-col p + p { margin-top: 1.25rem; }
+@media (max-width: 860px) { .w-step-two { grid-template-columns: 1fr; align-content: center; } }
