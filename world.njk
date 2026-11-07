@@ -5,6 +5,10 @@
 {% for p in publications | selectattr("selected") %}{% if "Nature Machine Intelligence" in p.venue %}{% set _ = lead.push(p) %}{% else %}{% set _ = others.push(p) %}{% endif %}{% endfor %}
 {% set selected = lead.concat(others) %}
 {% set rest = publications | rejectattr("selected") %}
+{# About, split into its paragraphs so each can be its own page/column. #}
+{% set aboutHtml %}{% mdfile "about" %}{% endset %}
+{% set paras = aboutHtml | trim | replace("</p>\n<p>", "</p>\u0000<p>") %}
+{% set paras = paras.split("\u0000") %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,13 +21,28 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preload" href="/fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/vendor/lenis/lenis.css">
   <link rel="stylesheet" href="/css/world.css">
-  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <script type="importmap">{"imports":{
+    "three": "/vendor/three/three.module.min.js",
+    "three/addons/": "/vendor/three/addons/",
+    "gsap": "/vendor/gsap/index.js",
+    "gsap/ScrollTrigger": "/vendor/gsap/ScrollTrigger.js",
+    "gsap/SplitText": "/vendor/gsap/SplitText.js",
+    "lenis": "/vendor/lenis/lenis.mjs"
+  }}</script>
   <script>
     // Motion only when the reader allows it; otherwise this is a plain page.
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('world');
+    // While the 3D view boots, text that will animate in waits hidden; if the
+    // script never starts, it shows after 3 s anyway.
+    (function () {
+      var r = document.documentElement;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      r.classList.add('world', 'world-boot');
+      setTimeout(function () { if (!r.classList.contains('world-ready')) r.classList.remove('world', 'world-boot'); }, 3000);
+    })();
   </script>
-  <script type="module" src="/js/world/world.js"></script>
+  <script type="module" src="/js/world/app.js"></script>
 </head>
 <body>
 <header class="w-top">
@@ -34,36 +53,39 @@
 
 <main id="top">
   <section class="ch ch-about" data-ch="about" aria-label="About">
-    <div class="w-about">{% mdfile "about" %}</div>
-  </section>
+    {# page 1: the opening paragraph alone #}
+    <div class="pg pg-intro" data-page><div class="w-lead" data-lines>{{ paras[0] | safe }}</div></div>
 
-  {% if news and news.length %}
-  <section class="ch ch-news" data-ch="news" aria-labelledby="news-heading">
-    {# A laptop sits in the 3D scene; scrolling opens its lid and types the
-       log onto its screen. This block is held in place while that happens. #}
-    <div class="w-nscroll">
-    <div class="w-npin">
-    <aside class="card news w-news">
-      <h2 class="card-bar mono" id="news-heading">news.log</h2>
-      <div class="news-list">
-        {% set last = "" %}
-        {% for item in news %}
-          {% set y = item.date | yearOf %}
-          {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
-          <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
-        {% endfor %}
+    {# page 2 (desktop: held while research shows first, then news.log slides in;
+       phones: three pages, one per block) #}
+    <div class="pg pg-research">
+      <div class="w-research">
+        <div class="w-sub" data-page data-lines>{{ paras[1] | safe }}</div>
+        <div class="w-sub" data-page data-lines>{% for p in paras.slice(2) %}{{ p | safe }}{% endfor %}</div>
       </div>
-    </aside>
-    </div>
+      {% if news and news.length %}
+      <div class="w-col-news" data-page>
+        <aside class="w-news" aria-labelledby="news-heading">
+          <h2 class="mono w-news-label" id="news-heading">news.log</h2>
+          <div class="news-list" data-lenis-prevent tabindex="0">
+            {% set last = "" %}
+            {% for item in news %}
+              {% set y = item.date | yearOf %}
+              {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
+              <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
+            {% endfor %}
+          </div>
+        </aside>
+      </div>
+      {% endif %}
     </div>
   </section>
-  {% endif %}
 
   <section class="ch ch-pubs" data-ch="pubs" aria-labelledby="publications-heading">
-    {% macro paper(pub, idx, svg, site) %}
-      <article class="w-pub" data-row data-pub="{{ idx }}">
+    {% macro paper(pub, idx, svg, site, page) %}
+      <article class="w-pub" data-pub="{{ idx }}"{% if page %} data-page{% endif %}>
         <p class="pub-venue mono">{{ pub.venue }} · {{ pub.year }}</p>
-        <h3 class="pub-title" data-split>{{ pub.title }}</h3>
+        <h3 class="pub-title">{{ pub.title }}</h3>
         <p class="pub-authors">{{ pub.authors | highlightAuthor(site.highlightAuthor) | safe }}</p>
         <p class="w-links">
           {%- if pub.pdf %}<a class="pub-icon" href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer" aria-label="PDF of {{ pub.title }}" title="PDF"><svg {{ svg | safe }}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></a>{% endif -%}
@@ -72,22 +94,20 @@
         </p>
       </article>
     {% endmacro %}
-    {# The section holds still while scrolling slides the papers past sideways. #}
-    <div class="w-hscroll" style="--n: {{ selected.length }}">
-      <div class="w-hpin">
-        <h2 class="block-heading" id="publications-heading" data-split>Selected publications</h2>
-        <div class="w-pubs w-selected w-track">
-          {% for pub in selected %}{{ paper(pub, loop.index0, svg, site) }}{% endfor %}
-        </div>
-        <p class="w-note mono">
-          <span class="foot-links">{% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">show more</button>{% endif %}
-      {% if site.social.scholar %}<a class="pub-scholar" href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}</span>
-          <span>* equal contribution</span>
-        </p>
+    {# desktop: held while the papers slide past sideways; phones: one page each #}
+    <div class="w-hpin">
+      <h2 class="block-heading" id="publications-heading" data-chars>Selected publications</h2>
+      <div class="w-track">
+        {% for pub in selected %}{{ paper(pub, loop.index0, svg, site, true) }}{% endfor %}
       </div>
+      <p class="w-note mono">
+        <span class="foot-links">{% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">show more</button>{% endif %}
+        {% if site.social.scholar %}<a class="pub-scholar" href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}</span>
+        <span>* equal contribution</span>
+      </p>
     </div>
-    <div class="w-pubs w-more" id="all-publications" hidden>
-      {% for pub in rest %}{{ paper(pub, selected.length + loop.index0, svg, site) }}{% endfor %}
+    <div class="w-more" id="all-publications" hidden>
+      {% for pub in rest %}{{ paper(pub, selected.length + loop.index0, svg, site, false) }}{% endfor %}
     </div>
   </section>
   <div class="w-paper" id="w-paper" role="dialog" aria-modal="false" aria-label="Publication" hidden>
@@ -97,20 +117,20 @@
   </div>
   <div class="w-leader" aria-hidden="true"></div>
 
-  <section class="ch ch-bg" data-ch="bg" aria-labelledby="background-heading">
-    <h2 class="block-heading" id="background-heading" data-split>Background</h2>
+  <section class="ch ch-bg" data-ch="bg" data-page aria-labelledby="background-heading">
+    <h2 class="block-heading" id="background-heading" data-chars>Background</h2>
     <div class="w-edus">
       {% for edu in education %}
-      <div class="w-edu" data-row data-year="{{ edu.startYear }}">
+      <div class="w-edu">
         <p class="edu-years mono">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}–{{ edu.endYear }}{% endif %}</p>
-        <h3 class="edu-degree" data-split>{{ edu.degree }} {{ edu.field }}</h3>
+        <h3 class="edu-degree">{{ edu.degree }} {{ edu.field }}</h3>
         <p class="edu-meta">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
       </div>
       {% endfor %}
     </div>
   </section>
 
-  <footer class="ch ch-end" data-ch="end">
+  <footer class="ch ch-end" data-ch="end" data-page>
     <div class="name-links">{{ icons.socialIcons(site) }}</div>
     <p class="mono">&copy; {% year %} {{ site.fullName }}</p>
   </footer>

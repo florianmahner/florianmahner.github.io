@@ -31,6 +31,21 @@ export default function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("css");
   eleventyConfig.addPassthroughCopy("js");
 
+  // Self-hosted libraries for the 3D view (/world/): three.js, GSAP
+  // (ScrollTrigger, SplitText), Lenis. ES modules, mapped by the import map
+  // in world.njk. Only the files actually imported are copied.
+  const vendor = {
+    "node_modules/three/build/three.module.min.js": "vendor/three/three.module.min.js",
+    "node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js": "vendor/three/addons/geometries/RoundedBoxGeometry.js",
+    "node_modules/three/examples/jsm/environments/RoomEnvironment.js": "vendor/three/addons/environments/RoomEnvironment.js",
+    "node_modules/lenis/dist/lenis.mjs": "vendor/lenis/lenis.mjs",
+    "node_modules/lenis/dist/lenis.css": "vendor/lenis/lenis.css",
+  };
+  for (const f of ["index", "gsap-core", "CSSPlugin", "ScrollTrigger", "Observer", "SplitText"]) {
+    vendor[`node_modules/gsap/${f}.js`] = `vendor/gsap/${f}.js`;
+  }
+  eleventyConfig.addPassthroughCopy(vendor);
+
   // Self-hosted variable fonts from @fontsource-variable/* — no third-party
   // font CDN. Inter carries wght + opsz; Geist Mono carries wght.
   const fonts = {

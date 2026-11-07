@@ -123,21 +123,32 @@ All motion lives in `js/motion.js`, configured by `background` and `intro` in
 
 ## World view (`/world/`)
 
-An immersive alternative to the homepage, published but not linked and
-`noindex`. Files: `world.njk`, `world.11tydata.js`, `css/world.css`,
-`js/world/world.js` (three.js via the import map, loaded only there).
+An immersive alternative to the homepage, linked from the footer ("3D view";
+hidden on phones for now) and `noindex`. Files: `world.njk`,
+`world.11tydata.js`, `css/world.css`, `js/world/app.js`.
 
-- Real 3D objects float on a fixed canvas behind the content; the camera
-  leans toward the cursor; objects can be grabbed and thrown.
-- About opens the page: the first paragraph alone, then a held second screen
-  where the research text shows first and news.log slides in after, with the
-  objects lining up as markers beside the visible news items (the rest wait
-  far back in space). Three columns from 1480px, two below.
-- Selected publications are a pinned sideways scene (Nature Machine
-  Intelligence first), one paper per step, each with its own object
-  arrangement; Background is a calm centred list.
-- Motion follows activity: full while scrolling or sliding, almost still
-  while reading. Reduced motion gets a plain page.
+Built on open-source libraries, self-hosted under `/vendor/` (copied from
+`node_modules` by `eleventy.config.js`, mapped by the import map in
+`world.njk`): three.js, GSAP (ScrollTrigger, SplitText; free incl. plugins)
+and Lenis. Don't hand-roll scroll code again; extend these.
+
+- One loop: GSAP's ticker. A prioritized read step does the few layout reads
+  first, then GSAP writes, then the 3D update/render. No per-frame
+  `getBoundingClientRect` loops; rows are measured on ScrollTrigger refresh.
+- Desktop (`gsap.matchMedia`, min-width 761px): Lenis smooth wheel scroll;
+  page 2 of About is pinned with two states (research alone → news.log in),
+  switched by a timed animation at the middle of the hold; the paper scene is
+  pinned and scrolling picks the paper, which glides in (never half-way).
+- Phones: real pages via native CSS scroll-snap (`[data-page]`), no Lenis;
+  each page change re-deals the objects in the top part of the screen with a
+  dip into depth; the page's text tilts in. Lighter material/geometry, lower
+  pixel ratio, no antialiasing.
+- Arrangement changes are timed glides (`W.blend`), not scroll-scrubbed.
+  Chapter triggers are created after the pins (pin spacing) — keep that order.
+- Tween `W` with `overwrite: 'auto'`, never `true` (it kills the other
+  property tweens on `W`).
+- Motion follows activity: lively while scrolling/changing, almost still while
+  reading. Reduced motion gets a plain page; boot failure shows text after 3 s.
 - Dev-only experiment pages (not built): `/split/`, `/news-ideas/`,
   `/layout-ideas/`; `?scene=objects` / `?scene=flow` on the homepage are lab
   modes that do nothing unless asked for.

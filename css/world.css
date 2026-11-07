@@ -1,562 +1,153 @@
-/* /world/ — immersive draft. Real 3D objects float on a fixed canvas behind
-   the page; the content scrolls over it as chapters and slides in word by
-   word. Without .world (reduced motion, no JS) it is a plain readable page. */
+/* /world/ — the immersive view. Layout and typography only; all motion is
+   done by js/world/app.js (GSAP ScrollTrigger + SplitText, Lenis, three.js).
+   Without .world (reduced motion, no JS) this is a plain readable page. */
 
-/* the page glides with JS here; the browser's own smooth scrolling would fight it */
-html.world { scroll-behavior: auto; }
-
-#world {
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  display: block; z-index: 0; pointer-events: none;
-}
+/* ---- canvas, header ----------------------------------------------------------------- */
+#world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
 main { position: relative; z-index: 1; }
 
-/* ---- header: the name, small, plus contact --------------------------------- */
 .w-top {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 2;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: 1rem max(var(--gutter), env(safe-area-inset-right)) 1rem max(var(--gutter), env(safe-area-inset-left));
+  position: fixed; top: 0; left: 0; right: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: flex-start; gap: .15rem;
+  padding: .9rem max(var(--gutter), env(safe-area-inset-right)) 1.4rem max(var(--gutter), env(safe-area-inset-left));
+  background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 0%, transparent));
 }
 .w-name { font-size: var(--fs-body); font-weight: 700; letter-spacing: -.02em; }
 .w-name a { color: var(--strong); }
 .w-name a:hover { background: none; }
-.w-top .name-links { display: flex; margin-right: -11px; }
+.w-top .name-links { display: flex; margin-left: -11px; }
+.w-top .w-switch { position: absolute; top: 1.1rem; right: max(var(--gutter), env(safe-area-inset-right)); }
+.view-switch { color: var(--link); }
 
-/* ---- chapters ------------------------------------------------------------------ */
-.ch {
-  min-height: 100vh;
-  padding: 22vh max(var(--gutter), env(safe-area-inset-right)) 12vh max(var(--gutter), env(safe-area-inset-left));
-  display: flex; flex-direction: column; justify-content: center;
+/* while the script boots, text that will animate in waits hidden */
+.world-boot main [data-lines], .world-boot main [data-chars], .world-boot .w-col-news { visibility: hidden; }
+
+/* ---- chapters ------------------------------------------------------------------------- */
+.ch { padding: 0 max(var(--gutter), env(safe-area-inset-right)) 0 max(var(--gutter), env(safe-area-inset-left)); }
+.w-line { padding-bottom: .08em; } /* room for descenders inside the line masks */
+
+/* About, page 1: the opening paragraph alone */
+.pg-intro { min-height: 100vh; display: flex; align-items: center; }
+.w-lead { width: min(100%, 64rem); }
+.w-lead p { font-size: var(--fs-heading); font-weight: 600; line-height: 1.22; letter-spacing: -.025em; color: var(--strong); }
+
+/* About, page 2: research text, then news.log on the right (held on desktop) */
+.pg-research {
+  min-height: 100vh; display: grid; align-content: center; align-items: start;
+  grid-template-columns: minmax(0, 40rem) minmax(0, 27rem); justify-content: space-between; gap: 3rem;
+  padding: 7rem 0 3rem;
 }
-/* Everything sits in the middle of the screen; the objects move around it. */
-.ch { align-items: center; }
-.ch > * { width: min(100%, 44rem); margin-inline: auto; }
-.block-heading { text-align: center; }
-
-.w-about p { color: var(--ink); max-width: 36rem; }
-.w-about p + p { margin-top: 1rem; }
-.w-about p:first-child {
-  font-size: var(--fs-heading); font-weight: 600; line-height: 1.22; letter-spacing: -.025em;
-  color: var(--strong); max-width: 30em; margin-bottom: 2.25rem;
-}
-/* About keeps its left-aligned column */
-.ch-about { align-items: flex-start; }
-.ch-about > * { margin-inline: 0; }
-@media (min-width: 961px) { .ch-about > * { width: min(100%, 56rem); } }
-
-.w-news { width: min(100%, 26rem); }
-
-.ch-pubs .block-heading, .ch-bg .block-heading { margin-bottom: 2.5rem; }
-.w-pubs, .w-edus { display: flex; flex-direction: column; gap: 2.75rem; }
-.w-pub .pub-venue, .w-edu .edu-years { color: var(--quiet); }
-.w-pub .pub-title { font-size: var(--fs-lead); font-weight: 650; line-height: 1.3; letter-spacing: -.015em; margin: .35rem 0 .45rem; color: var(--strong); }
-.w-pub .pub-authors { font-size: var(--fs-small); color: var(--muted); max-width: 38rem; }
-.w-links { display: flex; margin: .4rem 0 0 -7px; }
-.w-links .pub-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; color: var(--ink); }
-.w-note { margin-top: 2.5rem; color: var(--quiet); }
-.w-edu .edu-degree { font-size: var(--fs-lead); font-weight: 650; letter-spacing: -.015em; margin: .3rem 0 .3rem; color: var(--strong); }
-.w-edu .edu-meta { font-size: var(--fs-small); color: var(--muted); }
-
-.ch-end { align-items: center; text-align: center; gap: .75rem; color: var(--footer); }
-.ch-end > * { margin-right: 0 !important; width: auto; }
-
-/* ---- motion (only in world mode) --------------------------------------------------- */
-/* Words sit in a clipping box and slide up into it. */
-.world [data-split] .wd { display: inline-block; overflow: clip; vertical-align: top; padding-bottom: .14em; margin-bottom: -.14em; }
-.world [data-split] .wd > span {
-  display: inline-block; transform: translateY(110%);
-  transition: transform .95s cubic-bezier(.2, .75, .1, 1) var(--d, 0ms);
-}
-.world [data-split].in .wd > span { transform: none; }
-
-.world [data-rise] {
-  opacity: 0; transform: translateY(22px);
-  transition: opacity .8s ease var(--d, 0ms), transform .9s cubic-bezier(.2, .75, .1, 1) var(--d, 0ms);
-}
-.world [data-rise].in { opacity: 1; transform: none; }
-
-/* In the lists, the row you are reading is fully there; the rest step back. */
-.world [data-row] { transition: opacity .45s ease, transform .6s cubic-bezier(.2, .75, .1, 1); }
-.world.rows-live [data-row] { opacity: .38; }
-.world.rows-live [data-row].on { opacity: 1; transform: translateX(10px); }
-
-.world .w-top { transition: opacity .6s ease .2s; }
-.world:not(.world-ready) .w-top { opacity: 0; }
-
-/* ---- more motion ----------------------------------------------------------------- */
-/* Section headings: letters roll up out of a slot, one after another. */
-.world [data-chars] .wd > span { transform: none; transition: none; }
-.world [data-chars] .chr { display: inline-block; transform: translateY(115%) rotate(8deg); transform-origin: 0 100%;
-  transition: transform .9s cubic-bezier(.2, .8, .1, 1) var(--d, 0ms); }
-.world [data-chars].in .chr { transform: none; }
-
-/* news.log is a little desktop: a file icon, a cursor that double-clicks it,
-   a window that opens out of the icon, and the log typing itself out. */
-.w-desk { position: relative; width: min(100%, 36rem); }
-.w-file, .w-cursor { display: none; }
-.world .w-desk { padding-left: 7.5rem; min-height: 24rem; }
-.world .w-file {
-  display: flex; flex-direction: column; align-items: center; gap: .35rem;
-  position: absolute; left: 0; top: 0; width: 5.5rem; padding: .5rem .25rem;
-  color: var(--ink); opacity: 0; transform: translateY(10px);
-  transition: opacity .5s ease, transform .6s cubic-bezier(.2, .8, .1, 1);
-}
-.world .w-file span { padding: 1px 5px; }
-.world .w-desk.go .w-file { opacity: 1; transform: none; }
-.world .w-file.sel span { background: var(--ink); color: var(--card); }
-.world .w-file.sel svg { color: var(--link); }
-.world .w-file.press { transform: scale(.94); transition-duration: .08s; }
-.world .w-cursor {
-  display: block; position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none;
-  opacity: 0; transform: translate(var(--cx, 420px), var(--cy, 260px));
-  transition: transform .85s cubic-bezier(.45, 0, .2, 1), opacity .3s ease;
-}
-.world .w-desk.go .w-cursor { opacity: 1; }
-.world .w-desk.done .w-cursor { opacity: 0; }
-.world .w-news {
-  transform-origin: -4.5rem 1.6rem;
-  transform: scale(.06); opacity: 0;
-  transition: transform .55s cubic-bezier(.2, .9, .2, 1.05), opacity .25s ease;
-}
-.world .w-desk.open .w-news { transform: none; opacity: 1; }
-/* typewriter: letters appear one by one; a block caret follows the last one */
-.world .w-news .tc { visibility: hidden; }
-.world .w-news .tc.on { visibility: visible; }
-.world .w-news .caret {
-  display: inline-block; width: .55em; height: 1.05em; margin-left: 1px; vertical-align: -.15em;
-  background: var(--ink); animation: w-blink 1s steps(1) infinite;
-}
-@keyframes w-blink { 50% { opacity: 0; } }
-/* Selected publications: the section holds still (sticky) while vertical
-   scrolling slides the papers past sideways (--tx from JS). Each paper is
-   one centred scene with its title large. */
-.ch-pubs { padding-left: 0; padding-right: 0; padding-top: 0; }
-.ch-pubs > .w-hscroll { width: 100%; }
-.world .w-hscroll { height: calc(var(--n) * 90vh + 40vh); }
-.world .w-hpin { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 3rem; }
-.world .w-track { display: flex; flex-direction: row; gap: 0; transform: translate3d(var(--tx, 0px), 0, 0); will-change: transform; }
-.world .w-track .w-pub { flex: 0 0 100vw; padding: 0 max(var(--gutter), 8vw); align-items: center; text-align: center; }
-.world .w-track .w-links { justify-content: center; margin-left: 0; }
-.world .w-track .pub-authors { margin-inline: auto; }
-.world.rows-live .w-track .w-pub.on { transform: none; }
-/* the papers you are not on lean back as they slide away */
-.world .w-track .w-pub { transition: opacity .5s ease, filter .5s ease; }
-.world.rows-live .w-track .w-pub:not(.on) { filter: blur(2px); }
-.w-selected .w-pub { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; }
-.w-more, .ch-pubs > .w-note { width: min(100% - 2 * var(--gutter), 44rem); margin-inline: auto; }
-.w-note { justify-content: center; }
-.w-selected .pub-title { font-size: var(--fs-heading); line-height: 1.14; letter-spacing: -.03em; max-width: 17em; margin: .6rem 0 .9rem; }
-.w-selected .pub-authors { max-width: 34rem; }
-.w-more { margin-top: 2.5rem; }
-.w-note { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: baseline; }
-.w-note .text-button { color: var(--link); font: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-
-/* Every object is a paper: hovering one shows a hand, clicking opens its window
-   right where you clicked. */
-.world.obj-hover, .world.obj-hover body { cursor: grab; }
-.world.obj-grab, .world.obj-grab body { cursor: grabbing; user-select: none; }
-.w-paper { display: none; }
-/* A clicked paper is a note pinned in the world: no box, just text on a soft
-   halo, tied to its object by a thin line that draws itself. */
-.w-leader { display: none; }
-.world .w-paper {
-  display: block; position: fixed; z-index: 4; width: min(25rem, calc(100vw - 32px));
-  padding: 1rem 1.25rem 1rem 1.25rem;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 94%, transparent) 72%, transparent);
-  border-left: 1.5px solid var(--ink);
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path .7s cubic-bezier(.7, 0, .15, 1) .18s;
-}
-.world .w-paper[hidden] { display: none; }
-.world .w-paper.open { clip-path: inset(-20px -20px -20px -2px); }
-.world .w-leader {
-  display: block; position: fixed; z-index: 4; height: 1.5px; background: var(--ink);
-  transform-origin: 0 50%; transform: translate(var(--lx), var(--ly)) rotate(var(--la)) scaleX(0);
-  transition: transform .35s cubic-bezier(.6, 0, .2, 1); pointer-events: none;
-}
-.world .w-leader.open { transform: translate(var(--lx), var(--ly)) rotate(var(--la)) scaleX(1); }
-.world .w-leader::before { content: ''; position: absolute; left: -4px; top: -3.25px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-.w-paper-venue { color: var(--quiet); }
-.w-paper .w-close { top: .9rem; right: .2rem; }
-.w-paper .w-pub { min-height: 0; display: block; opacity: 1 !important; transform: none !important; text-align: left; padding: 0; }
-.w-paper .pub-venue { display: none; }
-.w-paper .pub-title { font-size: var(--fs-lead); margin-top: .3rem; }
-.w-paper .w-links { justify-content: flex-start; margin-left: -7px; }
-
-/* Background: each step has its year written large and hollow behind it. */
-.w-edus { gap: 0; }
-.w-edu { position: relative; padding: 9vh 0; text-align: center; }
-.w-edu .edu-meta { max-width: 30rem; margin-inline: auto; }
-.world .w-edu::before {
-  content: attr(data-year); position: absolute; left: 50%; top: 50%; z-index: -1;
-  font-family: var(--mono); font-size: var(--fs-name); font-weight: 500; letter-spacing: -.02em;
-  color: transparent; -webkit-text-stroke: 1px var(--quiet);
-  transform: translate(-50%, -50%) scale(1.6); opacity: 0;
-  transition: opacity 1s ease, transform 1.4s cubic-bezier(.2, .8, .1, 1);
-}
-.world .w-edu.on::before { opacity: .35; transform: translate(-50%, -50%) scale(2.2); }
-.world.rows-live .w-edu.on { transform: none; }
-
-/* the window can be dragged by its bar (--wx/--wy), closed and reopened */
-.world .w-desk.open .w-news { transform: translate(var(--wx, 0px), var(--wy, 0px)); }
-.world .w-news.dragging { transition: none; box-shadow: var(--shadow-lift); }
-.world .w-news .card-bar { cursor: grab; user-select: none; padding-right: 2.5rem; }
-.world .w-news.dragging .card-bar { cursor: grabbing; }
-.world .w-file { cursor: default; user-select: none; }
-.w-close { display: none; }
-.world .w-close {
-  display: block; position: absolute; top: .45rem; right: .6rem; width: 14px; height: 14px;
-  border: 1.5px solid var(--line); background: var(--card); cursor: pointer; padding: 0;
-}
-.world .w-close::after { content: ''; position: absolute; inset: -15px; } /* 44px tap area */
-.world .w-close:hover { background: var(--ink); }
-/* zoom outlines between icon and window */
-.w-zoom { position: absolute; z-index: 2; border: 1.5px solid var(--ink); pointer-events: none; opacity: 0; animation: w-zoom .5s ease-out forwards; }
-@keyframes w-zoom { 0% { opacity: 0; } 25% { opacity: .9; } 100% { opacity: 0; } }
-/* a log file has line numbers; each one appears when its line starts typing */
-.world .w-news .news-list { counter-reset: ln; }
-.world .w-news .news-list p { counter-increment: ln; position: relative; padding-left: 2.1rem; }
-.world .w-news .news-list p::before {
-  content: counter(ln); position: absolute; left: 0; width: 1.4rem; text-align: right;
-  font-family: var(--mono); font-size: var(--fs-mono); color: var(--quiet); opacity: 0; transition: opacity .2s;
-}
-.world .w-news .news-list p.typed::before { opacity: .7; }
-
-@media (max-width: 640px) {
-  .world .w-desk { padding-left: 0; padding-top: 6.5rem; }
-  .world .w-news { transform-origin: 2.75rem -3.5rem; }
-}
-.world [data-stream] { opacity: 0; transform: translateX(46px); filter: blur(6px);
-  transition: opacity .7s ease var(--d, 0ms), transform 1s cubic-bezier(.2, .8, .1, 1) var(--d, 0ms), filter .8s ease var(--d, 0ms); }
-.world [data-stream].in { opacity: 1; transform: none; filter: none; }
-
-/* List rows slide in from the left. */
-.world .w-pub > [data-rise], .world .w-edu > [data-rise] { transform: translateX(-26px); }
-.world .w-pub > [data-rise].in, .world .w-edu > [data-rise].in { transform: none; }
-
-/* Chapters behave like pages: as one scrolls away it sinks back, softens and
-   fades (--leave 0..1, set from scroll), while the next one rises in. Fast
-   scrolling also bends the text a touch, as if it had weight. */
-.world .ch > * {
-  transform: skewY(var(--skew, 0deg)) translateY(calc(var(--leave, 0) * -6vh)) scale(calc(1 - var(--leave, 0) * .06));
-  opacity: calc(1 - var(--leave, 0) * .9);
-  filter: blur(calc(var(--leave, 0) * 5px));
-  transform-origin: 0 50%;
-}
-.world .icon-link { transition: transform .35s cubic-bezier(.2, .8, .1, 1); }
-
-@media (max-width: 640px) {
-  .ch { padding-top: 16vh; padding-bottom: 10vh; }
-  .w-pubs, .w-edus { gap: 2.25rem; }
-  .world.rows-live [data-row].on { transform: none; }
+.w-research p { font-size: var(--fs-lead); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; color: var(--ink); }
+.w-research p + p, .w-sub + .w-sub { margin-top: 1.25rem; }
+@media (min-width: 1480px) {
+  .pg-research { grid-template-columns: minmax(0, 1fr) minmax(0, 23rem); gap: 3.5rem; }
+  .w-research { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: start; }
+  .w-sub + .w-sub { margin-top: 0; }
 }
 
-/* ---- news.log on a 3D laptop --------------------------------------------------------- */
-/* The block is held in place while scrolling opens the lid and types the log;
-   JS fits the window onto the laptop screen every frame. */
-.world .ch-news { padding: 0; }
-.world .ch-news > .w-nscroll { width: 100%; height: 280vh; }
-.world .w-npin { position: sticky; top: 0; height: 100vh; overflow: hidden; }
-.world .w-npin .w-news {
-  position: absolute; left: 0; top: 0; margin: 0;
-  display: flex; flex-direction: column;
-  transition: none; transform-origin: 0 0; opacity: 0; clip-path: none;
-}
-.world .w-npin .w-news .news-list { flex: 1; overflow: hidden; }
-.world .w-news .news-list p::before { opacity: .7; }
-
-/* ---- Selected publications: nothing gets clipped ------------------------------------- */
-.world .w-hpin { justify-content: safe center; gap: 2rem; padding: 4.5rem 0 2rem; }
-.world .w-track .w-pub { min-height: 0; }
-
-/* ---- Background: a quiet timeline ------------------------------------------------------ */
-/* One thin line with a dot per step; the step you are on fills its dot. */
-.w-edus { position: relative; width: min(100%, 36rem); margin-inline: auto; gap: 0; }
-.w-edu { text-align: left; padding: 1.4rem 0 1.4rem 2.25rem; border-left: 1.5px solid var(--line); }
-.w-edu .edu-meta { margin-inline: 0; }
-.world .w-edu::before {
-  content: ''; z-index: 1; left: -6px; top: 1.75rem; width: 10.5px; height: 10.5px;
-  border-radius: 50%; border: 1.5px solid var(--line); background: var(--bg);
-  font-size: 0; -webkit-text-stroke: 0; opacity: 1; transform: none;
-  transition: background .3s ease, transform .4s cubic-bezier(.2, .8, .1, 1);
-}
-.world .w-edu.on::before { background: var(--ink); transform: scale(1.25); opacity: 1; }
-.w-edu:first-child { padding-top: .25rem; }
-.w-edu:first-child::before { top: .6rem; }
-
-/* the publications heading sits centred above the paper scene */
-.world .w-hpin > .block-heading { align-self: stretch; width: 100%; text-align: center; margin: 0; padding: 0 var(--gutter); }
-
-/* ---- About: one paragraph per screen, large, lit as you read -------------------------- */
-.w-step { min-height: 100vh; display: flex; align-items: center; }
-.world .ch-about { padding-top: 0; padding-bottom: 0; }
-.world .ch-about > .w-about { width: min(100%, 60rem); }
-.world .w-about p, .world .w-about p:first-child {
-  font-size: var(--fs-heading); font-weight: 600; line-height: 1.2; letter-spacing: -.025em;
-  max-width: 24em; margin: 0; color: var(--strong);
-}
-.world [data-scrub] .wd > span { transform: none; transition: none; }
-.world [data-scrub] .wd { opacity: .16; transition: opacity .35s ease; }
-.world [data-scrub] .wd.lit { opacity: 1; }
-
-/* the held scenes never shrink or blur away (it would shift them sideways) */
-.world .ch > .w-hscroll, .world .ch > .w-nscroll { transform: none; opacity: 1; filter: none; }
-
-/* ---- news.log printed on a paper strip ------------------------------------------------- */
-.world .w-npin .w-news {
-  background: transparent; border: 0; box-shadow: none; clip-path: none;
-  overflow: hidden; justify-content: flex-end; padding: 0 1.1rem .9rem;
-}
-.world .w-npin .w-news .card-bar { background: none; border: 0; padding: .9rem 0 .5rem; text-align: center; color: var(--quiet); cursor: default; }
-.world .w-npin .w-news .news-list { flex: 0 0 auto; overflow: visible; }
-.world .w-npin .w-news .news-list p::before { display: none; }
-.world .w-npin .w-news .news-list p { padding-left: 0; }
-.world .w-news .tc { display: none; visibility: visible; }
-.world .w-news .tc.on { display: inline; }
-.world .w-news .news-list p:not(:has(.tc.on)) { display: none; }
-.world .w-news .w-close { display: none; }
-
-/* ---- tighter rhythm --------------------------------------------------------------------- */
-/* The first paragraph owns the opening screen; the rest follow closer. */
-.w-step { min-height: 72vh; }
-.w-step:first-child { min-height: 100vh; }
-.world .ch { min-height: 0; padding-top: 12vh; padding-bottom: 12vh; }
-.world .ch-about, .world .ch-news, .world .ch-pubs { padding-top: 0; padding-bottom: 0; }
-.world .ch-news > .w-nscroll { height: 220vh; }
-.world .w-hscroll { height: calc(var(--n) * 70vh + 30vh); }
-
-/* The closing line of About is an invitation: same words, quieter size, with
-   "reach out" as an email link and the contact icons right under it. */
-.w-step.w-reach { min-height: 56vh; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1rem; }
-.world .w-about .w-reach p { font-size: var(--fs-lead); font-weight: 500; letter-spacing: -.01em; color: var(--ink); }
-.w-reach .name-links { display: flex; margin-left: -11px; }
-
-/* printed log: text is laid out from the top of the strip and revealed as the
-   paper feeds out; once the strip is at full height, the text slides up */
-.world .w-npin .w-news { justify-content: flex-start; }
-.world .w-npin .w-news > * { transform: translateY(calc(-1 * var(--feed, 0px))); }
-
-/* the fixed header gets a soft fade of page colour so text slides under it cleanly */
-.w-top { background: linear-gradient(var(--bg) 55%, color-mix(in srgb, var(--bg) 0%, transparent)); }
-
-/* About in two screens: the opening paragraph, then the two research
-   paragraphs side by side (the invitation ends the second column). */
-.world .ch-about > .w-about { width: min(100%, 76rem); }
-.w-step-two { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-content: center; align-items: start; }
-.world .w-about .w-step-two p { font-size: var(--fs-lead); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; max-width: none; }
-.w-col p + p { margin-top: 1.25rem; }
-@media (max-width: 860px) { .w-step-two { grid-template-columns: 1fr; align-content: center; } }
-
-/* papers in the sideways scene are moved and faded by JS frame by frame;
-   no CSS transitions or blur fighting it */
-.world .w-track .w-pub, .world .w-track .w-pub > * { transition: none !important; filter: none !important; }
-.world.rows-live .w-track .w-pub { opacity: 1; }
-
-/* About: one shared column for both screens, so their edges line up, and the
-   second screen follows closely instead of a full empty screen later */
-.world .ch-about > .w-about { width: min(100%, 64rem); margin-inline: 0; }
-.world .w-about .w-step:first-child p { max-width: none; }
-.w-step:first-child { min-height: 92vh; }
-.w-step-two { min-height: 0; padding: 8vh 0 14vh; align-content: start; }
-
-/* reading effect: each line slides up and is fully there, nothing half-faded */
-.world [data-scrub] .wd { opacity: 0; transform: translateY(.35em); transition: opacity .55s ease, transform .7s cubic-bezier(.2, .8, .1, 1); }
-.world [data-scrub] .wd.lit { opacity: 1; transform: none; }
-
-/* second About screen: research on the left, news.log on the right */
-.world .ch-about > .w-about { width: min(100%, 76rem); }
-.w-step-two { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; }
-.w-col-news .w-news { width: 100%; }
-.world .w-col-news .w-news .news-list { max-height: 26rem; overflow: auto; overscroll-behavior: contain; }
-.world .w-col-news .w-news .tc { display: inline; visibility: hidden; }
-.world .w-col-news .w-news .tc.on { visibility: visible; }
-.world .w-col-news .w-news .news-list p:not(:has(.tc.on)) { display: block; }
-.world .w-col-news .w-news { transform: none; opacity: 1; clip-path: none; position: static; display: block; }
-.world .w-col-news .w-news .card-bar { opacity: 1; transform: none; }
-.world .w-about .w-col p + p { margin-top: 1.25rem; }
-
-/* second About screen spans the page, so news.log sits at the right edge */
-.world .ch-about > .w-about { width: 100%; max-width: none; }
-.w-step-two { grid-template-columns: minmax(0, 44rem) minmax(0, 25rem); justify-content: space-between; }
-
-/* news.log as a file: a sheet of paper floating in 3D with a folded corner,
-   a filename tab, soft layered shadow; it leans toward the cursor (--rx/--ry) */
-.w-col-news { perspective: 1400px; }
-.world .w-col-news .w-news {
-  position: relative; border: 0; background: var(--card);
-  background-image: linear-gradient(180deg, color-mix(in srgb, var(--card) 92%, var(--bg)) 0%, var(--card) 18%, var(--card) 82%, color-mix(in srgb, var(--card) 94%, var(--bg)) 100%);
-  box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 18px -6px rgba(20,24,40,.16), 0 30px 60px -20px rgba(20,24,40,.22);
-  transform: rotateY(var(--ry, -9deg)) rotateX(var(--rx, 4deg)) !important;
-  transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2, .8, .1, 1) !important;
-  padding: 2.4rem 1.6rem 1.4rem; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%) !important;
-}
-/* the folded corner */
-.world .w-col-news .w-news::after {
-  content: ''; position: absolute; top: 0; right: 0; width: 26px; height: 26px;
-  background: linear-gradient(225deg, transparent 50%, color-mix(in srgb, var(--bg) 70%, var(--quiet)) 50%);
-  box-shadow: -2px 2px 4px rgba(0,0,0,.08);
-}
-/* filename, typed at the top of the page like a header */
-.world .w-col-news .w-news .card-bar {
-  position: absolute; top: .9rem; left: 1.6rem; padding: 0; border: 0; background: none; color: var(--quiet);
-}
-.world .w-col-news .w-news .news-list { max-height: 24rem; padding: 0; }
-@media (prefers-color-scheme: dark) {
-  .world .w-col-news .w-news { box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 20px 50px -16px rgba(0,0,0,.7); }
-}
-.world .w-col-news .w-news { padding-top: 2.9rem; }
-/* the log keeps its own small type even though it now lives inside About */
-.world .w-about .w-news p { font-size: var(--fs-small); font-weight: 400; line-height: 1.55; letter-spacing: 0; color: var(--ink); max-width: none; }
-.world .w-about .w-news p + p { margin-top: .7rem; }
-.world .w-about .w-news .news-year { font-family: var(--mono); font-size: var(--fs-mono); color: var(--quiet); }
-.world .w-about .w-news strong { color: var(--strong); }
-
-/* ---- first screen: back to its approved line width ------------------------------------- */
-.world .w-about .w-step:first-child p { max-width: 64rem; }
-
-/* ---- second screen: research | central theme + invitation | news.log ----------------- */
-.w-step-two {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 23rem);
-  justify-content: stretch; gap: clamp(2rem, 3.5vw, 3.5rem);
-}
-@media (max-width: 1200px) {
-  .w-step-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .w-col-news { grid-column: 2; }
-}
-@media (max-width: 860px) {
-  .w-step-two { grid-template-columns: 1fr; }
-  .w-col-news { grid-column: auto; }
-}
-
-/* ---- news.log: the site's own window again, no line numbers --------------------------- */
-.world .w-col-news .w-news {
-  position: relative; z-index: 0;
-  background: var(--card); background-image: none;
-  border: var(--border); box-shadow: var(--shadow);
-  padding: 0; clip-path: none !important;
-  transform: translateX(var(--carr, 0px)) !important;
-  transition: transform .16s ease-out !important;
-  margin-bottom: -16px; /* the page goes down into the roller */
-}
-.world .w-col-news .w-news::after { content: none; }
-.world .w-col-news .w-news .card-bar {
-  position: static; padding: .45rem .85rem; background: var(--bar);
-  border-bottom: var(--border); color: var(--ink); text-align: left;
-}
-.world .w-col-news .w-news .news-list { padding: .9rem 1rem 1.6rem; max-height: 22rem; }
-.world .w-news .news-list p::before { content: none; display: none; }
-.world .w-news .news-list p { padding-left: 0; }
-
-/* ---- the typewriter under it --------------------------------------------------------------- */
-.w-type { display: none; }
-.world .w-type { display: block; position: relative; z-index: 1; width: calc(100% + 24px); margin: 0 -12px; height: auto; overflow: visible; }
-.w-type .tw-fill { fill: var(--card); stroke: var(--line); stroke-width: 1.5; stroke-linejoin: round; }
-.w-type .tw-shadow { fill: var(--shadow-color); }
-.w-type .tw-line { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-linecap: round; }
-.w-type .tw-key { fill: var(--bar); stroke: var(--line); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; transition: transform .08s ease-out; }
-.w-type .tw-key.hit { transform: translateY(2.5px) scale(.92); fill: var(--ink); }
-.w-type .w-carriage { transform: translateX(var(--carr, 0px)); transition: transform .16s ease-out; }
-
-/* ---- Background: a calm typographic list, no line, no dots ------------------------------ */
-/* years small in mono, the degree large, the institution below; the step you
-   are on is fully there and the others step back, like the papers */
-.w-edus { width: min(100%, 40rem); margin-inline: auto; display: flex; flex-direction: column; gap: 3.25rem; }
-.w-edu, .w-edu:first-child { border-left: 0; padding: 0; text-align: center; }
-.world .w-edu::before, .world .w-edu:first-child::before { content: none; display: none; }
-.w-edu .edu-years { margin-bottom: .35rem; }
-.w-edu .edu-degree { font-size: var(--fs-heading); line-height: 1.12; letter-spacing: -.03em; margin: 0 0 .5rem; }
-.w-edu .edu-meta { margin-inline: auto; }
-.world.rows-live .w-edu { opacity: .32; }
-.world.rows-live .w-edu.on { opacity: 1; }
-
-/* header: the name at the very top, the contact icons in a row below it */
-.w-top { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: .15rem; padding-top: .9rem; padding-bottom: 1.4rem; }
-.w-top .name-links { margin: 0 0 0 -11px; }
-
-/* ---- news.log as a calm, readable list; 3D objects line up beside the items ---------- */
-.world .w-col-news .w-news {
-  border: 0; box-shadow: none; background: none; padding: 0; margin: 0;
-  transform: none !important; transition: none !important;
-}
-.world .w-col-news .w-news .card-bar {
-  position: static; background: none; border: 0; padding: 0 0 1rem 3.6rem; color: var(--quiet);
-}
-.world .w-col-news .w-news .news-list { padding: 0; max-height: none; overflow: visible; }
-.world .w-col-news .w-news .news-list p { padding-left: 3.6rem; }
-.world .w-col-news .w-news .news-item { min-height: 2.6rem; }
-.world .w-about .w-news p + p { margin-top: 1rem; }
-.world .w-col-news .tc { visibility: visible !important; display: inline !important; }
-.world .w-col-news .caret { display: none; }
-.world .w-col-news .w-type { display: none; }
-
-.world .w-col-news .news-more { margin: 1rem 0 0 3.6rem; }
-.world .w-col-news .news-more { display: inline-block; width: auto; background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; }
-
-/* the note sits at the foot of the paper scene; Background follows closer */
-.world .w-hpin > .w-note { margin: 0 auto; }
-.world .ch-bg { padding-top: 4vh; }
-
-/* news.log: a scroll window with soft edges; objects follow the items inside it */
-.world .w-col-news .w-news .news-list {
-  max-height: min(58vh, 34rem); overflow-y: auto; overscroll-behavior: contain;
+/* news.log: a calm list in a soft-edged scroll window; 3D objects line up in
+   front of the items (the left padding is their space) */
+.w-news-label { color: var(--quiet); padding: 0 0 1rem 3.6rem; }
+.w-news .news-list {
+  position: relative; max-height: min(58vh, 34rem); overflow-y: auto; overscroll-behavior: contain;
   padding: .6rem .4rem 2.2rem 0; scrollbar-width: thin; scrollbar-color: var(--quiet) transparent;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.4rem, #000 calc(100% - 2.6rem), transparent 100%);
           mask-image: linear-gradient(to bottom, transparent 0, #000 1.4rem, #000 calc(100% - 2.6rem), transparent 100%);
 }
+.w-news .news-year { font-family: var(--mono); font-size: var(--fs-mono); color: var(--quiet); padding: 0 0 0 3.6rem; margin: .4rem 0 .6rem; }
+.w-news .news-item { font-size: var(--fs-small); line-height: 1.55; color: var(--ink); padding: 0 0 0 3.6rem; min-height: 2.6rem; margin-bottom: 1rem; }
+.w-news .news-item strong { color: var(--strong); }
 
-/* second screen: two calm columns, research left, news.log right */
-.w-step-two { grid-template-columns: minmax(0, 40rem) minmax(0, 28rem); justify-content: space-between; }
-@media (max-width: 1200px) { .w-step-two { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); } .w-col-news { grid-column: auto; } }
-@media (max-width: 860px) { .w-step-two { grid-template-columns: 1fr; } }
+/* ---- Selected publications: held while papers slide past sideways (desktop) ---------------- */
+.ch-pubs { padding-left: 0; padding-right: 0; }
+.w-hpin { height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 2rem; padding: 4.5rem 0 2rem; }
+.w-hpin > .block-heading { text-align: center; padding: 0 var(--gutter); }
+.w-track { display: flex; will-change: transform; }
+.w-track .w-pub { flex: 0 0 100vw; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 max(var(--gutter), 8vw); }
+.w-pub .pub-venue { color: var(--quiet); }
+.w-pub .pub-title { font-size: var(--fs-heading); font-weight: 650; line-height: 1.14; letter-spacing: -.03em; max-width: 17em; margin: .6rem 0 .9rem; color: var(--strong); }
+.w-pub .pub-authors { font-size: var(--fs-small); color: var(--muted); max-width: 34rem; }
+.w-links { display: flex; justify-content: center; margin-top: .4rem; }
+.w-links .pub-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; color: var(--ink); }
+.w-note { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem 1.5rem; align-items: baseline; color: var(--quiet); padding: 0 var(--gutter); }
+.w-note .text-button { color: var(--link); font: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.foot-links { display: inline-flex; gap: 1.5rem; align-items: baseline; }
+.w-more { width: min(100% - 2 * var(--gutter), 44rem); margin: 3rem auto 0; display: flex; flex-direction: column; gap: 2.5rem; }
+.w-more .w-pub { align-items: flex-start; text-align: left; }
+.w-more .pub-title { font-size: var(--fs-lead); }
+.w-more .w-links { justify-content: flex-start; margin-left: -7px; }
 
-/* large desktops: three columns again (research flows into two, news.log third) */
-@media (min-width: 1480px) {
-  .w-step-two { grid-template-columns: minmax(0, 1fr) minmax(0, 23rem); gap: clamp(2rem, 3.5vw, 3.5rem); }
-  .w-step-two > .w-col:first-child { columns: 2; column-gap: clamp(2rem, 3.5vw, 3.5rem); }
-  .world .w-about .w-step-two > .w-col:first-child p { break-inside: avoid; }
-  .world .w-about .w-step-two > .w-col:first-child p:nth-child(2) { break-before: column; margin-top: 0; }
+/* ---- Background: a calm centred list ------------------------------------------------------- */
+.ch-bg { padding-top: 14vh; padding-bottom: 10vh; }
+.ch-bg .block-heading { text-align: center; margin-bottom: 2.5rem; }
+.w-edus { width: min(100%, 40rem); margin-inline: auto; display: flex; flex-direction: column; gap: 3.25rem; }
+.w-edu { text-align: center; transition: opacity .45s ease; }
+.w-edu .edu-years { color: var(--quiet); margin-bottom: .35rem; }
+.w-edu .edu-degree { font-size: var(--fs-heading); font-weight: 650; line-height: 1.12; letter-spacing: -.03em; margin-bottom: .5rem; color: var(--strong); }
+.w-edu .edu-meta { font-size: var(--fs-small); color: var(--muted); max-width: 30rem; margin-inline: auto; }
+.rows-live .w-edu { opacity: .32; }
+.rows-live .w-edu.on { opacity: 1; }
+
+/* ---- end ----------------------------------------------------------------------------------- */
+.ch-end { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .75rem; padding-bottom: 3rem; color: var(--footer); }
+
+/* ---- objects you can grab; a paper note pinned beside its object ------------------------------ */
+.world.obj-hover, .world.obj-hover body { cursor: grab; }
+.world.obj-grab, .world.obj-grab body { cursor: grabbing; user-select: none; }
+.w-paper, .w-leader { display: none; }
+.world .w-paper {
+  display: block; position: fixed; z-index: 4; width: min(25rem, calc(100vw - 32px)); padding: 1rem 1.25rem;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 94%, transparent) 72%, transparent);
+  border-left: 1.5px solid var(--ink); clip-path: inset(0 100% 0 0); transition: clip-path .7s cubic-bezier(.7, 0, .15, 1) .18s;
 }
-
-/* the second screen is held in a taller stage while research and news play in */
-.world .w-stage { height: 220vh; }
-.world .w-stage > .w-step-two { position: sticky; top: 0; height: 100vh; min-height: 0; padding: 0; align-content: center; }
-.world .w-step-two > .w-col { will-change: transform, opacity; }
-
-.w-top .w-switch { position: absolute; top: 1.1rem; right: max(var(--gutter), env(safe-area-inset-right)); }
-
-/* ---- phones ---------------------------------------------------------------------------- */
-/* The objects sit on a shelf along the bottom edge (drawn above a soft band of
-   page colour, so they never cover text); the held second screen becomes a
-   normal scroll; the first paragraph fills the opening screen. */
-@media (max-width: 760px) {
-  .world #world { z-index: 3; }
-  .world .w-top { z-index: 4; }
-  .world body::after {
-    content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: 104px; z-index: 2; pointer-events: none;
-    background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 0%, transparent), var(--bg) 58%);
-  }
-  .world main { padding-bottom: 96px; }
-  .world .w-step:first-child { min-height: 100svh; }
-  .world .w-stage { height: auto; }
-  .world .w-stage > .w-step-two { position: static; height: auto; padding: 6vh 0 10vh; gap: 3rem; }
-  .world .w-hpin > .w-note { flex-wrap: wrap; justify-content: center; gap: .4rem 1.25rem; padding: 0 16px; width: 100%; }
+.world .w-paper[hidden] { display: none; }
+.world .w-paper.open { clip-path: inset(-20px -20px -20px -2px); }
+.world .w-leader {
+  display: block; position: fixed; z-index: 4; height: 1.5px; background: var(--ink); pointer-events: none;
+  transform-origin: 0 50%; transform: translate(var(--lx), var(--ly)) rotate(var(--la)) scaleX(0); transition: transform .35s cubic-bezier(.6, 0, .2, 1);
 }
+.world .w-leader.open { transform: translate(var(--lx), var(--ly)) rotate(var(--la)) scaleX(1); }
+.world .w-leader::before { content: ''; position: absolute; left: -4px; top: -3.25px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.w-paper-venue { color: var(--quiet); }
+.world .w-close { display: block; position: absolute; top: .9rem; right: .2rem; width: 14px; height: 14px; border: 1.5px solid var(--line); background: var(--card); cursor: pointer; padding: 0; }
+.world .w-close::after { content: ''; position: absolute; inset: -15px; } /* 44px tap area */
+.world .w-close:hover { background: var(--ink); }
+.w-paper .w-pub { align-items: flex-start; text-align: left; }
+.w-paper .pub-venue { display: none; }
+.w-paper .pub-title { font-size: var(--fs-lead); margin-top: .3rem; }
+.w-paper .w-links { justify-content: flex-start; margin-left: -7px; }
 
-/* ---- phones, take two: one idea per screen ---------------------------------------------- */
-/* The top part of each screen belongs to the 3D objects; the text sits calmly in
-   the lower part and tilts into view as it arrives (JS). The bottom shelf is gone. */
+/* ---- phones: real pages, one idea per page ----------------------------------------------------- */
+/* The phone's own snapping moves exactly one page per swipe. The top part of
+   each page belongs to the 3D objects; the text sits in the lower part. */
 @media (max-width: 760px) {
-  .world #world { z-index: 0; }
-  .world body::after { content: none; }
-  .world main { padding-bottom: 0; }
-  .world .w-about .w-step, .world .w-about .w-step:first-child {
+  .world.pages { scroll-snap-type: y mandatory; }
+  .world.pages [data-page] { scroll-snap-align: start; scroll-snap-stop: always; }
+  .world [data-page] {
     min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 0 0 13vh;
+    padding-bottom: 12svh; padding-top: 40svh;
   }
-  .world .w-about .w-step > * { transform-origin: 50% 100%; will-change: transform, opacity; }
-  .world .w-about .w-phone-step p { font-size: var(--fs-lead); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; }
-  .world .w-about .w-phone-step p + p { margin-top: 1rem; }
-  .world .w-phone-news .w-col-news { width: 100%; }
-  .world .w-phone-news .w-col-news .w-news .news-list { max-height: 48vh; }
-  .world .w-hpin { justify-content: flex-end; padding-bottom: 11vh; }
+  .world .pg-intro { padding-top: 38svh; }
+  .world .pg-research, .world .w-research { display: contents; }
+  .world .w-sub + .w-sub { margin-top: 0; }
+  .world .w-col-news { padding-top: 34svh; }
+  .world .w-news .news-list { max-height: 44svh; }
+  .world .w-hpin { height: auto; overflow: visible; display: block; padding: 0; }
+  .world .w-track { display: block; transform: none !important; }
+  .world .w-track .w-pub { padding-left: var(--gutter); padding-right: var(--gutter); }
+  .world .w-track .w-pub > .block-heading { margin-bottom: 1.5rem; }
+  .world .w-hpin > .w-note { padding: 0 var(--gutter) 6svh; }
+  .world .ch-bg { padding-top: 40svh; justify-content: flex-end; }
+  .world .ch-bg .block-heading { margin-bottom: 1.5rem; }
+  .world .w-edus { gap: 1.6rem; }
+  .world .w-edu .edu-degree { font-size: var(--fs-lead); }
+  .world .ch-end { min-height: 100svh; }
+}
+
+@media (max-width: 760px) {
+  .world .ch-bg { padding-top: 36svh; padding-bottom: 8svh; }
+  .world .w-edus { gap: 1.1rem; }
+  .world .w-edu .edu-degree { font-size: var(--fs-body); margin-bottom: .2rem; }
+  .world .w-edu .edu-years { margin-bottom: .1rem; }
+  .world .ch-bg .block-heading { margin-bottom: 1rem; }
 }
