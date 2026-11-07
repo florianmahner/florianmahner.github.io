@@ -480,7 +480,7 @@ const forms = {
       out.lerpVectors(a, m, k);
       // only while About is the arrangement on screen (not while blending away)
       const aboutW = (state.a === 'about' ? 1 - state.t : 0) + (state.b === 'about' ? state.t : 0);
-      markerOn[i] = k > 0.5 && aboutW > 0.5;
+      markerOn[i] = k > 0.5 && (!phone || aboutW > 0.5);
       const markerScale = size / 0.85;
       return sc + (markerScale - sc) * k;
     }
@@ -883,7 +883,7 @@ function frame(now) {
       const d = k - pos, a = Math.abs(d);
       if (a > 1.6) continue;
       const P = trackPapers[k];
-      P.el.style.opacity = (1 - Math.min(1, a)).toFixed(3); // neighbours fully out, never peeking
+      P.el.style.opacity = (1 - Math.min(1, a) * (phone ? 1 : 0.85)).toFixed(3); // phones: neighbours fully out
       if (P.title) P.title.style.transform = `translate3d(${(d * -70).toFixed(1)}px,0,0)`;
       if (P.rest) for (const r of P.rest) r.style.transform = `translate3d(${(d * -150).toFixed(1)}px,0,0)`;
     }
@@ -912,7 +912,7 @@ function frame(now) {
 
   const fa = forms[state.a], fb = forms[state.b];
   objs.forEach((o, i) => {
-    markerOn[i] = false; // set again by the About arrangement when it applies
+    if (phone) markerOn[i] = false; // phones: set again by the About arrangement when it applies
     const sa = fa(i, ts, state.pA, ta, pubA);
     const sb = fb(i, ts, state.pB, tb, pubA);
     ta.lerp(tb, state.t);
@@ -1051,4 +1051,5 @@ readPage();
 objs.forEach((o, i) => { forms.about(i, 0, 0, o.pos); o.pos.z -= 25 + i * 2; });
 root.classList.add('world-ready');
 start();
+
 
