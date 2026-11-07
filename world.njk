@@ -46,12 +46,22 @@
       <h2 class="card-bar mono" id="news-heading">news.log</h2>
       <div class="news-list">
         {% set last = "" %}
-        {% for item in news %}
+        {% for item in news.slice(0, 4) %}
           {% set y = item.date | yearOf %}
           {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
           <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
         {% endfor %}
+        {% if news.length > 4 %}
+        <div id="news-older" hidden>
+          {% for item in news.slice(4) %}
+            {% set y = item.date | yearOf %}
+            {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
+            <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
+      {% if news.length > 4 %}<button class="news-more mono" type="button" aria-expanded="false" aria-controls="news-older">show older</button>{% endif %}
     </aside>
     </div>
     </div>

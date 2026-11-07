@@ -197,7 +197,7 @@ function setupText() {
     // research | central theme + invitation | news.log on the right
     about.forEach((p, k) => (k === 0 ? one : k === 1 ? colA : colB).appendChild(p));
     const win = document.querySelector('.w-news'), sec = document.querySelector('.ch-news');
-    if (win) { colC.appendChild(win); colC.appendChild(typewriter()); }
+    if (win) colC.appendChild(win);
     if (sec) sec.remove();
   }
   about.forEach(p => {
@@ -418,8 +418,23 @@ const forms = {
     const bx = -0.9 + ((i * 0.618) % 1) * 1.8;
     const by = top ? 0.7 + ((i * 0.37) % 1) * 0.12 : -0.62 - ((i * 0.53) % 1) * 0.28;
     const bd = 10 + ((i * 0.71) % 1) * 8;
-    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
     const sc = narrow ? c[3] * 0.58 : c[3]; // smaller on tall narrow screens
+    const row = rects.newsRows && rects.newsRows[i];
+    if (row && k > 0) {
+      // fly over and line up as a marker just left of its news item
+      const D = 9.5;
+      const halfH = D * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const pxPerWorld = vh / (2 * halfH);
+      const mx = row.left + 22, my = row.top + 12;
+      const nmx = (mx / innerWidth) * 2 - 1, nmy = -((my / vh) * 2 - 1);
+      const a = new THREE.Vector3(), m = new THREE.Vector3();
+      screenToWorld(ax, ay, c[2], a);
+      screenToWorld(nmx, nmy, D, m);
+      out.lerpVectors(a, m, k);
+      const markerScale = 34 / pxPerWorld / 0.85; // about 34px across
+      return sc + (markerScale - sc) * k;
+    }
+    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
     return sc + ((narrow ? 0.5 : 0.75) - sc) * k;
   },
   news(i, t, p, out) {
@@ -478,6 +493,7 @@ let lastTx = 0, txCur = 0, txVel = 0;
 const trackPapers = track ? [...track.children].map(el => ({ el, title: el.querySelector('.pub-title'), rest: [...el.querySelectorAll('.pub-venue, .pub-authors, .w-links')] })) : [];
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
+const newsItems = [...document.querySelectorAll('.w-col-news .news-item')];
 const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
 const state = { a: 'about', b: 'about', t: 0, pA: 0, pB: 0, pubActive: 0, rowsLive: false };
 function readPage() {
@@ -505,6 +521,7 @@ function readPage() {
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
   scrubText();
+  rects.newsRows = newsItems.length ? newsItems.filter(el => !el.closest('[hidden]')).map(el => el.getBoundingClientRect()) : null;
   if (newsWin && newsWin.closest('.w-step-two')) {
     const r = newsWin.getBoundingClientRect();
     // news.log stays hidden until its screen arrives, then rises in and types
@@ -647,6 +664,15 @@ addEventListener('click', e => {
 });
 paper?.querySelector('.w-paper-close').addEventListener('click', closePaper);
 addEventListener('keydown', e => { if (e.key === 'Escape') closePaper(); });
+
+// news "show older" / "show less"
+const newsMore = document.querySelector('.news-more'), newsOlder = document.getElementById('news-older');
+if (newsMore && newsOlder) newsMore.addEventListener('click', () => {
+  const open = newsOlder.hidden;
+  newsOlder.hidden = !open;
+  newsMore.setAttribute('aria-expanded', String(open));
+  newsMore.textContent = open ? 'show less' : 'show older';
+});
 
 // "All N publications" opens the rest of the list in place
 const toggle = document.getElementById('toggle-publications'), more = document.getElementById('all-publications');

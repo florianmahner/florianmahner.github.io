@@ -472,3 +472,22 @@ main { position: relative; z-index: 1; }
 /* header: the name at the very top, the contact icons in a row below it */
 .w-top { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: .15rem; padding-top: .9rem; padding-bottom: 1.4rem; }
 .w-top .name-links { margin: 0 0 0 -11px; }
+
+/* ---- news.log as a calm, readable list; 3D objects line up beside the items ---------- */
+.world .w-col-news .w-news {
+  border: 0; box-shadow: none; background: none; padding: 0; margin: 0;
+  transform: none !important; transition: none !important;
+}
+.world .w-col-news .w-news .card-bar {
+  position: static; background: none; border: 0; padding: 0 0 1rem 3.6rem; color: var(--quiet);
+}
+.world .w-col-news .w-news .news-list { padding: 0; max-height: none; overflow: visible; }
+.world .w-col-news .w-news .news-list p { padding-left: 3.6rem; }
+.world .w-col-news .w-news .news-item { min-height: 2.6rem; }
+.world .w-about .w-news p + p { margin-top: 1rem; }
+.world .w-col-news .tc { visibility: visible !important; display: inline !important; }
+.world .w-col-news .caret { display: none; }
+.world .w-col-news .w-type { display: none; }
+
+.world .w-col-news .news-more { margin: 1rem 0 0 3.6rem; }
+.world .w-col-news .news-more { display: inline-block; width: auto; background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; }
