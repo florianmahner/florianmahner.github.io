@@ -358,3 +358,7 @@ main { position: relative; z-index: 1; }
 .world .w-about .w-step:first-child p { max-width: none; }
 .w-step:first-child { min-height: 92vh; }
 .w-step-two { min-height: 0; padding: 8vh 0 14vh; align-content: start; }
+
+/* reading effect: each line slides up and is fully there, nothing half-faded */
+.world [data-scrub] .wd { opacity: 0; transform: translateY(.35em); transition: opacity .55s ease, transform .7s cubic-bezier(.2, .8, .1, 1); }
+.world [data-scrub] .wd.lit { opacity: 1; transform: none; }

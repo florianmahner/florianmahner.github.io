@@ -69,6 +69,18 @@ function magnetic() {
 }
 
 const scrubs = [];
+// words that share a vertical position form a line
+function groupLines(sc) {
+  sc.lines = [];
+  let top = null;
+  for (const w of sc.words) {
+    const t = w.offsetTop;
+    if (top === null || Math.abs(t - top) > 4) { sc.lines.push([]); top = t; }
+    sc.lines[sc.lines.length - 1].push(w);
+  }
+  sc.lines.forEach((line, li) => line.forEach(w => w.style.setProperty('--d', '0ms')));
+}
+addEventListener('resize', () => { for (const sc of scrubs) { sc.lines = null; sc.lit = -1; } });
 function scrubText() {
   for (const sc of scrubs) {
     const r = sc.el.getBoundingClientRect();
@@ -76,10 +88,11 @@ function scrubText() {
     // centred, so the first paragraph is fully lit on arrival
     const start = vh * 0.95, done = vh / 2 - r.height / 2;
     const k = clamp((start - r.top) / Math.max(1, start - done), 0, 1);
-    const n = Math.round(k * sc.words.length);
+    // whole lines arrive, never half-faded words
+    if (!sc.lines) groupLines(sc);
+    const n = Math.ceil(k * sc.lines.length - 0.001);
     if (n === sc.lit) continue;
-    const lo = Math.min(n, Math.max(0, sc.lit)), hi = Math.max(n, sc.lit < 0 ? sc.words.length : sc.lit);
-    for (let i = lo; i < hi; i++) sc.words[i].classList.toggle('lit', i < n);
+    sc.lines.forEach((line, li) => { const on = li < n; for (const w of line) w.classList.toggle('lit', on); });
     sc.lit = n;
   }
 }
