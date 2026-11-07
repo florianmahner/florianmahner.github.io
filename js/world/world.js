@@ -403,9 +403,10 @@ const forms = {
   bg(i, t, p, out) {
     // a line receding into depth; scrolling through Background flies you along it
     const k = i / (N - 1);
-    const d = 5 + i * 3.1 - p * 16;
-    screenToWorld(0.22 + k * 0.62, -0.42 + k * 0.78, Math.max(d, 0.5), out);
-    return d < 3 ? Math.max(0, (d - 0.6) / 2.4) : 1;
+    const d = 8 + i * 3.1 - p * 16;
+    // never let one come right up to the camera: they shrink away well before
+    screenToWorld(0.22 + k * 0.62, -0.42 + k * 0.78, Math.max(d, 6), out);
+    return 0.85 * smoother(clamp((d - 6) / 4, 0, 1));
   },
   end(i, t, p, out) {
     // a small cluster above the contact links, turning as a whole
