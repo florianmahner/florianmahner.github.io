@@ -73,9 +73,11 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
   lead), `--muted`/`--quiet` greys for secondary text and labels, `--card`,
   `--bar` (card title strips), `--line` (borders), `--shadow-color` (steel
   #b2c1d9 light, #000 dark), `--accent` (the dot), `--link` #6d28d9.
-- Type: `--fs-name` (hero), `--fs-heading` (section headings), `--fs-lead`
-  (first About paragraph), `--fs-title` (card titles), `--fs-body`,
-  `--fs-small`, `--fs-mono`. Use these; don't add sizes.
+- Type: exactly six sizes — `--fs-name` (hero), `--fs-heading` (section
+  headings), `--fs-lead` (first About paragraph), `--fs-body` (body and card
+  titles, which are bold), `--fs-small` (authors, news; a smaller value on
+  phones), `--fs-mono` (labels). Never add a seventh; hierarchy inside a
+  card comes from weight, not size.
 - Layout: one 12-column grid (`.grid`, `--gap`). Under the one-line name the
   hero is 8 + 4 columns,
   publication cards span 4, Background cards span 3, so the News card lines
