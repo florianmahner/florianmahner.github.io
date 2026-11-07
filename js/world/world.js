@@ -636,6 +636,12 @@ function glideStep(now) {
 }
 addEventListener('wheel', e => {
   if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.target.closest('.w-paper')) return;
+  // inside news.log: let the log scroll natively until it hits its end
+  const box = e.target.closest('.news-list');
+  if (box && box.scrollHeight > box.clientHeight + 1) {
+    const atTop = box.scrollTop <= 0, atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
+    if ((e.deltaY < 0 && !atTop) || (e.deltaY > 0 && !atEnd)) return;
+  }
   e.preventDefault();
   if (!glide.on) glide.target = se.scrollTop;
   glideTo(glide.target + e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1));
