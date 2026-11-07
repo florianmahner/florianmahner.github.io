@@ -256,6 +256,7 @@ a:focus-visible, button:focus-visible {
 .news-year { padding: .9rem 1.1rem .1rem; color: var(--quiet); font-weight: 500; }
 .news-item { padding: .45rem 1.1rem; font-size: var(--fs-small); line-height: 1.5; }
 .news-item strong { font-weight: 600; color: var(--strong); }
+.news-item em { padding-right: .08em; }   /* italic correction before "!" */
 .news-more, .text-button {
   font: inherit;
   font-family: var(--mono);

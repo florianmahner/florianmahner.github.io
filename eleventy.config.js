@@ -60,6 +60,12 @@ export default function(eleventyConfig) {
   // Inline markdown (links, emphasis) for one-line strings such as news items.
   eleventyConfig.addFilter("mdInline", str => str ? md.renderInline(str) : "");
 
+  // News sentences end in "!", and Inter's "!" sits very tight against the
+  // letter before it. A hair space (U+200A) gives it room without reading
+  // as a real space.
+  eleventyConfig.addFilter("newsText", str =>
+    str ? md.renderInline(str).replace(/!(\s*)$/, "\u200A!$1") : "");
+
   // News dates are "YYYY-MM" (or "YYYY-MM-DD").
   const MONTHS = ["January","February","March","April","May","June","July",
                   "August","September","October","November","December"];

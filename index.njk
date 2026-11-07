@@ -12,7 +12,7 @@ title: Florian P. Mahner
 {%- for item in items -%}
   {%- set y = item.date | yearOf -%}
   {%- if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
-  <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | mdInline | safe }}</p>
+  <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
 {%- endfor -%}
 {% endmacro %}
 
