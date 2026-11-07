@@ -600,14 +600,15 @@ function frame(now) {
     // fast scrolling scatters them a little; they gather again when you stop
     ta.x *= 1 + speed * 0.00006; ta.y *= 1 + speed * 0.00004;
     // the cursor pushes objects aside (measured on screen, applied in depth)
-    if (pointerOn) {
+    if (pointerOn && grab.i < 0) {
       pv.copy(o.pos).project(camera);
       const dx = (pv.x - lean.tx) * aspect, dy = pv.y + lean.ty, d = Math.hypot(dx, dy);
       const R = 0.16 + (o.scale * 0.9) / Math.max(1, -o.pos.z) * 2.2; // bigger on screen, wider reach
       if (d < R && d > 1e-4) {
-        const f = (1 - d / R) ** 2 * 2.6 * (-o.pos.z / 10);
-        ta.x += (dx / d) * f; ta.y += (dy / d) * f; ta.z += f * 0.6;
-        o.rot.y += f * dt * 4; o.rot.x += f * dt * 2;
+        // only a gentle lean away; real moving is grab-and-drag
+        const f = (1 - d / R) ** 2 * 0.45 * (-o.pos.z / 10);
+        ta.x += (dx / d) * f; ta.y += (dy / d) * f;
+        o.rot.y += f * dt * 1.5;
       }
     }
     // gentle float, so nothing is ever perfectly still
