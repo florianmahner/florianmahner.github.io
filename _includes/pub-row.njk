@@ -1,15 +1,17 @@
 {# One publication card. Used for both the selected list and the expanded
-   "all publications" list so the markup lives in one place. #}
+   "all publications" list so the markup lives in one place. Venue and the
+   PDF/Web/Code links share the top line to keep the card short. #}
 {% macro pubRow(pub, highlight) %}
-{%- set preprint = pub.venue.indexOf("arXiv") > -1 -%}
 <article class="card pub-card lift reveal">
-  <p class="pub-venue mono{% if preprint %} is-preprint{% endif %}">{{ pub.venue }} · {{ pub.year }}</p>
+  <div class="pub-head mono">
+    <p class="pub-venue">{{ pub.venue }} · {{ pub.year }}</p>
+    <p class="pub-links">
+      {%- if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer">PDF</a>{% endif -%}
+      {%- if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer">Web</a>{% endif -%}
+      {%- if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif -%}
+    </p>
+  </div>
   <h3 class="pub-title">{{ pub.title }}</h3>
   <p class="pub-authors">{{ pub.authors | highlightAuthor(highlight) | safe }}</p>
-  <p class="pub-links mono">
-    {%- if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer">PDF</a>{% endif -%}
-    {%- if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer">Web</a>{% endif -%}
-    {%- if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif -%}
-  </p>
 </article>
 {% endmacro %}
