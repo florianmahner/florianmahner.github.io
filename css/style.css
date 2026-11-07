@@ -490,3 +490,5 @@ html[data-scene="flow"] #stage { display: none; }
 
 /* switch between the classic and the 3D view */
 .view-switch { color: var(--link); }
+/* the 3D view is built for desktop; phones and tablets keep the classic page */
+@media (max-width: 900px), (pointer: coarse) { .view-switch { display: none; } }
