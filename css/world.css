@@ -283,3 +283,6 @@ main { position: relative; z-index: 1; }
 .world .w-edu.on::before { background: var(--ink); transform: scale(1.25); opacity: 1; }
 .w-edu:first-child { padding-top: .25rem; }
 .w-edu:first-child::before { top: .6rem; }
+
+/* the publications heading sits centred above the paper scene */
+.world .w-hpin > .block-heading { align-self: stretch; width: 100%; text-align: center; margin: 0; padding: 0 var(--gutter); }

@@ -190,41 +190,101 @@ const objs = kinds.map((make, i) => {
   };
 });
 
-// ---- a laptop for news.log: base, keyboard, hinge, lid with a screen ----------------------
+// ---- a laptop for news.log ------------------------------------------------------------------
+// Thin aluminium body with softly rounded edges; a recessed keyboard well
+// with real 3D keys; speaker grilles; a trackpad; a hinge barrel; a thin lid
+// with a black glass bezel, a camera dot and the display inside it.
 const laptop = new THREE.Group();
-const lap = { W: 3.4, D: 2.3, H: 0.12, T: 0.07 };
-const shell = new THREE.MeshPhysicalMaterial({ roughness: 0.32, metalness: 0.55, clearcoat: 0.3 });
-const keysTex = (() => {
-  const c = document.createElement('canvas'); c.width = 1024; c.height = 420;
-  const g = c.getContext('2d');
-  g.fillStyle = '#26262a'; g.fillRect(0, 0, 1024, 420);
-  g.fillStyle = '#3a3a40';
-  const rows = [14, 14, 13, 12];
-  rows.forEach((n, r) => {
-    const kw = (1024 - 40) / 14.6;
-    for (let k = 0; k < n; k++) { g.beginPath(); g.roundRect(20 + k * kw + r * kw * 0.3, 20 + r * 92, kw - 8, 80, 8); g.fill(); }
-  });
-  g.beginPath(); g.roundRect(20 + 3.2 * 69, 20 + 4 * 92 - 4, 69 * 7, 36, 8); g.fill();
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-})();
-const base = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.H, lap.D, 4, 0.05), shell);
+const lap = { W: 3.6, D: 2.45, H: 0.085, T: 0.045 };
+const shell = new THREE.MeshPhysicalMaterial({ roughness: 0.28, metalness: 0.7, clearcoat: 0.4, clearcoatRoughness: 0.3 });
+const keyMat = new THREE.MeshPhysicalMaterial({ roughness: 0.55, metalness: 0.05, clearcoat: 0.15 });
+const wellMat = new THREE.MeshStandardMaterial({ roughness: 0.6, metalness: 0.4 });
+const glass = new THREE.MeshPhysicalMaterial({ color: 0x0d0d10, roughness: 0.08, metalness: 0, clearcoat: 1 });
+const dark1 = new THREE.MeshStandardMaterial({ color: 0x1a1a1d, roughness: 0.4, metalness: 0.5 });
+
+const base = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.H, lap.D, 6, 0.04), shell);
 base.position.y = lap.H / 2;
-const keys = new THREE.Mesh(new THREE.PlaneGeometry(lap.W * 0.86, lap.D * 0.4), new THREE.MeshStandardMaterial({ map: keysTex, roughness: 0.7 }));
-keys.rotation.x = -Math.PI / 2; keys.position.set(0, lap.H + 0.002, -lap.D * 0.16);
-const pad = new THREE.Mesh(new THREE.PlaneGeometry(lap.W * 0.32, lap.D * 0.26), new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.3 }));
-pad.rotation.x = -Math.PI / 2; pad.position.set(0, lap.H + 0.002, lap.D * 0.3);
-const hinge = new THREE.Group(); hinge.position.set(0, lap.H, -lap.D / 2);
-const lid = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.T, lap.D, 4, 0.04), shell);
-lid.position.set(0, lap.T / 2, lap.D / 2);
+// keyboard well, slightly sunk into the deck
+const well = new THREE.Mesh(new RoundedBoxGeometry(lap.W * 0.88, 0.02, lap.D * 0.43, 4, 0.01), wellMat);
+well.position.set(0, lap.H - 0.004, -lap.D * 0.17);
+// keys: one instanced mesh, rows like a real board (function row, numbers, letters, space bar)
+const keyGeo = new RoundedBoxGeometry(1, 1, 1, 3, 0.18);
+const keyRows = [
+  { n: 14, h: 0.5 }, { n: 14, h: 1 }, { n: 14, h: 1 }, { n: 13, h: 1 }, { n: 12, h: 1 }, { n: 0, h: 1, space: true },
+];
+const keySlots = [];
+{
+  const wellW = lap.W * 0.86, wellD = lap.D * 0.41, unit = wellW / 14.4, gap = unit * 0.14;
+  let z = -lap.D * 0.17 - wellD / 2 + unit * 0.2;
+  keyRows.forEach((row, r) => {
+    const d = unit * row.h * 0.84;
+    if (row.space) {
+      const side = [1.3, 1, 1.25, 5.4, 1.25, 1, 1, 1];
+      let x = -wellW / 2 + gap;
+      for (const w of side) { keySlots.push({ x: x + (w * unit - gap) / 2, z: z + d / 2, w: w * unit - gap, d }); x += w * unit; }
+    } else {
+      const wide = r === 3 ? 1.8 : r === 4 ? 2.3 : 1;
+      const keyW = (wellW - (wide - 1) * unit) / row.n;
+      let x = -wellW / 2 + gap / 2;
+      for (let k = 0; k < row.n; k++) {
+        const w = (k === 0 ? keyW + (wide - 1) * unit : keyW) - gap;
+        keySlots.push({ x: x + w / 2 + gap / 2, z: z + d / 2, w, d });
+        x += w + gap;
+      }
+    }
+    z += d + gap;
+  });
+}
+const keys = new THREE.InstancedMesh(keyGeo, keyMat, keySlots.length);
+{
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+  keySlots.forEach((k, i) => { ps.set(k.x, lap.H + 0.012, k.z); sc.set(k.w, 0.022, k.d); keys.setMatrixAt(i, m.compose(ps, q, sc)); });
+}
+// speaker grilles: rows of tiny holes either side of the keyboard
+const grille = (() => {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 512;
+  const g = c.getContext('2d'); g.fillStyle = 'rgba(0,0,0,0)'; g.fillRect(0, 0, 64, 512);
+  g.fillStyle = 'rgba(0,0,0,.55)';
+  for (let y = 6; y < 512; y += 12) for (let x = 6; x < 64; x += 12) { g.beginPath(); g.arc(x + (y / 12 % 2) * 6, y, 2.2, 0, 7); g.fill(); }
+  const t = new THREE.CanvasTexture(c); return t;
+})();
+const grMat = new THREE.MeshBasicMaterial({ map: grille, transparent: true, depthWrite: false });
+const grL = new THREE.Mesh(new THREE.PlaneGeometry(0.16, lap.D * 0.42), grMat);
+grL.rotation.x = -Math.PI / 2; grL.position.set(-lap.W * 0.47, lap.H + 0.001, -lap.D * 0.17);
+const grR = grL.clone(); grR.position.x *= -1;
+// trackpad: a slightly darker inset glass
+const pad = new THREE.Mesh(new RoundedBoxGeometry(lap.W * 0.36, 0.006, lap.D * 0.3, 4, 0.002), new THREE.MeshPhysicalMaterial({ roughness: 0.25, metalness: 0.5, clearcoat: 0.6 }));
+pad.position.set(0, lap.H + 0.001, lap.D * 0.27);
+// hinge barrel along the back edge
+const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, lap.W * 0.8, 24).rotateZ(Math.PI / 2), dark1);
+barrel.position.set(0, lap.H + 0.01, -lap.D / 2 + 0.03);
+// lid: thin shell, black glass bezel, display inside it, a camera dot
+const hinge = new THREE.Group(); hinge.position.set(0, lap.H + 0.01, -lap.D / 2 + 0.03);
+const lid = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.T, lap.D - 0.04, 6, 0.022), shell);
+lid.position.set(0, lap.T / 2, (lap.D - 0.04) / 2);
+const bezel = new THREE.Mesh(new RoundedBoxGeometry(lap.W - 0.06, 0.004, lap.D - 0.1, 4, 0.002), glass);
+bezel.position.set(0, -0.002, (lap.D - 0.04) / 2);
+const disp = { w: lap.W - 0.26, d: lap.D - 0.38 };
 const screenMat = new THREE.MeshBasicMaterial({ toneMapped: false });
-const screen = new THREE.Mesh(new THREE.PlaneGeometry(lap.W - 0.24, lap.D - 0.24), screenMat);
-screen.rotation.x = Math.PI / 2; screen.position.set(0, -0.002, lap.D / 2); // underside of the lid
-hinge.add(lid, screen);
-laptop.add(base, keys, pad, hinge);
-laptop.rotation.x = 0.35; // tipped toward you, so you see the keyboard
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(disp.w, disp.d), screenMat);
+screen.rotation.x = Math.PI / 2; screen.position.set(0, -0.0045, (lap.D - 0.04) / 2 + 0.02);
+const cam = new THREE.Mesh(new THREE.CircleGeometry(0.018, 20), new THREE.MeshBasicMaterial({ color: 0x2a3140 }));
+cam.rotation.x = Math.PI / 2; cam.position.set(0, -0.0046, lap.D - 0.04 - 0.07);
+hinge.add(lid, bezel, screen, cam);
+// a soft shadow on nothing in particular, so it sits in space
+const lapShadow = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, 'rgba(0,0,0,.35)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(lap.W * 1.5, lap.D * 1.3), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
+  m.rotation.x = -Math.PI / 2; m.position.y = -0.02; return m;
+})();
+laptop.add(lapShadow, base, well, keys, grL, grR, pad, barrel, hinge);
+laptop.rotation.x = 0.38; // tipped toward you, so you see the keyboard
 laptop.visible = false;
 scene.add(laptop);
-const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([x, y]) => new THREE.Vector3(x * (lap.W - 0.24) / 2, y * (lap.D - 0.24) / 2, 0));
+const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([x, y]) => new THREE.Vector3(x * disp.w / 2, y * disp.d / 2, 0));
 const cw = new THREE.Vector3();
 
 // ---- arrangements, in screen terms: nx, ny in -1..1, d = distance from camera ------------
@@ -248,6 +308,40 @@ function anchorAt(r, d, out) {
   const halfH = d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * (small ? 1.35 : 1);
   return { hw: (r.width / innerWidth) * halfH * aspect, hh: (r.height / vh) * halfH };
 }
+// one arrangement per selected paper (offsets from the title's centre);
+// any later paper falls back to a ring
+const pa = new THREE.Vector3(), pb = new THREE.Vector3();
+const PAPER_SCENES = [
+  // two groups either side of the title, mirror images turning into line
+  (i, t, s, o) => {
+    const side = i < N / 2 ? -1 : 1, k = i % (N / 2), a = (k / (N / 2)) * Math.PI * 2 + t * 0.35 * side;
+    const r = 0.95;
+    o.set(side * (s.hw + 1.9) + Math.cos(a) * r * 0.8, Math.sin(a) * r, Math.sin(a + 0.6) * r * 0.9);
+    return 0.72;
+  },
+  // all of them in one shared, tight sphere, turning as one
+  (i, t, s, o) => {
+    const y = 1 - (i + 0.5) / N * 2, rr = Math.sqrt(1 - y * y), a = i * 2.39996 + t * 0.3;
+    o.set(s.hw + 2.0 + Math.cos(a) * rr * 1.15, y * 1.15, Math.sin(a) * rr * 1.15);
+    return 0.62;
+  },
+  // lined up along three axes from one corner, like dimensions
+  (i, t, s, o) => {
+    const axis = i % 3, step = Math.floor(i / 3) + 1, d = step * 0.78;
+    const ox = -(s.hw + 2.6), oy = -1.1;
+    const tilt = Math.sin(t * 0.3) * 0.15;
+    if (axis === 0) o.set(ox + d, oy, 0);
+    else if (axis === 1) o.set(ox, oy + d, 0);
+    else o.set(ox - d * 0.45, oy - d * 0.25 + tilt, d * 0.9);
+    return 0.62;
+  },
+];
+function paperScene(j, i, t, s, o) {
+  if (PAPER_SCENES[j]) return PAPER_SCENES[j](i, t, s, o);
+  const th = (i / N) * Math.PI * 2 + t * 0.2;
+  o.set(Math.cos(th) * (s.hw + 1.4), Math.sin(th) * (s.hh + 1.4), Math.sin(th) * 0.8);
+  return 0.7;
+}
 const forms = {
   about(i, t, p, out) {
     const c = cloud[i];
@@ -266,16 +360,16 @@ const forms = {
     return 0.8 + 0.15 * Math.sin(t * 1.7 + i);
   },
   pubs(i, t, p, out, active) {
-    // a ring around the paper you are on, turned so its own object sits at
-    // the top, closest to you; the ring turns as you slide to the next paper
+    // every selected paper has its own scene; between papers the two blend
     const s = anchorAt(rects.row || EMPTY, 11.5, out);
-    const th = ((i - active) / N) * Math.PI * 2 + Math.PI / 2;
-    const rx = s.hw + (small ? 0.6 : 1.4), ry = s.hh + (small ? 1.2 : 1.5);
-    out.x += Math.cos(th) * rx;
-    out.y += Math.sin(th) * ry + 0.2;
-    const front = (Math.sin(th) + 1) / 2;
-    out.z += front * 2.2 - 1.2;
-    return 0.6 + front ** 3 * 1.0;
+    const cx = out.x, cy = out.y, cz = out.z;
+    const j0 = Math.floor(active), j1 = Math.min(j0 + 1, PAPER_SCENES.length), f = smoother(active - j0);
+    const A = paperScene(j0, i, t, s, pa), B = paperScene(j1, i, t, s, pb);
+    pa.lerp(pb, f);
+    out.set(cx + pa.x, cy + pa.y, cz + pa.z);
+    // the paper's own object is a little larger, wherever it stands
+    const own = clamp(1 - Math.abs(i - active), 0, 1);
+    return (A + (B - A) * f) * (1 + own * 0.45);
   },
   bg(i, t, p, out) {
     // a line receding into depth; scrolling through Background flies you along it
@@ -343,6 +437,8 @@ function readPage() {
     const r = hs.getBoundingClientRect();
     const k = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
     const tx = -k * Math.max(0, track.scrollWidth - innerWidth);
+    // while the scene is held, the scroll itself says how far between two papers we are
+    state.pubScroll = r.top <= 0 && r.bottom >= vh ? k * (track.children.length - 1) : -1;
     if (Math.abs(tx - lastTx) > 0.3) { track.style.setProperty('--tx', `${tx.toFixed(1)}px`); lastTx = tx; }
   }
   const rowIn = rows => {
@@ -511,13 +607,16 @@ function armSnap() {
   snapTimer = setTimeout(() => {
     if (!hs || glide.on) return;
     const r = hs.getBoundingClientRect(), span = r.height - vh;
-    if (r.top > 0 || r.bottom < vh || span <= 0) return;
     const n = track.children.length;
-    if (n < 2) return;
-    const k = -r.top / span, j = Math.round(k * (n - 1));
-    const dy = (j / (n - 1) - k) * span;
+    if (span <= 0 || n < 2) return;
+    // stopped anywhere near the paper scene, even a little before or past it:
+    // ease to the nearest paper so it sits exactly in the middle
+    const o = -r.top;
+    if (o < -vh * 0.45 || o > span + vh * 0.45) return;
+    const j = clamp(Math.round((o / span) * (n - 1)), 0, n - 1);
+    const dy = (j / (n - 1)) * span - o;
     if (Math.abs(dy) > 2) glideTo(se.scrollTop + dy);
-  }, 180);
+  }, 140);
 }
 
 // ---- theme / size -------------------------------------------------------------------------------
@@ -525,7 +624,9 @@ function theme() {
   const p = palette[dark.matches ? 'dark' : 'light'];
   for (const t in mats) mats[t].color.set(p[t]);
   shell.color.set(dark.matches ? 0x55524e : 0xd8dce3);
-  pad.material.color.set(dark.matches ? 0x4a4744 : 0xc9cdd5);
+  pad.material.color.set(dark.matches ? 0x4a4744 : 0xc4c8d0);
+  keyMat.color.set(dark.matches ? 0x1c1b1a : 0x232327);
+  wellMat.color.set(dark.matches ? 0x2a2826 : 0x9ea3ad);
   screenMat.color.set(getComputedStyle(root).getPropertyValue('--card').trim() || '#ffffff');
   scene.environmentIntensity = dark.matches ? 0.4 : 1;
   key.intensity = dark.matches ? 0.7 : 1.2;
@@ -554,7 +655,7 @@ function frame(now) {
   readPage();
 
   // the wheel turns smoothly to the active paper, the short way round
-  let diff = state.pubActive - pubA;
+  let diff = (state.pubScroll >= 0 ? state.pubScroll : state.pubActive) - pubA;
   pubA += diff * (1 - Math.exp(-dt * 5));
   scrollV += ((scrollY - lastY) / Math.max(dt, 1e-3) - scrollV) * 0.2; lastY = scrollY;
 
@@ -633,11 +734,13 @@ function placeLaptop(dt) {
   laptop.position.y -= 1.05;
   laptop.position.z -= (1 - lapW) * 6; // it arrives from the back
   laptop.scale.setScalar(0.6 + lapW * 0.4);
-  laptop.rotation.y = lean.x * 0.12;
-  // scrolling opens the lid first, then types the log
-  const open = smoother(clamp(newsP / 0.24, 0, 1));
-  hinge.rotation.x = -open * 1.92;
-  showLog((newsP - 0.26) / 0.64);
+  // scroll: the lid opens, the log types, a pause to read, then it closes again
+  const open = smoother(clamp(newsP / 0.2, 0, 1));
+  const shut = smoother(clamp((newsP - 0.8) / 0.17, 0, 1));
+  hinge.rotation.x = -open * (1 - shut) * 1.95;
+  showLog((newsP - 0.22) / 0.46);
+  // a slow quarter turn while open, so it reads as an object, not a picture
+  laptop.rotation.y = lean.x * 0.12 + (open - shut) * Math.sin(t * 0.4) * 0.04 - shut * 0.5;
   laptop.updateMatrixWorld(true);
   // fit the HTML log over the screen as the camera sees it
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -654,7 +757,7 @@ function placeLaptop(dt) {
   Object.assign(newsWin.style, {
     width: `${ww}px`, height: `${hh}px`,
     transform: `translate(${(cx - ww / 2).toFixed(1)}px, ${(cy - hh / 2).toFixed(1)}px)`,
-    opacity: String(smoother(clamp((open - 0.82) / 0.18, 0, 1)) * Math.min(1, lapW * 1.4)),
+    opacity: String(smoother(clamp((open - 0.82) / 0.18, 0, 1)) * (1 - smoother(clamp(shut / 0.35, 0, 1))) * Math.min(1, lapW * 1.4)),
   });
 }
 function start() { if (running) return; running = true; last = 0; requestAnimationFrame(frame); }
