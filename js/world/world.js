@@ -124,7 +124,9 @@ function showLog(k) {
   for (let i = lo; i < hi; i++) log.chars[i].classList.toggle('on', i < n);
   log.shown = n;
   if (n > 0) log.chars[n - 1].after(log.caret); else log.list.prepend(log.caret);
-  log.list.scrollTop = log.list.scrollHeight; // like a terminal, the newest line stays in view
+  // like a terminal, the newest typed line stays in view
+  const last = log.chars[Math.max(0, n - 1)];
+  if (last) { const lp = last.closest('p'); if (lp) log.list.scrollTop = Math.max(0, lp.offsetTop + lp.offsetHeight - log.list.clientHeight); }
 }
 
 function invite(p) {
