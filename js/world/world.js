@@ -478,7 +478,9 @@ const forms = {
         size = (22 / pxPerWorld) * (far / D);
       }
       out.lerpVectors(a, m, k);
-      markerOn[i] = k > 0.5;
+      // only while About is the arrangement on screen (not while blending away)
+      const aboutW = (state.a === 'about' ? 1 - state.t : 0) + (state.b === 'about' ? state.t : 0);
+      markerOn[i] = k > 0.5 && aboutW > 0.5;
       const markerScale = size / 0.85;
       return sc + (markerScale - sc) * k;
     }
@@ -572,7 +574,7 @@ function readPage() {
   // while the About stage is held, stay fully in the About arrangement
   if (stageEl) {
     const sr = stageEl.getBoundingClientRect();
-    if (sr.top <= 1 && sr.bottom >= vh - 1) { state.a = state.b = 'about'; state.t = 0; i = j = chapters.findIndex(c => c.name === 'about'); }
+    if (!phone && sr.top <= 1 && sr.bottom >= vh - 1) { state.a = state.b = 'about'; state.t = 0; i = j = chapters.findIndex(c => c.name === 'about'); }
   }
   const prog = r => clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
@@ -585,18 +587,24 @@ function readPage() {
     const r = newsWin.getBoundingClientRect();
     // staged: first only the research text, then it steps back a little and
     // news.log slides in from the right while the objects line up beside it
-    const st = stageEl ? stageEl.getBoundingClientRect() : null;
-    const sp = st ? clamp(-st.top / Math.max(1, st.height - vh), 0, 1) : 1;
-    newsReveal = smoother(clamp((sp - 0.25) / 0.45, 0, 1));
     const col = newsWin.closest('.w-col-news');
-    if (col) {
-      col.style.opacity = newsReveal.toFixed(3);
-      col.style.transform = `translateX(${((1 - newsReveal) * 80).toFixed(1)}px)`;
-      col.style.pointerEvents = newsReveal > 0.5 ? '' : 'none';
-    }
-    if (researchCol) {
-      researchCol.style.opacity = (1 - newsReveal * 0.35).toFixed(3);
-      researchCol.style.transform = `translateX(${(-newsReveal * 24).toFixed(1)}px)`;
+    if (phone) {
+      newsReveal = smoother(clamp((vh * 0.92 - r.top) / (vh * 0.35), 0, 1));
+      if (col) { col.style.opacity = newsReveal.toFixed(3); col.style.transform = `translateY(${((1 - newsReveal) * 24).toFixed(1)}px)`; col.style.pointerEvents = ''; }
+      if (researchCol) { researchCol.style.opacity = ''; researchCol.style.transform = ''; }
+    } else {
+      const st = stageEl ? stageEl.getBoundingClientRect() : null;
+      const sp = st ? clamp(-st.top / Math.max(1, st.height - vh), 0, 1) : 1;
+      newsReveal = smoother(clamp((sp - 0.25) / 0.45, 0, 1));
+      if (col) {
+        col.style.opacity = newsReveal.toFixed(3);
+        col.style.transform = `translateX(${((1 - newsReveal) * 80).toFixed(1)}px)`;
+        col.style.pointerEvents = newsReveal > 0.5 ? '' : 'none';
+      }
+      if (researchCol) {
+        researchCol.style.opacity = (1 - newsReveal * 0.35).toFixed(3);
+        researchCol.style.transform = `translateX(${(-newsReveal * 24).toFixed(1)}px)`;
+      }
     }
     showLog(1);
   }
@@ -833,9 +841,11 @@ function theme() {
   rim.intensity = dark.matches ? 0.6 : 0.9;
 }
 let tanHalf = Math.tan(THREE.MathUtils.degToRad(17.5));
+let phone = innerWidth <= 760;
 function resize() {
   vh = innerHeight;
   small = innerWidth <= 640;
+  phone = innerWidth <= 760;
   renderer.setPixelRatio(Math.min(devicePixelRatio, small ? 1.5 : 2));
   renderer.setSize(innerWidth, innerHeight, false);
   aspect = innerWidth / innerHeight;
@@ -873,7 +883,7 @@ function frame(now) {
       const d = k - pos, a = Math.abs(d);
       if (a > 1.6) continue;
       const P = trackPapers[k];
-      P.el.style.opacity = (1 - Math.min(1, a) * 0.85).toFixed(3);
+      P.el.style.opacity = (1 - Math.min(1, a)).toFixed(3); // neighbours fully out, never peeking
       if (P.title) P.title.style.transform = `translate3d(${(d * -70).toFixed(1)}px,0,0)`;
       if (P.rest) for (const r of P.rest) r.style.transform = `translate3d(${(d * -150).toFixed(1)}px,0,0)`;
     }
@@ -902,10 +912,11 @@ function frame(now) {
 
   const fa = forms[state.a], fb = forms[state.b];
   objs.forEach((o, i) => {
+    markerOn[i] = false; // set again by the About arrangement when it applies
     const sa = fa(i, ts, state.pA, ta, pubA);
     const sb = fb(i, ts, state.pB, tb, pubA);
     ta.lerp(tb, state.t);
-    const sc = sa + (sb - sa) * state.t;
+    let sc = sa + (sb - sa) * state.t;
     // fast scrolling scatters them a little; they gather again when you stop
     ta.x *= 1 + speed * 0.000012; ta.y *= 1 + speed * 0.000008;
     // the cursor pushes objects aside (measured on screen, applied in depth)
@@ -923,9 +934,21 @@ function frame(now) {
     // gentle float, so nothing is ever perfectly still
     ta.x += Math.sin(t * 0.4 + o.phase) * 0.04;
     ta.y += Math.sin(t * 0.5 + o.phase * 1.3) * 0.05;
+    // phones: a calm shelf along the bottom edge, so objects never cover text;
+    // the current paper's object stands a little taller
+    let shelfScale = 0;
+    if (phone && !markerOn[i]) {
+      const inPubs = state.a === 'pubs' || state.b === 'pubs';
+      const own = inPubs ? clamp(1 - Math.abs(i - pubA), 0, 1) : 0;
+      const sx = ((i + 0.5) / N) * innerWidth;
+      const sy = vh - 44 - own * 10 + Math.sin(ts * 0.6 + i) * 2;
+      pointAtScreen(sx, sy, 9.5, ta);
+      const halfH = 9.5 * tanHalf;
+      shelfScale = ((24 + own * 14) / (vh / (2 * halfH))) / 0.85;
+    }
     // keep every object fully on screen, whatever the window size
     // (markers follow their news item, even when it scrolls off)
-    if (!markerOn[i]) {
+    if (!markerOn[i] && !shelfScale) {
       const zc = Math.max(1, camera.position.z - ta.z);
       const hh = zc * tanHalf, hw = hh * aspect, rr = 0.8 * Math.max(sc, 0.3) + 0.15;
       ta.x = clamp(ta.x, -hw + rr, hw - rr);
@@ -949,6 +972,7 @@ function frame(now) {
       if (free > 0) { o.rot.x += o.vel.y * dt * 0.3; o.rot.y += o.vel.x * dt * 0.3; }
       o.pos.addScaledVector(o.vel, dt);
     }
+    if (shelfScale) sc = shelfScale;
     o.scale += (sc * (i === hovered ? 1.18 : 1) - o.scale) * (1 - Math.exp(-dt * (i === hovered ? 9 : 4)));
     // turn: own pace, faster for the paper in front, a kick from scrolling
     const boost = (state.a === 'pubs' || state.b === 'pubs') && i === state.pubActive ? 1.6 : 1;
@@ -1027,3 +1051,4 @@ readPage();
 objs.forEach((o, i) => { forms.about(i, 0, 0, o.pos); o.pos.z -= 25 + i * 2; });
 root.classList.add('world-ready');
 start();
+
