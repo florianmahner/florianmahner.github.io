@@ -508,3 +508,11 @@ main { position: relative; z-index: 1; }
 .w-step-two { grid-template-columns: minmax(0, 40rem) minmax(0, 28rem); justify-content: space-between; }
 @media (max-width: 1200px) { .w-step-two { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); } .w-col-news { grid-column: auto; } }
 @media (max-width: 860px) { .w-step-two { grid-template-columns: 1fr; } }
+
+/* large desktops: three columns again (research flows into two, news.log third) */
+@media (min-width: 1480px) {
+  .w-step-two { grid-template-columns: minmax(0, 1fr) minmax(0, 23rem); gap: clamp(2rem, 3.5vw, 3.5rem); }
+  .w-step-two > .w-col:first-child { columns: 2; column-gap: clamp(2rem, 3.5vw, 3.5rem); }
+  .world .w-about .w-step-two > .w-col:first-child p { break-inside: avoid; }
+  .world .w-about .w-step-two > .w-col:first-child p:nth-child(2) { break-before: column; margin-top: 0; }
+}
