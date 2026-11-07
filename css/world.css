@@ -286,3 +286,32 @@ main { position: relative; z-index: 1; }
 
 /* the publications heading sits centred above the paper scene */
 .world .w-hpin > .block-heading { align-self: stretch; width: 100%; text-align: center; margin: 0; padding: 0 var(--gutter); }
+
+/* ---- About: one paragraph per screen, large, lit as you read -------------------------- */
+.w-step { min-height: 100vh; display: flex; align-items: center; }
+.world .ch-about { padding-top: 0; padding-bottom: 0; }
+.world .ch-about > .w-about { width: min(100%, 60rem); }
+.world .w-about p, .world .w-about p:first-child {
+  font-size: var(--fs-heading); font-weight: 600; line-height: 1.2; letter-spacing: -.025em;
+  max-width: 24em; margin: 0; color: var(--strong);
+}
+.world [data-scrub] .wd > span { transform: none; transition: none; }
+.world [data-scrub] .wd { opacity: .16; transition: opacity .35s ease; }
+.world [data-scrub] .wd.lit { opacity: 1; }
+
+/* the held scenes never shrink or blur away (it would shift them sideways) */
+.world .ch > .w-hscroll, .world .ch > .w-nscroll { transform: none; opacity: 1; filter: none; }
+
+/* ---- news.log printed on a paper strip ------------------------------------------------- */
+.world .w-npin .w-news {
+  background: transparent; border: 0; box-shadow: none; clip-path: none;
+  overflow: hidden; justify-content: flex-end; padding: 0 1.1rem .9rem;
+}
+.world .w-npin .w-news .card-bar { background: none; border: 0; padding: .9rem 0 .5rem; text-align: center; color: var(--quiet); cursor: default; }
+.world .w-npin .w-news .news-list { flex: 0 0 auto; overflow: visible; }
+.world .w-npin .w-news .news-list p::before { display: none; }
+.world .w-npin .w-news .news-list p { padding-left: 0; }
+.world .w-news .tc { display: none; visibility: visible; }
+.world .w-news .tc.on { display: inline; }
+.world .w-news .news-list p:not(:has(.tc.on)) { display: none; }
+.world .w-news .w-close { display: none; }

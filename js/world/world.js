@@ -68,6 +68,19 @@ function magnetic() {
   });
 }
 
+const scrubs = [];
+function scrubText() {
+  for (const sc of scrubs) {
+    const r = sc.el.getBoundingClientRect();
+    const k = clamp((vh * 0.8 - r.top) / (r.height + vh * 0.3), 0, 1);
+    const n = Math.round(k * sc.words.length);
+    if (n === sc.lit) continue;
+    const lo = Math.min(n, Math.max(0, sc.lit)), hi = Math.max(n, sc.lit < 0 ? sc.words.length : sc.lit);
+    for (let i = lo; i < hi; i++) sc.words[i].classList.toggle('lit', i < n);
+    sc.lit = n;
+  }
+}
+
 // news.log letters, revealed by the laptop scene as you scroll
 const log = { chars: [], shown: -1, list: null, caret: null };
 function setupLog() {
@@ -100,8 +113,14 @@ function showLog(k) {
 
 function setupText() {
   const about = $$('.w-about p');
-  if (about[0]) about[0].setAttribute('data-split', '');
-  about.slice(1).forEach((p, i) => { p.setAttribute('data-rise', ''); p.style.setProperty('--d', `${120 + i * 90}ms`); });
+  about.forEach(p => {
+    const step = document.createElement('div');
+    step.className = 'w-step';
+    p.before(step); step.appendChild(p);
+    p.setAttribute('data-scrub', '');
+    splitWords(p);
+    scrubs.push({ el: p, words: [...p.querySelectorAll('.wd')], lit: -1 });
+  });
   $$('.news-item').forEach((p, i) => p.style.setProperty('--d', `${(i % 6) * 70}ms`));
   $$('.w-pub, .w-edu').forEach(el => {
     for (const c of el.children) if (!c.hasAttribute('data-split')) { c.setAttribute('data-rise', ''); c.style.setProperty('--d', '160ms'); }
@@ -190,101 +209,55 @@ const objs = kinds.map((make, i) => {
   };
 });
 
-// ---- a laptop for news.log ------------------------------------------------------------------
-// Thin aluminium body with softly rounded edges; a recessed keyboard well
-// with real 3D keys; speaker grilles; a trackpad; a hinge barrel; a thin lid
-// with a black glass bezel, a camera dot and the display inside it.
-const laptop = new THREE.Group();
-const lap = { W: 3.6, D: 2.45, H: 0.085, T: 0.045 };
-const shell = new THREE.MeshPhysicalMaterial({ roughness: 0.28, metalness: 0.7, clearcoat: 0.4, clearcoatRoughness: 0.3 });
-const keyMat = new THREE.MeshPhysicalMaterial({ roughness: 0.55, metalness: 0.05, clearcoat: 0.15 });
-const wellMat = new THREE.MeshStandardMaterial({ roughness: 0.6, metalness: 0.4 });
-const glass = new THREE.MeshPhysicalMaterial({ color: 0x0d0d10, roughness: 0.08, metalness: 0, clearcoat: 1 });
-const dark1 = new THREE.MeshStandardMaterial({ color: 0x1a1a1d, roughness: 0.4, metalness: 0.5 });
-
-const base = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.H, lap.D, 6, 0.04), shell);
-base.position.y = lap.H / 2;
-// keyboard well, slightly sunk into the deck
-const well = new THREE.Mesh(new RoundedBoxGeometry(lap.W * 0.88, 0.02, lap.D * 0.43, 4, 0.01), wellMat);
-well.position.set(0, lap.H - 0.004, -lap.D * 0.17);
-// keys: one instanced mesh, rows like a real board (function row, numbers, letters, space bar)
-const keyGeo = new RoundedBoxGeometry(1, 1, 1, 3, 0.18);
-const keyRows = [
-  { n: 14, h: 0.5 }, { n: 14, h: 1 }, { n: 14, h: 1 }, { n: 13, h: 1 }, { n: 12, h: 1 }, { n: 0, h: 1, space: true },
-];
-const keySlots = [];
-{
-  const wellW = lap.W * 0.86, wellD = lap.D * 0.41, unit = wellW / 14.4, gap = unit * 0.14;
-  let z = -lap.D * 0.17 - wellD / 2 + unit * 0.2;
-  keyRows.forEach((row, r) => {
-    const d = unit * row.h * 0.84;
-    if (row.space) {
-      const side = [1.3, 1, 1.25, 5.4, 1.25, 1, 1, 1];
-      let x = -wellW / 2 + gap;
-      for (const w of side) { keySlots.push({ x: x + (w * unit - gap) / 2, z: z + d / 2, w: w * unit - gap, d }); x += w * unit; }
-    } else {
-      const wide = r === 3 ? 1.8 : r === 4 ? 2.3 : 1;
-      const keyW = (wellW - (wide - 1) * unit) / row.n;
-      let x = -wellW / 2 + gap / 2;
-      for (let k = 0; k < row.n; k++) {
-        const w = (k === 0 ? keyW + (wide - 1) * unit : keyW) - gap;
-        keySlots.push({ x: x + w / 2 + gap / 2, z: z + d / 2, w, d });
-        x += w + gap;
-      }
-    }
-    z += d + gap;
-  });
-}
-const keys = new THREE.InstancedMesh(keyGeo, keyMat, keySlots.length);
-{
-  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
-  keySlots.forEach((k, i) => { ps.set(k.x, lap.H + 0.012, k.z); sc.set(k.w, 0.022, k.d); keys.setMatrixAt(i, m.compose(ps, q, sc)); });
-}
-// speaker grilles: rows of tiny holes either side of the keyboard
-const grille = (() => {
-  const c = document.createElement('canvas'); c.width = 64; c.height = 512;
-  const g = c.getContext('2d'); g.fillStyle = 'rgba(0,0,0,0)'; g.fillRect(0, 0, 64, 512);
-  g.fillStyle = 'rgba(0,0,0,.55)';
-  for (let y = 6; y < 512; y += 12) for (let x = 6; x < 64; x += 12) { g.beginPath(); g.arc(x + (y / 12 % 2) * 6, y, 2.2, 0, 7); g.fill(); }
-  const t = new THREE.CanvasTexture(c); return t;
-})();
-const grMat = new THREE.MeshBasicMaterial({ map: grille, transparent: true, depthWrite: false });
-const grL = new THREE.Mesh(new THREE.PlaneGeometry(0.16, lap.D * 0.42), grMat);
-grL.rotation.x = -Math.PI / 2; grL.position.set(-lap.W * 0.47, lap.H + 0.001, -lap.D * 0.17);
-const grR = grL.clone(); grR.position.x *= -1;
-// trackpad: a slightly darker inset glass
-const pad = new THREE.Mesh(new RoundedBoxGeometry(lap.W * 0.36, 0.006, lap.D * 0.3, 4, 0.002), new THREE.MeshPhysicalMaterial({ roughness: 0.25, metalness: 0.5, clearcoat: 0.6 }));
-pad.position.set(0, lap.H + 0.001, lap.D * 0.27);
-// hinge barrel along the back edge
-const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, lap.W * 0.8, 24).rotateZ(Math.PI / 2), dark1);
-barrel.position.set(0, lap.H + 0.01, -lap.D / 2 + 0.03);
-// lid: thin shell, black glass bezel, display inside it, a camera dot
-const hinge = new THREE.Group(); hinge.position.set(0, lap.H + 0.01, -lap.D / 2 + 0.03);
-const lid = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.T, lap.D - 0.04, 6, 0.022), shell);
-lid.position.set(0, lap.T / 2, (lap.D - 0.04) / 2);
-const bezel = new THREE.Mesh(new RoundedBoxGeometry(lap.W - 0.06, 0.004, lap.D - 0.1, 4, 0.002), glass);
-bezel.position.set(0, -0.002, (lap.D - 0.04) / 2);
-const disp = { w: lap.W - 0.26, d: lap.D - 0.38 };
-const screenMat = new THREE.MeshBasicMaterial({ toneMapped: false });
-const screen = new THREE.Mesh(new THREE.PlaneGeometry(disp.w, disp.d), screenMat);
-screen.rotation.x = Math.PI / 2; screen.position.set(0, -0.0045, (lap.D - 0.04) / 2 + 0.02);
-const cam = new THREE.Mesh(new THREE.CircleGeometry(0.018, 20), new THREE.MeshBasicMaterial({ color: 0x2a3140 }));
-cam.rotation.x = Math.PI / 2; cam.position.set(0, -0.0046, lap.D - 0.04 - 0.07);
-hinge.add(lid, bezel, screen, cam);
-// a soft shadow on nothing in particular, so it sits in space
-const lapShadow = (() => {
+// ---- a small printer for news.log ----------------------------------------------------------
+// Simple, soft shapes in the objects' clay: a body, a paper roll, a slot, a
+// button. As you scroll it prints the log onto a strip that rises out of the
+// slot and curls back a little at the top.
+const printer = new THREE.Group();
+const body = new THREE.MeshPhysicalMaterial({ roughness: 0.45, clearcoat: 0.35, clearcoatRoughness: 0.4 });
+const darkPart = new THREE.MeshStandardMaterial({ color: 0x1d1d20, roughness: 0.5 });
+const pr = { W: 2.7, H: 0.78, D: 1.55 };
+const prBody = new THREE.Mesh(new RoundedBoxGeometry(pr.W, pr.H, pr.D, 6, 0.16), body);
+prBody.position.y = pr.H / 2;
+const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, pr.W - 0.3, 40).rotateZ(Math.PI / 2), body);
+roll.position.set(0, pr.H - 0.05, -pr.D / 2 + 0.36);
+const slot = new THREE.Mesh(new RoundedBoxGeometry(2.25, 0.03, 0.07, 2, 0.01), darkPart);
+slot.position.set(0, pr.H + 0.005, 0.05);
+const button = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.04, 28), darkPart);
+button.position.set(pr.W / 2 - 0.35, pr.H + 0.01, pr.D / 2 - 0.3);
+const led = new THREE.Mesh(new THREE.CircleGeometry(0.035, 20), new THREE.MeshBasicMaterial({ color: 0x2a2a2e }));
+led.rotation.x = -Math.PI / 2; led.position.set(pr.W / 2 - 0.6, pr.H + 0.003, pr.D / 2 - 0.3);
+const prShadow = (() => {
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d'), grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0, 'rgba(0,0,0,.35)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+  grd.addColorStop(0, 'rgba(0,0,0,.32)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(lap.W * 1.5, lap.D * 1.3), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
-  m.rotation.x = -Math.PI / 2; m.position.y = -0.02; return m;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(pr.W * 1.6, pr.D * 1.6), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
+  m.rotation.x = -Math.PI / 2; m.position.y = -0.01; return m;
 })();
-laptop.add(lapShadow, base, well, keys, grL, grR, pad, barrel, hinge);
-laptop.rotation.x = 0.38; // tipped toward you, so you see the keyboard
-laptop.visible = false;
-scene.add(laptop);
-const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([x, y]) => new THREE.Vector3(x * disp.w / 2, y * disp.d / 2, 0));
+// the paper: a strip whose height and curl we reshape every frame
+const PSEG = 32, paperW = 2.05;
+const paperGeo = new THREE.PlaneGeometry(paperW, 1, 1, PSEG);
+const paperMat = new THREE.MeshStandardMaterial({ roughness: 0.92, side: THREE.DoubleSide });
+const strip = new THREE.Mesh(paperGeo, paperMat);
+strip.position.set(0, pr.H + 0.01, 0.05);
+let paperH = 0.001;
+function shapePaper(h) {
+  const pos = paperGeo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const v = Math.floor(i / 2) / PSEG; // 0 at the top row, 1 at the slot
+    const y = (1 - v) * h;
+    pos.setY(i, y);
+    pos.setZ(i, -0.22 * Math.pow(y / Math.max(h, 1e-3), 2) * Math.min(h, 2.2)); // curls back near the top
+  }
+  pos.needsUpdate = true;
+  paperGeo.computeVertexNormals();
+}
+printer.add(prShadow, prBody, roll, slot, button, led, strip);
+printer.rotation.x = 0.24; // tipped toward you a little
+printer.visible = false;
+scene.add(printer);
+const paperCorners = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
 const cw = new THREE.Vector3();
 
 // ---- arrangements, in screen terms: nx, ny in -1..1, d = distance from camera ------------
@@ -398,7 +371,7 @@ const hs = document.querySelector('.w-hscroll'), track = document.querySelector(
 const ns = document.querySelector('.w-nscroll'), npin = document.querySelector('.w-npin');
 const newsWin = document.querySelector('.w-news');
 let newsP = 0;
-let lastTx = 0;
+let lastTx = 0, txCur = 0;
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
 const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
@@ -427,6 +400,7 @@ function readPage() {
   const prog = r => clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
+  scrubText();
   if (ns) {
     const r = ns.getBoundingClientRect();
     newsP = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
@@ -436,10 +410,9 @@ function readPage() {
     // vertical scroll through the pinned section slides the track sideways
     const r = hs.getBoundingClientRect();
     const k = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
-    const tx = -k * Math.max(0, track.scrollWidth - innerWidth);
-    // while the scene is held, the scroll itself says how far between two papers we are
-    state.pubScroll = r.top <= 0 && r.bottom >= vh ? k * (track.children.length - 1) : -1;
-    if (Math.abs(tx - lastTx) > 0.3) { track.style.setProperty('--tx', `${tx.toFixed(1)}px`); lastTx = tx; }
+    // scrolling only chooses WHICH paper; the slide itself is animated (frame)
+    state.pubIdx = clamp(Math.round(k * (track.children.length - 1)), 0, track.children.length - 1);
+    state.pinned = r.top <= 1 && r.bottom >= vh - 1;
   }
   const rowIn = rows => {
     let best = -1, bd = Infinity;
@@ -605,29 +578,31 @@ let snapTimer = 0;
 function armSnap() {
   clearTimeout(snapTimer);
   snapTimer = setTimeout(() => {
-    if (!hs || glide.on) return;
-    const r = hs.getBoundingClientRect(), span = r.height - vh;
-    const n = track.children.length;
-    if (span <= 0 || n < 2) return;
-    // stopped anywhere near the paper scene, even a little before or past it:
-    // ease to the nearest paper so it sits exactly in the middle
-    const o = -r.top;
-    if (o < -vh * 0.45 || o > span + vh * 0.45) return;
-    const j = clamp(Math.round((o / span) * (n - 1)), 0, n - 1);
-    const dy = (j / (n - 1)) * span - o;
-    if (Math.abs(dy) > 2) glideTo(se.scrollTop + dy);
-  }, 140);
+    if (glide.on) return;
+    const y0 = se.scrollTop, stops = [];
+    // each About paragraph centred on screen
+    for (const st of document.querySelectorAll('.w-step')) {
+      const r = st.getBoundingClientRect();
+      stops.push(y0 + r.top + r.height / 2 - vh / 2);
+    }
+    // each paper in the sideways scene
+    if (hs) {
+      const r = hs.getBoundingClientRect(), span = r.height - vh, n = track.children.length;
+      for (let j = 0; j < n && span > 0; j++) stops.push(y0 + r.top + (n > 1 ? (j / (n - 1)) * span : 0));
+    }
+    let best = null, bd = Infinity;
+    for (const y of stops) { const d = Math.abs(y - y0); if (d < bd) { bd = d; best = y; } }
+    // only when we stopped close to one; elsewhere scrolling stays free
+    if (best !== null && bd > 2 && bd < vh * 0.42) glideTo(best);
+  }, 130);
 }
 
 // ---- theme / size -------------------------------------------------------------------------------
 function theme() {
   const p = palette[dark.matches ? 'dark' : 'light'];
   for (const t in mats) mats[t].color.set(p[t]);
-  shell.color.set(dark.matches ? 0x55524e : 0xd8dce3);
-  pad.material.color.set(dark.matches ? 0x4a4744 : 0xc4c8d0);
-  keyMat.color.set(dark.matches ? 0x1c1b1a : 0x232327);
-  wellMat.color.set(dark.matches ? 0x2a2826 : 0x9ea3ad);
-  screenMat.color.set(getComputedStyle(root).getPropertyValue('--card').trim() || '#ffffff');
+  body.color.set(p.clay);
+  paperMat.color.set(getComputedStyle(root).getPropertyValue('--card').trim() || '#ffffff');
   scene.environmentIntensity = dark.matches ? 0.4 : 1;
   key.intensity = dark.matches ? 0.7 : 1.2;
   rim.intensity = dark.matches ? 0.6 : 0.9;
@@ -655,7 +630,15 @@ function frame(now) {
   readPage();
 
   // the wheel turns smoothly to the active paper, the short way round
-  let diff = (state.pubScroll >= 0 ? state.pubScroll : state.pubActive) - pubA;
+  // slide the track to the chosen paper with a soft spring; it always lands centred
+  if (track) {
+    const target = -(state.pubIdx || 0) * innerWidth;
+    txCur += (target - txCur) * (1 - Math.exp(-dt * 6.5));
+    if (Math.abs(target - txCur) < 0.3) txCur = target;
+    if (Math.abs(txCur - lastTx) > 0.2) { track.style.setProperty('--tx', `${txCur.toFixed(1)}px`); lastTx = txCur; }
+  }
+  const slidePos = -txCur / innerWidth; // 0..n-1, continuous while sliding
+  let diff = (state.pinned ? slidePos : state.pubActive) - pubA;
   pubA += diff * (1 - Math.exp(-dt * 5));
   scrollV += ((scrollY - lastY) / Math.max(dt, 1e-3) - scrollV) * 0.2; lastY = scrollY;
 
@@ -720,44 +703,47 @@ function frame(now) {
     o.mesh.rotation.copy(o.rot);
     o.mesh.scale.setScalar(Math.max(0.001, o.scale));
   });
-  placeLaptop(dt);
+  placePrinter(dt);
   renderer.render(scene, camera);
 }
 
 let lapW = 0;
-function placeLaptop(dt) {
+function placePrinter(dt) {
   const w = (state.a === 'news' ? 1 - state.t : 0) + (state.b === 'news' ? state.t : 0);
   lapW += (w - lapW) * (1 - Math.exp(-dt * 5));
-  laptop.visible = lapW > 0.01 && !!rects.npin;
-  if (!laptop.visible) { if (newsWin) newsWin.style.opacity = '0'; rects.screen = null; return; }
-  anchorAt(rects.npin, small ? 9.5 : 7.4, laptop.position);
-  laptop.position.y -= 1.05;
-  laptop.position.z -= (1 - lapW) * 6; // it arrives from the back
-  laptop.scale.setScalar(0.6 + lapW * 0.4);
-  // scroll: the lid opens, the log types, a pause to read, then it closes again
-  const open = smoother(clamp(newsP / 0.2, 0, 1));
-  const shut = smoother(clamp((newsP - 0.8) / 0.17, 0, 1));
-  hinge.rotation.x = -open * (1 - shut) * 1.95;
-  showLog((newsP - 0.22) / 0.46);
-  // a slow quarter turn while open, so it reads as an object, not a picture
-  laptop.rotation.y = lean.x * 0.12 + (open - shut) * Math.sin(t * 0.4) * 0.04 - shut * 0.5;
-  laptop.updateMatrixWorld(true);
-  // fit the HTML log over the screen as the camera sees it
+  printer.visible = lapW > 0.01 && !!rects.npin;
+  if (!printer.visible) { if (newsWin) newsWin.style.opacity = '0'; rects.screen = null; return; }
+  anchorAt(rects.npin, small ? 10.5 : 8.6, printer.position);
+  printer.position.y -= small ? 2.4 : 2.05;
+  printer.position.z -= (1 - lapW) * 6; // it arrives from the back
+  printer.rotation.y = lean.x * 0.1 + Math.sin(t * 0.35) * 0.03;
+  // scroll prints: letters appear, the strip grows to fit what is printed
+  showLog((newsP - 0.1) / 0.72);
+  printer.updateMatrixWorld(true);
+  if (newsWin) {
+    const dist = camera.position.distanceTo(printer.position);
+    const worldPerPx = (2 * dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) / vh;
+    const want = log.shown > 0 ? Math.min(small ? 3.4 : 3.1, (newsWin.scrollHeight + 18) * worldPerPx) : 0.001;
+    paperH += (want - paperH) * (1 - Math.exp(-dt * 10));
+  }
+  shapePaper(paperH);
+  // fit the HTML onto the strip as the camera sees it (the flat lower part)
+  const hw = paperW / 2;
+  paperCorners[0].set(-hw, 0, 0); paperCorners[1].set(hw, 0, 0);
+  paperCorners[2].set(-hw, paperH, 0); paperCorners[3].set(hw, paperH, 0);
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-  for (const c of corners) {
-    cw.copy(c).applyMatrix4(screen.matrixWorld).project(camera);
+  for (const c of paperCorners) {
+    cw.copy(c).applyMatrix4(strip.matrixWorld).project(camera);
     const x = (cw.x * 0.5 + 0.5) * innerWidth, y = (-cw.y * 0.5 + 0.5) * vh;
     x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
   }
-  rects.screen = { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
+  rects.screen = { left: x0, top: y0, width: x1 - x0, height: Math.max(40, y1 - y0) };
   if (!newsWin) return;
-  const pr = rects.npin, minW = Math.min(innerWidth - 32, 360);
-  const ww = Math.max(x1 - x0 - 16, minW), hh = Math.max(y1 - y0 - 16, 220);
-  const cx = (x0 + x1) / 2 - pr.left, cy = (y0 + y1) / 2 - pr.top;
+  const pn = rects.npin, ww = x1 - x0;
   Object.assign(newsWin.style, {
-    width: `${ww}px`, height: `${hh}px`,
-    transform: `translate(${(cx - ww / 2).toFixed(1)}px, ${(cy - hh / 2).toFixed(1)}px)`,
-    opacity: String(smoother(clamp((open - 0.82) / 0.18, 0, 1)) * (1 - smoother(clamp(shut / 0.35, 0, 1))) * Math.min(1, lapW * 1.4)),
+    width: `${ww.toFixed(1)}px`, height: `${Math.max(0, y1 - y0).toFixed(1)}px`,
+    transform: `translate(${(x0 - pn.left).toFixed(1)}px, ${(y0 - pn.top).toFixed(1)}px)`,
+    opacity: String(Math.min(1, lapW * 1.3)),
   });
 }
 function start() { if (running) return; running = true; last = 0; requestAnimationFrame(frame); }
