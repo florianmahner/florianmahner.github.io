@@ -193,9 +193,9 @@ function setupText() {
     const two = document.createElement('div'); two.className = 'w-step w-step-two';
     const colA = document.createElement('div'), colB = document.createElement('div'), colC = document.createElement('div');
     colA.className = colB.className = 'w-col'; colC.className = 'w-col w-col-news';
-    host.prepend(one); one.after(two); two.append(colA, colB, colC);
-    // research | central theme + invitation | news.log on the right
-    about.forEach((p, k) => (k === 0 ? one : k === 1 ? colA : colB).appendChild(p));
+    host.prepend(one); one.after(two); two.append(colA, colC);
+    // research (both paragraphs and the invitation) on the left, news.log on the right
+    about.forEach((p, k) => (k === 0 ? one : colA).appendChild(p));
     const win = document.querySelector('.w-news'), sec = document.querySelector('.ch-news');
     if (win) colC.appendChild(win);
     if (sec) sec.remove();
