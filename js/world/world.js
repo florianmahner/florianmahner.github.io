@@ -441,12 +441,13 @@ const forms = {
     return (A + (B - A) * f) * (1 + own * 0.45);
   },
   bg(i, t, p, out) {
-    // a line receding into depth; scrolling through Background flies you along it
-    const k = i / (N - 1);
-    const d = 8 + i * 3.1 - p * 16;
-    // never let one come right up to the camera: they shrink away well before
-    screenToWorld(0.22 + k * 0.62, -0.42 + k * 0.78, Math.max(d, 6), out);
-    return 0.85 * smoother(clamp((d - 6) / 4, 0, 1));
+    // two loose columns at the sides, clear of the centred list; they drift
+    // slowly upward as you read down through the steps
+    const side = i % 2 ? 1 : -1, row = Math.floor(i / 2);
+    const nx = side * (0.8 + ((i * 0.37) % 1) * 0.12);
+    const ny = 0.7 - row * 0.36 + p * 0.3 + Math.sin(t * 0.5 + i) * 0.03;
+    screenToWorld(nx, ny, 11 + ((i * 0.61) % 1) * 6, out);
+    return 0.7;
   },
   end(i, t, p, out) {
     // a small cluster above the contact links, turning as a whole
