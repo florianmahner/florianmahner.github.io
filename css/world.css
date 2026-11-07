@@ -275,7 +275,7 @@ main { position: relative; z-index: 1; }
 .w-edu { text-align: left; padding: 1.4rem 0 1.4rem 2.25rem; border-left: 1.5px solid var(--line); }
 .w-edu .edu-meta { margin-inline: 0; }
 .world .w-edu::before {
-  content: ''; left: -6px; top: 1.75rem; width: 10.5px; height: 10.5px;
+  content: ''; z-index: 1; left: -6px; top: 1.75rem; width: 10.5px; height: 10.5px;
   border-radius: 50%; border: 1.5px solid var(--line); background: var(--bg);
   font-size: 0; -webkit-text-stroke: 0; opacity: 1; transform: none;
   transition: background .3s ease, transform .4s cubic-bezier(.2, .8, .1, 1);
