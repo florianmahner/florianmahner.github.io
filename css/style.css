@@ -183,8 +183,8 @@ a:focus-visible, button:focus-visible {
 .edu-card { grid-column: span 3; }
 
 /* Contact icons */
-.top-links, .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -11px; }
-.footer-links { display: none; }
+.top-links { display: flex; flex-wrap: wrap; justify-content: flex-end; margin-right: -11px; }
+.name-links { display: none; }
 .icon-link {
   display: inline-flex;
   align-items: center;
@@ -349,11 +349,11 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 640px) {
   :root { --gap: 1.25rem; }
   .pub-card, .edu-card { grid-column: span 12; }
+  /* Phones: contact icons sit in a row under the name, not top right. */
   .top-links { display: none; }
-  .footer-links { display: flex; }
-  .hero-name { margin-top: 2.5rem; }
-  .footer { flex-direction: column-reverse; align-items: flex-start; }
-  .footer-links { justify-content: flex-start; margin: 0 0 0 -11px; }
+  .name-links { display: flex; flex-wrap: wrap; margin: .75rem 0 0 -11px; }
+  .hero-name { margin-top: 2.25rem; }
+  .hero { margin-top: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -364,7 +364,7 @@ a:focus-visible, button:focus-visible {
 @media print {
   body { background: #fff; }
   .card { box-shadow: none; }
-  .top-links, .footer-links, .news-more, .text-button, .bg-canvas, .motion-panel { display: none; }
+  .top-links, .name-links, .news-more, .text-button, .bg-canvas, .motion-panel { display: none; }
   #news-older, #all-publications { display: block !important; }
 }
 
