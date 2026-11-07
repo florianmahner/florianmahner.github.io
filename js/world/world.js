@@ -502,6 +502,8 @@ addEventListener('pointermove', e => {
   lean.tx = (e.clientX / innerWidth) * 2 - 1;
   lean.ty = (e.clientY / innerHeight) * 2 - 1;
   pointerOn = true;
+  // the news.log sheet leans a little toward the cursor
+  if (newsWin) { newsWin.style.setProperty('--ry', `${(-9 + lean.tx * 6).toFixed(2)}deg`); newsWin.style.setProperty('--rx', `${(4 - lean.ty * 4).toFixed(2)}deg`); }
 }, { passive: true });
 document.addEventListener('pointerleave', () => { pointerOn = false; });
 

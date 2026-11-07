@@ -374,3 +374,33 @@ main { position: relative; z-index: 1; }
 .world .w-col-news .w-news { transform: none; opacity: 1; clip-path: none; position: static; display: block; }
 .world .w-col-news .w-news .card-bar { opacity: 1; transform: none; }
 .world .w-about .w-col p + p { margin-top: 1.25rem; }
+
+/* second About screen spans the page, so news.log sits at the right edge */
+.world .ch-about > .w-about { width: 100%; max-width: none; }
+.w-step-two { grid-template-columns: minmax(0, 44rem) minmax(0, 25rem); justify-content: space-between; }
+
+/* news.log as a file: a sheet of paper floating in 3D with a folded corner,
+   a filename tab, soft layered shadow; it leans toward the cursor (--rx/--ry) */
+.w-col-news { perspective: 1400px; }
+.world .w-col-news .w-news {
+  position: relative; border: 0; background: var(--card);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--card) 92%, var(--bg)) 0%, var(--card) 18%, var(--card) 82%, color-mix(in srgb, var(--card) 94%, var(--bg)) 100%);
+  box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 18px -6px rgba(20,24,40,.16), 0 30px 60px -20px rgba(20,24,40,.22);
+  transform: rotateY(var(--ry, -9deg)) rotateX(var(--rx, 4deg)) !important;
+  transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2, .8, .1, 1) !important;
+  padding: 2.4rem 1.6rem 1.4rem; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%) !important;
+}
+/* the folded corner */
+.world .w-col-news .w-news::after {
+  content: ''; position: absolute; top: 0; right: 0; width: 26px; height: 26px;
+  background: linear-gradient(225deg, transparent 50%, color-mix(in srgb, var(--bg) 70%, var(--quiet)) 50%);
+  box-shadow: -2px 2px 4px rgba(0,0,0,.08);
+}
+/* filename, typed at the top of the page like a header */
+.world .w-col-news .w-news .card-bar {
+  position: absolute; top: .9rem; left: 1.6rem; padding: 0; border: 0; background: none; color: var(--quiet);
+}
+.world .w-col-news .w-news .news-list { max-height: 24rem; padding: 0; }
+@media (prefers-color-scheme: dark) {
+  .world .w-col-news .w-news { box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 20px 50px -16px rgba(0,0,0,.7); }
+}
