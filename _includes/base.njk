@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bg="{{ site.background or 'none' }}" data-intro="{{ site.intro or 'none' }}">
+<html lang="en" data-bg="{{ site.background or 'none' }}" data-intro="{{ site.intro or 'none' }}" data-scene="{{ site.scene or 'none' }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,6 +27,17 @@
   <script>document.documentElement.classList.add('js')</script>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/motion.js" defer></script>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <script>
+    // The 3D stage loads only when asked for (site.json "scene" or ?scene=), after the page.
+    (function () {
+      var r = document.documentElement, q = new URLSearchParams(location.search).get('scene');
+      var s = q || r.getAttribute('data-scene');
+      if (!s || s === 'none') return;
+      r.setAttribute('data-scene', s);
+      addEventListener('load', function () { var m = document.createElement('script'); m.type = 'module'; m.src = '/js/scene.js'; document.head.appendChild(m); });
+    })();
+  </script>
 
   <script type="application/ld+json">
   {

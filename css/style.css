@@ -183,6 +183,23 @@ a:focus-visible, button:focus-visible {
 .pub-card { grid-column: span 4; }
 .edu-card { grid-column: span 3; }
 
+/* 3D stage above the name (js/scene.js). Hidden unless a scene is on. The
+   canvas fades in once drawn, and its edges fade into the page. */
+.stage { display: none; }
+[data-scene]:not([data-scene="none"]) .stage {
+  display: block;
+  position: relative;
+  height: clamp(15rem, 34vh, 24rem);
+  margin: 0 calc(-1 * var(--gutter)) calc(-1 * clamp(2.5rem, 5vw, 4.5rem) + .5rem);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+.stage canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; touch-action: pan-y; }
+.stage.ready canvas { opacity: 1; }
+@media (max-width: 640px) {
+  [data-scene]:not([data-scene="none"]) .stage { height: 11rem; margin-bottom: -2rem; }
+}
+
 /* Contact icons */
 /* Contact icons sit in a row under the name on every screen size. The -11px
    aligns the first icon's glyph (not its 44px tap area) with the name. */
