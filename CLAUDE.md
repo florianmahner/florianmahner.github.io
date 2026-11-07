@@ -99,8 +99,7 @@ All motion lives in `js/motion.js`, configured by `background` and `intro` in
 - `.reveal` elements rise in via IntersectionObserver (`base.njk`, gated by
   the `.js` class so no-JS readers see everything); cards lift on hover.
 - Everything is off under `prefers-reduced-motion`; the grid pauses in hidden
-  tabs. On localhost a small panel (bottom left) toggles the grid and replays
-  the intro; `?bg=` and `?intro=` override the defaults.
+  tabs. `?bg=` and `?intro=` override the defaults.
 - Rejected, don't bring back: cursor-driven pulling/swirling grid, graph /
   cluster / attractor backgrounds ("looks like astro stuff"), a dot falling
   from the top.

@@ -1,0 +1,120 @@
+---
+title: Florian P. Mahner
+---
+{#- Split mode (docs/split-spec.md): content on the left, a sticky 3D stage on
+    the right (a sticky band on top on tablets and phones). Same content as
+    index.njk, in the owner's words; only the structure differs.
+
+    Hooks for js/split/ — every one is progressive enhancement:
+      [data-chapter]  section roots: hero | news | pubs | bg | end
+      [data-lines]    split into lines that slide up when revealed (.is-in)
+      [data-words]    About: each <p> split into words for the reading highlight
+      [data-reveal]   fades and rises in when revealed (.is-in, stagger via --i)
+      [data-count]    a year that counts up to its value when revealed
+      [data-pub]      a publication row; the value is its index in
+                      publications.json, which is also its 3D object's index
+      [data-edu]      a Background entry; index in education.json -#}
+{% import "icons.njk" as icons %}
+{% set NEWS_VISIBLE = 4 %}
+
+{# News entries; the year label appears whenever the year changes. #}
+{% macro newsItems(items, prevYear) %}
+{%- set last = prevYear -%}
+{%- for item in items -%}
+  {%- set y = item.date | yearOf -%}
+  {%- if y != last %}<p class="news-year mono" data-reveal>{{ y }}</p>{% set last = y %}{% endif %}
+  <div class="news-row" data-reveal>
+    <time class="news-month mono" datetime="{{ item.date }}">{{ item.date | monthName }}</time>
+    <p class="news-text">{{ item.text | newsText | safe }}</p>
+  </div>
+{%- endfor -%}
+{% endmacro %}
+
+{# One publication as a typographic index row. #}
+{% macro pubRow(pub, index, highlight) %}
+<li class="pub-row" data-pub="{{ index }}">
+  <p class="row-venue mono" data-reveal>{{ pub.venue }} · {{ pub.year }}</p>
+  <h3 class="row-title" data-lines>{{ pub.title }}</h3>
+  <p class="row-authors" data-reveal>{{ pub.authors | highlightAuthor(highlight) | safe }}</p>
+  {%- if pub.pdf or pub.html or pub.code %}
+  <p class="row-links mono" data-reveal>
+    {%- if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer" aria-label="PDF of {{ pub.title }}">PDF</a>{% endif -%}
+    {%- if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer" aria-label="Web page for {{ pub.title }}">Web</a>{% endif -%}
+    {%- if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer" aria-label="Code for {{ pub.title }}">Code</a>{% endif -%}
+  </p>
+  {%- endif %}
+</li>
+{% endmacro %}
+
+{# Wrap each four-digit year in a counter span; the rest of the label stays as written. #}
+{% macro years(label) -%}
+{{ label | escape | string | replace(r/(\d{4})/g, '<span data-count="$1">$1</span>') | safe }}
+{%- endmacro %}
+
+<main class="split" id="top">
+
+  <div class="split-stage" id="split-stage" aria-hidden="true"></div>
+
+  <div class="split-col">
+
+    <header class="split-hero" data-chapter="hero">
+      <h1 class="hero-name" id="name" data-lines>Florian P<span class="accent-dot">.</span> Mahner</h1>
+      <div class="name-links">{{ icons.socialIcons(site) }}</div>
+      <div class="about split-about" data-words>
+        {% mdfile "about" %}
+      </div>
+    </header>
+
+    {% if news and news.length %}
+    <section class="split-block split-news" data-chapter="news" aria-labelledby="news-heading">
+      <h2 class="split-label mono" id="news-heading" data-lines>news.log</h2>
+      <div class="news-log">
+        {{ newsItems(news.slice(0, NEWS_VISIBLE), "") }}
+      </div>
+      {% if news.length > NEWS_VISIBLE %}
+      <div class="news-log" id="news-older" hidden>
+        {{ newsItems(news.slice(NEWS_VISIBLE), news[NEWS_VISIBLE - 1].date | yearOf) }}
+      </div>
+      <p class="split-foot mono">
+        <button class="text-button" id="toggle-news" type="button" aria-expanded="false" aria-controls="news-older">show older</button>
+      </p>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {% set rest = publications | rejectattr("selected") %}
+    <section class="split-block split-pubs" data-chapter="pubs" aria-labelledby="publications-heading">
+      <h2 class="block-heading" id="publications-heading" data-lines>Selected publications</h2>
+      <ol class="pub-index" role="list">
+        {% for pub in publications %}{% if pub.selected %}{{ pubRow(pub, loop.index0, site.highlightAuthor) }}{% endif %}{% endfor %}
+      </ol>
+      {% if rest.length %}
+      <ol class="pub-index" id="all-publications" role="list" hidden>
+        {% for pub in publications %}{% if not pub.selected %}{{ pubRow(pub, loop.index0, site.highlightAuthor) }}{% endif %}{% endfor %}
+      </ol>
+      {% endif %}
+      <p class="split-foot mono">
+        {% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">All {{ publications.length }} publications</button>{% endif %}
+        <span>* equal contribution</span>
+      </p>
+    </section>
+
+    <section class="split-block split-bg" data-chapter="bg" aria-labelledby="background-heading">
+      <h2 class="block-heading" id="background-heading" data-lines>Background</h2>
+      <ol class="timeline" role="list">
+        {% for edu in education %}
+        <li class="tl-item" data-edu="{{ loop.index0 }}">
+          <p class="tl-years mono" data-reveal>{% if edu.startLabel %}{{ years(edu.startLabel) }}{% else %}<span data-count="{{ edu.startYear }}">{{ edu.startYear }}</span>–<span data-count="{{ edu.endYear }}">{{ edu.endYear }}</span>{% endif %}</p>
+          <h3 class="tl-degree" data-lines>{{ edu.degree }} {{ edu.field }}</h3>
+          <p class="tl-meta" data-reveal>{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    <footer class="split-footer" data-chapter="end">
+      <p class="mono">&copy; {% year %} {{ site.fullName }}</p>
+    </footer>
+
+  </div>
+</main>

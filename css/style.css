@@ -130,16 +130,6 @@ body {
    CSS dots step aside while it runs. */
 .bg-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .bg-live body { background-image: none; }
-/* Localhost-only motion panel. */
-.motion-panel {
-  position: fixed; left: 12px; bottom: 12px; z-index: 50;
-  display: flex; gap: 4px; padding: 6px;
-  background: var(--card); border: var(--border); box-shadow: var(--shadow-sm);
-  font-family: var(--mono); font-size: .75rem;
-}
-.motion-panel button { font: inherit; color: var(--ink); background: none; border: 1px solid transparent; padding: 4px 8px; cursor: pointer; }
-.motion-panel button:hover { border-color: var(--line); }
-.motion-panel button[aria-pressed="true"] { background: var(--bar); border-color: var(--line); }
 h1, h2, h3, p { margin: 0; }
 p, .pub-authors { text-wrap: pretty; }
 .pub-title, .edu-degree, .block-heading { text-wrap: balance; }
@@ -198,6 +188,25 @@ a:focus-visible, button:focus-visible {
 .stage.ready canvas { opacity: 1; }
 @media (max-width: 640px) {
   [data-scene]:not([data-scene="none"]) .stage { height: 11rem; margin-bottom: -2rem; }
+}
+
+/* Flow mode (js/flow/): one fixed, click-through canvas in front of the page;
+   the objects travel with the content. The band above the name stays off.
+   The canvas fades in once the first frame is drawn. */
+html[data-scene="flow"] #stage { display: none; }
+[data-scene="flow"] .flow-canvas {
+  position: fixed; inset: 0; z-index: 5;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  opacity: 0; transition: opacity .6s ease;
+}
+[data-scene="flow"].flow-ready .flow-canvas { opacity: 1; }
+@media (max-width: 640px) {
+  /* Phones: the objects rest in a row above the name. */
+  [data-scene="flow"] .name-row { padding-top: 4.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-scene="flow"] .flow-canvas { transition: none; }
 }
 
 /* Contact icons */
@@ -444,7 +453,7 @@ a:focus-visible, button:focus-visible {
 @media print {
   body { background: #fff; }
   .card { box-shadow: none; }
-  .name-links, .news-more, .text-button, .bg-canvas, .motion-panel { display: none; }
+  .name-links, .news-more, .text-button, .bg-canvas { display: none; }
   #news-older, #all-publications { display: block !important; }
 }
 

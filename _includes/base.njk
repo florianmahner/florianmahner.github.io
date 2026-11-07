@@ -30,12 +30,13 @@
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
   <script>
     // The 3D stage loads only when asked for (site.json "scene" or ?scene=), after the page.
+    // "flow" is the whole-page scroll mode (js/flow/); anything else is the band above the name.
     (function () {
       var r = document.documentElement, q = new URLSearchParams(location.search).get('scene');
       var s = q || r.getAttribute('data-scene');
       if (!s || s === 'none') return;
       r.setAttribute('data-scene', s);
-      addEventListener('load', function () { var m = document.createElement('script'); m.type = 'module'; m.src = '/js/scene.js'; document.head.appendChild(m); });
+      addEventListener('load', function () { var m = document.createElement('script'); m.type = 'module'; m.src = s === 'flow' ? '/js/flow/main.js' : '/js/scene.js'; document.head.appendChild(m); });
     })();
   </script>
 

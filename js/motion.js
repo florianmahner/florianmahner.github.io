@@ -11,14 +11,13 @@
      hops, lands with squash-and-stretch and sends out one soft ring.
 
    Both are skipped for prefers-reduced-motion; the grid pauses in background
-   tabs and stays static (CSS dots) on touch devices. On localhost a small panel (bottom left) toggles the grid and replays
-   the intro. ?bg= and ?intro= override the defaults for testing.
+   tabs and stays static (CSS dots) on touch devices. ?bg= and ?intro=
+   override the defaults for testing.
    ========================================================================== */
 (function () {
   'use strict';
 
   var root = document.documentElement;
-  var isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
   var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
   var dark = window.matchMedia('(prefers-color-scheme: dark)');
   var coarse = window.matchMedia('(pointer: coarse)');
@@ -120,7 +119,6 @@
     root.classList.toggle('bg-live', on);
     canvas.style.display = on ? '' : 'none';
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    if (panel) panel.update();
     if (!on) return;
     readColor(); resize(); draw(performance.now() - t0);
     raf = requestAnimationFrame(loop);
@@ -187,33 +185,12 @@
     requestAnimationFrame(step);
   }
 
-  // ---- localhost test panel -----------------------------------------------
-  var panel = null;
-  function buildPanel(bg) {
-    var box = document.createElement('div');
-    box.className = 'motion-panel';
-    box.setAttribute('role', 'group');
-    box.setAttribute('aria-label', 'Motion preview (localhost only)');
-    var toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.addEventListener('click', function () { bg = on ? 'none' : 'breathe'; setBackground(bg); });
-    var replay = document.createElement('button');
-    replay.type = 'button';
-    replay.textContent = 'replay intro';
-    replay.addEventListener('click', function () { window.scrollTo({ top: 0 }); playIntro('hop'); });
-    box.appendChild(toggle); box.appendChild(replay);
-    document.body.appendChild(box);
-    return { update: function () { toggle.textContent = on ? 'grid: breathe' : 'grid: static'; toggle.setAttribute('aria-pressed', on ? 'true' : 'false'); } };
-  }
-
   // ---- boot -----------------------------------------------------------------
   function boot() {
     var bg = params.get('bg') || root.getAttribute('data-bg') || 'none';
     var intro = params.get('intro') || root.getAttribute('data-intro') || 'none';
     document.body.prepend(canvas);
-    if (isLocal) panel = buildPanel(bg);
     setBackground(bg);
-    if (panel) panel.update();
     playIntro(intro);
 
     window.addEventListener('resize', function () { if (on) { resize(); draw(performance.now() - t0); } });

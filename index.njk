@@ -20,12 +20,12 @@ title: Florian P. Mahner
 
   <div class="stage" id="stage" aria-hidden="true"></div>
 
-  <div class="name-row">
+  <div class="name-row" data-flow="hero">
     <h1 class="hero-name reveal" id="name">Florian P<span class="accent-dot">.</span> Mahner</h1>
     <div class="name-links">{{ icons.socialIcons(site) }}</div>
   </div>
 
-  <div class="grid hero">
+  <div class="grid hero" data-flow="hero">
     <section class="span-8 about reveal" aria-labelledby="name">
       {% mdfile "about" %}
     </section>
@@ -50,7 +50,7 @@ title: Florian P. Mahner
 
   {% set selected = publications | selectattr("selected") %}
   {% set rest = publications | rejectattr("selected") %}
-  <section class="grid block" aria-labelledby="publications-heading">
+  <section class="grid block" aria-labelledby="publications-heading" data-flow="pubs">
     <h2 class="block-heading span-12" id="publications-heading">Selected publications</h2>
     <div class="swipe">
       {% for pub in selected %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
@@ -64,7 +64,7 @@ title: Florian P. Mahner
     </p>
   </section>
 
-  <section class="grid block" aria-labelledby="background-heading">
+  <section class="grid block" aria-labelledby="background-heading" data-flow="bg">
     <h2 class="block-heading span-12" id="background-heading">Background</h2>
     <div class="swipe">
       {% for edu in education %}
@@ -77,7 +77,7 @@ title: Florian P. Mahner
     </div>
   </section>
 
-  <footer class="footer">
+  <footer class="footer" data-flow="footer">
     <p class="mono">&copy; {% year %} {{ site.fullName }}</p>
   </footer>
 </main>

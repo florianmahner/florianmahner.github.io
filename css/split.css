@@ -1,0 +1,233 @@
+/* ==========================================================================
+   Split mode (/split/, docs/split-spec.md) — loaded after css/style.css and
+   built on its tokens: content scrolls on the left as plain typography, a 3D
+   stage stays put on the right (a sticky band on top on tablets and phones).
+   Only the six type tokens are used; dark mode comes from the tokens alone.
+   ========================================================================== */
+
+:root {
+  --split-gap: clamp(5.5rem, 14vh, 10rem);     /* room between chapters, so each one gets scroll time */
+  --split-ease: cubic-bezier(.2, .7, .1, 1);
+  --split-faint: color-mix(in srgb, var(--quiet) 30%, transparent);  /* timeline rail */
+}
+
+/* ---- layout ------------------------------------------------------------ */
+/* Desktop: two columns inside the usual page width. The stage sits in the
+   right column of the same grid row as the content, so sticky keeps it in
+   view for the whole page. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+  column-gap: var(--gap);
+  max-width: calc(var(--page-w) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
+.split-col {
+  grid-column: 1; grid-row: 1;
+  min-width: 0;
+  padding: clamp(3.5rem, 14vh, 9rem) 0 0;
+  /* Lets the footer reach the reading line, so the "end" chapter can become active. */
+  padding-bottom: max(32vh, env(safe-area-inset-bottom));
+}
+.split-stage {
+  grid-column: 2; grid-row: 1;
+  align-self: start;
+  position: sticky; top: 0;
+  height: 100vh;
+  /* Bleeds to the window edge: no frame, it floats on the page's dot grid. */
+  margin-right: calc(-1 * var(--gutter));
+}
+.split-stage canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; touch-action: pan-y; }
+.split-stage.ready canvas { opacity: 1; }
+
+/* No JS, or no WebGL (main.js adds .split-flat): one readable column. */
+html:not(.js) .split-stage, .split-flat .split-stage { display: none; }
+html:not(.js) .split, .split-flat .split { grid-template-columns: minmax(0, 1fr); }
+html:not(.js) .split-col, .split-flat .split-col { max-width: 50rem; padding-bottom: 4rem; }
+
+/* ---- hero ---------------------------------------------------------------- */
+.split-hero .name-links { margin-top: .75rem; }
+.split-about { margin-top: clamp(1.75rem, 4vh, 2.75rem); }
+
+/* ---- chapters ------------------------------------------------------------ */
+.split-block { margin-top: var(--split-gap); }
+.split-label { color: var(--strong); font-weight: 500; }
+.split-foot {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1.5rem;
+  line-height: 1.4;
+  color: var(--quiet);
+}
+
+/* ---- news.log: mono month labels in a left gutter, text on the right ------ */
+.news-log {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+.news-log + .news-log { margin-top: 0; }
+#news-older[hidden] { display: none; }
+.news-year { grid-column: 1 / -1; padding: 1rem 0 .15rem; color: var(--quiet); font-weight: 500; }
+.news-log > .news-year:first-child { padding-top: 0; }
+/* Each row spans both columns and reuses them via subgrid, so every text
+   column starts at the same x. */
+.news-row {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: subgrid;
+  padding: .45rem 0;
+}
+.news-month { color: var(--quiet); line-height: calc(var(--fs-small) * 1.55); }   /* first line sits on the text's first line */
+.news-text { font-size: var(--fs-small); line-height: 1.55; }
+.news-text em { padding-right: .08em; }   /* italic correction before "!" */
+
+/* ---- publications: a typographic index ------------------------------------ */
+.pub-index { list-style: none; margin: 2rem 0 0; padding: 0; }
+.pub-index + .pub-index { margin-top: 0; }
+#all-publications[hidden] { display: none; }
+.pub-row {
+  margin: 0 0 2.25rem;
+  transition: opacity .3s ease;
+}
+.row-venue { color: var(--quiet); }
+.row-title {
+  margin-top: .35rem;
+  color: var(--strong);
+  font-size: var(--fs-body); font-weight: 650; line-height: 1.38; letter-spacing: -.01em;
+  text-wrap: balance;
+  transition: transform .3s var(--split-ease);
+}
+.row-authors { margin-top: .3rem; font-size: var(--fs-small); color: var(--muted); text-wrap: pretty; }
+.row-links { display: flex; flex-wrap: wrap; gap: 0 1.1rem; margin-top: .35rem; }
+.row-links a { display: inline-block; padding: .3rem 0; }   /* taller tap target, same look */
+/* Active row (the one at the reading line, or under the mouse): full ink,
+   the others step back. main.js sets .is-active and .has-active. */
+.has-active .pub-row:not(.is-active) { opacity: .55; }
+@media (hover: hover) and (pointer: fine) {
+  .has-active .pub-row:hover { opacity: 1; }
+  .pub-row:hover .row-title { transform: translateX(6px); }
+}
+
+/* ---- Background: a vertical timeline -------------------------------------- */
+.timeline {
+  list-style: none; margin: 2rem 0 0; padding: 0 0 0 1.5rem;
+  border-left: 1px solid var(--split-faint);
+}
+.tl-item { position: relative; padding-bottom: 2rem; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item::before {   /* the marker on the rail, centred on the 1px line */
+  content: ''; position: absolute; left: calc(-1.5rem - 3.5px); top: calc(var(--fs-mono) * .7 - 3px);
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--bg); box-shadow: 0 0 0 1.5px var(--quiet);
+}
+.tl-years { color: var(--quiet); font-variant-numeric: tabular-nums; }   /* counting digits don't jitter */
+.tl-degree { margin-top: .3rem; color: var(--strong); font-size: var(--fs-body); font-weight: 600; line-height: 1.4; text-wrap: balance; }
+.tl-meta { margin-top: .15rem; font-size: var(--fs-small); color: var(--muted); }
+
+/* ---- footer --------------------------------------------------------------- */
+.split-footer { margin-top: var(--split-gap); color: var(--footer); }
+
+/* ---- reveal start states ----------------------------------------------------
+   Only under .split-motion (JS on, motion allowed). Until main.js marks the
+   page .split-live, the same elements wait hidden, with a CSS failsafe that
+   shows them after 4s in case the scripts never arrive. */
+@media (prefers-reduced-motion: no-preference) {
+  .split-motion:not(.split-live) :is([data-lines], [data-reveal]) {
+    opacity: 0;
+    animation: split-failsafe .4s ease 4s forwards;
+  }
+
+  /* Lines (js/split/text.js): <span class="line"><span class="line-inner">…</span></span>,
+     --i is the line's index for the 60ms stagger. */
+  .split-motion .line {
+    display: block;
+    overflow: clip;
+    padding-bottom: .12em; margin-bottom: -.12em;   /* keep descenders out of the clip */
+  }
+  .split-motion .line-inner {
+    display: block;
+    transform: translateY(100%);
+    transition: transform .7s var(--split-ease) calc(var(--i, 0) * 60ms);
+  }
+  .split-motion .is-in .line-inner { transform: none; }
+
+  /* Rows and labels fade and rise; --i staggers news items. */
+  .split-motion.split-live [data-reveal] {
+    opacity: 0; transform: translateY(14px);
+    transition: opacity .7s var(--split-ease) calc(var(--i, 0) * 80ms),
+                transform .7s var(--split-ease) calc(var(--i, 0) * 80ms);
+  }
+  .split-motion.split-live [data-reveal].is-in { opacity: 1; transform: none; }
+
+  /* Link letter-roll (fine pointers): <span class="roll"><span>label</span>
+     <span aria-hidden="true">label</span></span> — both copies share one
+     cell; on hover the top one rolls up and the bottom one rolls in. */
+  .roll { display: inline-grid; overflow: clip; vertical-align: bottom; }
+  .roll > * { grid-area: 1 / 1; transition: transform .35s var(--split-ease); }
+  .roll > :last-child { transform: translateY(100%); }
+  @media (hover: hover) and (pointer: fine) {
+    a:hover > .roll > :first-child { transform: translateY(-100%); }
+    a:hover > .roll > :last-child { transform: none; }
+  }
+}
+@keyframes split-failsafe { to { opacity: 1; } }
+
+/* Reading highlight (About): words start quiet and take the paragraph's own
+   colour once lit (ink, strong for the lead, violet inside links). Without
+   motion text.js still splits, but every word is lit. */
+.split-live .word { color: var(--quiet); transition: color .25s ease; }
+.split-live .word.is-lit { color: inherit; }
+@media (prefers-reduced-motion: reduce) {
+  .split-live .word { color: inherit; transition: none; }
+}
+
+/* ---- tablet and phone: one column, the stage as a sticky band on top ------ */
+@media (max-width: 960px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .split-stage {
+    grid-column: 1; grid-row: auto;
+    z-index: 3;
+    height: 40vh;
+    margin: 0 calc(-1 * var(--gutter));
+    /* Opaque page ground, so the content scrolling beneath is hidden, with a
+       soft fade at the bottom edge. The dots stay aligned with the page's. */
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--dots) 1px, transparent 1.2px);
+    background-size: 16px 16px;
+    background-attachment: fixed;
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent);
+            mask-image: linear-gradient(to bottom, #000 78%, transparent);
+  }
+  .bg-live .split-stage { background-image: none; }
+  .split-col { grid-column: 1; grid-row: auto; padding-top: 1.5rem; padding-bottom: max(40vh, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 640px) {
+  :root { --split-gap: clamp(4rem, 11vh, 6rem); }
+  .split-stage { height: 34vh; transition: height .45s var(--split-ease); }
+  /* main.js sets .split-past-hero once the hero has scrolled by. */
+  .split-past-hero .split-stage { height: 22vh; }
+  .split-col { padding-bottom: max(30vh, env(safe-area-inset-bottom)); }
+  .news-log { grid-template-columns: 5.25rem minmax(0, 1fr); column-gap: 1rem; }
+  .news-row { padding: .35rem 0; }
+  .news-text { line-height: 1.5; }
+  .pub-row { margin-bottom: 1.75rem; }
+  .row-links a { padding: .6rem 0; }   /* 44px tap targets */
+  .timeline { padding-left: 1.25rem; }
+  .tl-item::before { left: calc(-1.25rem - 3.5px); }
+  .tl-item { padding-bottom: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-stage, .split-stage canvas, .pub-row, .row-title { transition: none; }
+}
+@media print {
+  .split { display: block; }
+  .split-stage, .text-button { display: none; }
+  .split-col { padding: 0; }
+  #news-older, #all-publications { display: block !important; }
+  .news-log#news-older { display: grid !important; }
+}
