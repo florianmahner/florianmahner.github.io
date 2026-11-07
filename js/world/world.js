@@ -355,6 +355,13 @@ function screenToWorld(nx, ny, d, out) {
   const halfH = d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   return out.set(nx * halfH * aspect, ny * halfH, -d);
 }
+// first-screen spots: two staggered columns in the open right area
+// [nx, ny, distance, scale]
+const OPEN = [
+  [0.56, 0.62, 11, 0.8], [0.84, 0.5, 13, 0.85], [0.62, 0.22, 12, 0.75], [0.9, 0.08, 15, 0.9],
+  [0.52, -0.14, 10, 0.7], [0.8, -0.3, 11, 0.8], [0.6, -0.55, 13, 0.85], [0.9, -0.66, 12, 0.75],
+  [0.72, 0.82, 16, 0.7], [0.7, -0.84, 15, 0.7],
+];
 const cloud = [
   [0.55, 0.5, 9, 1.15], [0.86, 0.12, 12, 1.25], [0.42, -0.4, 8, 0.95], [0.7, -0.62, 11, 1.05], [0.94, 0.66, 15, 1.35],
   [0.32, 0.78, 13, 0.85], [0.6, -0.02, 16, 1.4], [0.9, -0.38, 7.5, 0.8], [0.25, -0.8, 12, 0.9], [0.74, 0.88, 10, 0.75],
@@ -421,15 +428,19 @@ const forms = {
     // wide screens: the open space right of the text; tall narrow screens:
     // spread across the free bands above and below the text instead
     const narrow = aspect < 0.9;
-    const ax = narrow ? -0.8 + ((i * 0.618) % 1) * 1.6 : 0.62 + (c[0] - 0.25) * 0.5;
-    const ay = narrow ? (i % 2 ? 0.42 + ((i * 0.37) % 1) * 0.42 : -0.42 - ((i * 0.53) % 1) * 0.46) : c[1];
+    // first screen (wide): each object has its own spot in the open space right
+    // of the text, spaced so none of them overlap
+    const g = OPEN[i % OPEN.length];
+    const ax = narrow ? -0.8 + ((i * 0.618) % 1) * 1.6 : g[0];
+    const ay = narrow ? (i % 2 ? 0.42 + ((i * 0.37) % 1) * 0.42 : -0.42 - ((i * 0.53) % 1) * 0.46) : g[1];
+    const ad = narrow ? c[2] : g[2];
     // second screen: loose groups in the free space above and below the text,
     // at different depths, never one straight line
     const top = i % 3 === 0;
     const bx = -0.9 + ((i * 0.618) % 1) * 1.8;
     const by = top ? 0.7 + ((i * 0.37) % 1) * 0.12 : -0.62 - ((i * 0.53) % 1) * 0.28;
     const bd = 10 + ((i * 0.71) % 1) * 8;
-    const sc = narrow ? c[3] * 0.58 : c[3]; // smaller on tall narrow screens
+    const sc = narrow ? c[3] * 0.58 : g[3]; // smaller on tall narrow screens
     const rows = rects.newsRows;
     markerOn[i] = false;
     const km = stageEl ? newsReveal : k;
@@ -446,7 +457,7 @@ const forms = {
       const inView = r && box && r.top + r.height * 0.5 > box.top + 8 && r.top + 12 < box.bottom - 8;
       const extra = inView ? -1 : i;
       const a = new THREE.Vector3(), m = new THREE.Vector3();
-      screenToWorld(ax, ay, c[2], a);
+      screenToWorld(ax, ay, ad, a);
       let size;
       if (extra < 0) {
         // has a news item: sits right in front of it
@@ -471,7 +482,7 @@ const forms = {
       const markerScale = size / 0.85;
       return sc + (markerScale - sc) * k;
     }
-    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
+    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, ad + (bd - ad) * k, out);
     return sc + ((narrow ? 0.5 : 0.75) - sc) * k;
   },
   news(i, t, p, out) {
@@ -837,7 +848,7 @@ function resize() {
 const ta = new THREE.Vector3(), tb = new THREE.Vector3();
 const pv = new THREE.Vector3();
 let lastSkew = 0, pointerOn = false;
-let last = 0, t = 0, pubA = 0, scrollV = 0, lastY = scrollY, running = false;
+let last = 0, t = 0, ts = 0, act = 0, pubA = 0, scrollV = 0, lastY = scrollY, running = false;
 function frame(now) {
   if (!running) return;
   requestAnimationFrame(frame);
@@ -870,6 +881,12 @@ function frame(now) {
   const slidePos = -txCur / innerWidth; // 0..n-1, continuous while sliding
   let diff = (state.pinned ? slidePos : state.pubActive) - pubA;
   pubA += diff * (1 - Math.exp(-dt * 5));
+  // motion follows what you do: full while scrolling or while a paper slides,
+  // almost still once you stop to read
+  const doing = clamp(Math.abs(scrollV) / 1200 + Math.abs(diff) * 2 + Math.abs(txVel) / 900, 0, 1);
+  act += (doing - act) * (1 - Math.exp(-dt * (doing > act ? 8 : 1.2)));
+  const rate = 0.1 + 0.9 * act;
+  ts += dt * rate;
   scrollV += ((scrollY - lastY) / Math.max(dt, 1e-3) - scrollV) * 0.2; lastY = scrollY;
 
   lean.x += (lean.tx - lean.x) * (1 - Math.exp(-dt * 3));
@@ -885,8 +902,8 @@ function frame(now) {
 
   const fa = forms[state.a], fb = forms[state.b];
   objs.forEach((o, i) => {
-    const sa = fa(i, t, state.pA, ta, pubA);
-    const sb = fb(i, t, state.pB, tb, pubA);
+    const sa = fa(i, ts, state.pA, ta, pubA);
+    const sb = fb(i, ts, state.pB, tb, pubA);
     ta.lerp(tb, state.t);
     const sc = sa + (sb - sa) * state.t;
     // fast scrolling scatters them a little; they gather again when you stop
@@ -935,9 +952,9 @@ function frame(now) {
     o.scale += (sc * (i === hovered ? 1.18 : 1) - o.scale) * (1 - Math.exp(-dt * (i === hovered ? 9 : 4)));
     // turn: own pace, faster for the paper in front, a kick from scrolling
     const boost = (state.a === 'pubs' || state.b === 'pubs') && i === state.pubActive ? 1.6 : 1;
-    o.rot.x += o.spin.x * dt * boost + scrollV * 0.00001;
-    o.rot.y += o.spin.y * dt * boost;
-    o.rot.z += o.spin.z * dt;
+    o.rot.x += o.spin.x * dt * boost * rate + scrollV * 0.00001;
+    o.rot.y += o.spin.y * dt * boost * rate;
+    o.rot.z += o.spin.z * dt * rate;
     o.mesh.position.copy(o.pos);
     o.mesh.rotation.copy(o.rot);
     o.mesh.scale.setScalar(Math.max(0.001, o.scale));
