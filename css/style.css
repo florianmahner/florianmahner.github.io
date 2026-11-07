@@ -227,7 +227,7 @@ a:focus-visible, button:focus-visible {
   animation: dot-ring 1.1s cubic-bezier(.1, .6, .3, 1) both;
 }
 @keyframes dot-ring { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(6); } }
-.about { max-width: none; }   /* runs the full 8-column width, up to the News card */
+.about { max-width: 50rem; }
 .about p { margin-top: 1.1rem; }
 .about p:first-child {
   margin-top: 0;
@@ -296,14 +296,19 @@ a:focus-visible, button:focus-visible {
   align-items: center;
   flex-wrap: wrap;
   gap: .5rem;
+  margin-top: -.5rem;            /* sits close under the cards */
+  line-height: 1.4;
   color: var(--quiet);
 }
+/* The button is only as tall as its text, so the next section's gap starts at
+   the text; the ::after keeps a 44px tap area without taking up layout space. */
 .text-button {
-  min-height: 44px;
+  position: relative;
   padding: 0;
   background: none;
   border: 0;
 }
+.text-button::after { content: ''; position: absolute; left: -8px; right: -8px; top: 50%; height: 44px; transform: translateY(-50%); }
 .text-button:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* Card rows. On desktop .swipe is transparent to the 12-column grid; on
    phones it becomes a sideways-scrolling row with the next card peeking in. */
