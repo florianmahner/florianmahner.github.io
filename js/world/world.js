@@ -350,8 +350,8 @@ const cw = new THREE.Vector3();
 let aspect = 1, small = false;
 const v = new THREE.Vector3();
 function screenToWorld(nx, ny, d, out) {
+  if (small) d *= 1.35; // phones: keep objects further back (smaller), same screen position
   const halfH = d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  if (small) { nx *= 0.75; d *= 1.35; } // phones: the text spans the screen, keep objects further back
   return out.set(nx * halfH * aspect, ny * halfH, -d);
 }
 const cloud = [
