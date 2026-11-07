@@ -1,15 +1,16 @@
 {# One publication card. Used for both the selected list and the expanded
-   "all publications" list so the markup lives in one place. #}
+   "all publications" list so the markup lives in one place. PDF / Web / Code
+   are icon links in the card's top-right corner. #}
 {% macro pubRow(pub, highlight) %}
-{%- set preprint = pub.venue.indexOf("arXiv") > -1 -%}
+{%- set svg = 'width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"' -%}
 <article class="card pub-card lift reveal">
-  <p class="pub-venue mono{% if preprint %} is-preprint{% endif %}">{{ pub.venue }} · {{ pub.year }}</p>
+  <p class="pub-venue mono">{{ pub.venue }} · {{ pub.year }}</p>
   <h3 class="pub-title">{{ pub.title }}</h3>
   <p class="pub-authors">{{ pub.authors | highlightAuthor(highlight) | safe }}</p>
-  <p class="pub-links mono">
-    {%- if pub.pdf %}<a href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer">PDF</a>{% endif -%}
-    {%- if pub.html %}<a href="{{ pub.html }}" target="_blank" rel="noopener noreferrer">Web</a>{% endif -%}
-    {%- if pub.code %}<a href="{{ pub.code }}" target="_blank" rel="noopener noreferrer">Code</a>{% endif -%}
-  </p>
+  <div class="pub-links">
+    {%- if pub.pdf %}<a class="pub-icon" href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer" aria-label="PDF of {{ pub.title }}" title="PDF"><svg {{ svg | safe }}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></a>{% endif -%}
+    {%- if pub.html %}<a class="pub-icon" href="{{ pub.html }}" target="_blank" rel="noopener noreferrer" aria-label="Web page for {{ pub.title }}" title="Web"><svg {{ svg | safe }}><path d="M10 14L20 4"/><path d="M15 4h5v5"/><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/></svg></a>{% endif -%}
+    {%- if pub.code %}<a class="pub-icon" href="{{ pub.code }}" target="_blank" rel="noopener noreferrer" aria-label="Code for {{ pub.title }}" title="Code"><svg {{ svg | safe }}><path d="M8 7l-5 5 5 5"/><path d="M16 7l5 5-5 5"/></svg></a>{% endif -%}
+  </div>
 </article>
 {% endmacro %}

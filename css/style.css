@@ -312,13 +312,22 @@ a:focus-visible, button:focus-visible {
 #all-publications[hidden] { display: none; }
 
 /* Publication card */
-.pub-card { display: flex; flex-direction: column; gap: .6rem; padding: 1.25rem 1.35rem; }
+.pub-card { position: relative; display: flex; flex-direction: column; gap: .6rem; padding: 1.25rem 1.35rem; }
 .pub-venue { color: var(--quiet); }
 .pub-title { color: var(--strong); font-size: var(--fs-title); font-weight: 650; line-height: 1.35; letter-spacing: -.015em; }
 .pub-authors { font-size: var(--fs-small); color: var(--muted); }
 .author { white-space: nowrap; }
 .author.self { color: var(--strong); font-weight: 600; }
-.pub-links { margin-top: auto; padding-top: .5rem; display: flex; gap: 1rem; }
+/* PDF / Web / Code as icons in the top-right corner; the venue line leaves
+   room for up to three of them. */
+.pub-venue { padding-right: 6.5rem; }
+.pub-links { position: absolute; top: .65rem; right: .7rem; display: flex; }
+.pub-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.1rem; height: 2.1rem; color: var(--ink); border-radius: 4px;
+}
+.pub-icon:hover { color: var(--link); background: var(--link-hover); box-shadow: none; }
+.pub-icon svg { display: block; }
 
 /* Background card */
 .edu-card { padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
@@ -357,6 +366,8 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 640px) {
   :root { --gap: 1.25rem; }
   .pub-card, .edu-card { grid-column: span 12; }
+  .pub-icon { width: 2.75rem; height: 2.75rem; }   /* 44px tap targets */
+  .pub-links { top: .3rem; right: .3rem; }
   /* Phones: publications and background scroll sideways, one card tall. */
   .swipe {
     grid-column: span 12;
