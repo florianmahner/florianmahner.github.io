@@ -322,17 +322,16 @@ const forms = {
     return 0.8 + 0.15 * Math.sin(t * 1.7 + i);
   },
   pubs(i, t, p, out, active) {
-    const th = ((i - active) / N) * Math.PI * 2;
-    // the wheel rides along beside the paper you are reading
-    const r = rects.row;
-    const ny = r ? clamp(-(((r.top + r.height / 2) / vh) * 2 - 1), -0.5, 0.5) : 0;
-    screenToWorld(small ? 0.55 : 0.5, ny, 11.5, out);
-    const R = 2.9;
-    out.y += Math.sin(th) * R;
-    out.z += (Math.cos(th) - 1) * R * 1.25;
-    out.x += (1 - Math.cos(th)) * 0.9;
-    const front = (Math.cos(th) + 1) / 2;
-    return 0.75 + front * front * 0.95;
+    // a ring around the paper you are on, turned so its own object sits at
+    // the top, closest to you; the ring turns as you slide to the next paper
+    const s = anchorAt(rects.row || EMPTY, 11.5, out);
+    const th = ((i - active) / N) * Math.PI * 2 + Math.PI / 2;
+    const rx = s.hw + (small ? 0.6 : 1.4), ry = s.hh + (small ? 1.2 : 1.5);
+    out.x += Math.cos(th) * rx;
+    out.y += Math.sin(th) * ry + 0.2;
+    const front = (Math.sin(th) + 1) / 2;
+    out.z += front * 2.2 - 1.2;
+    return 0.6 + front ** 3 * 1.0;
   },
   bg(i, t, p, out) {
     // a line receding into depth; scrolling through Background flies you along it
@@ -357,6 +356,8 @@ const visiblePubs = () => $$('.w-pubs .w-pub').filter(r => !r.closest('[hidden]'
 let pubRows = visiblePubs();
 const bgRows = $$('.w-edu');
 let vh = innerHeight;
+const hs = document.querySelector('.w-hscroll'), track = document.querySelector('.w-track');
+let lastTx = 0;
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
 const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
@@ -385,15 +386,26 @@ function readPage() {
   const prog = r => clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
+  if (hs) {
+    // vertical scroll through the pinned section slides the track sideways
+    const r = hs.getBoundingClientRect();
+    const k = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
+    const tx = -k * Math.max(0, track.scrollWidth - innerWidth);
+    if (Math.abs(tx - lastTx) > 0.3) { track.style.setProperty('--tx', `${tx.toFixed(1)}px`); lastTx = tx; }
+  }
   const rowIn = rows => {
     let best = -1, bd = Infinity;
-    rows.forEach((r, k) => { const b = r.getBoundingClientRect(); const d = Math.abs(b.top + b.height / 2 - mid); if (d < bd) { bd = d; best = k; } });
+    rows.forEach((r, k) => {
+      const b = r.getBoundingClientRect();
+      const d = Math.hypot(b.left + b.width / 2 - innerWidth / 2, b.top + b.height / 2 - mid);
+      if (d < bd) { bd = d; best = k; }
+    });
     return best;
   };
   const inPubs = state.a === 'pubs' || state.b === 'pubs';
   const inBg = state.a === 'bg' || state.b === 'bg';
   const pr = inPubs ? rowIn(pubRows) : -1, br = inBg ? rowIn(bgRows) : -1;
-  if (pr >= 0) { state.pubActive = +pubRows[pr].dataset.pub; rects.row = pubRows[pr].getBoundingClientRect(); }
+  if (pr >= 0) { state.pubActive = +pubRows[pr].dataset.pub; rects.row = (pubRows[pr].querySelector('.pub-title') || pubRows[pr]).getBoundingClientRect(); }
   const live = (state.a === 'pubs' && state.t < 0.5) || (state.b === 'pubs' && state.t >= 0.5) || (state.a === 'bg' && state.t < 0.5) || (state.b === 'bg' && state.t >= 0.5);
   if (live !== state.rowsLive) { root.classList.toggle('rows-live', live); state.rowsLive = live; }
   pubRows.forEach((r, k) => r.classList.toggle('on', k === pr));
@@ -426,7 +438,8 @@ addEventListener('pointermove', e => {
   const i = onEmpty(e.target) ? pick(e) : -1;
   if (i !== hovered) { hovered = i; root.classList.toggle('obj-hover', i >= 0); }
 }, { passive: true });
-const paper = document.getElementById('w-paper');
+const paper = document.getElementById('w-paper'), leader = document.querySelector('.w-leader');
+let pinned = -1;
 function openPaper(i, x, y) {
   const src = document.querySelector(`.w-pubs .w-pub[data-pub="${i}"]`);
   if (!src || !paper) return;
@@ -438,15 +451,60 @@ function openPaper(i, x, y) {
   art.querySelectorAll('[data-split], [data-rise]').forEach(el => el.classList.add('in'));
   paper.querySelector('.w-paper-venue').textContent = src.querySelector('.pub-venue')?.textContent || '';
   paper.hidden = false;
+  // the note sits beside the object, on whichever side has room
+  pv.copy(objs[i].pos).project(camera);
+  const ox = (pv.x * 0.5 + 0.5) * innerWidth, oy = (-pv.y * 0.5 + 0.5) * innerHeight;
   const w = paper.offsetWidth, h = paper.offsetHeight;
-  const left = clamp(x + 24, 16, innerWidth - w - 16), top = clamp(y - h / 2, 70, innerHeight - h - 16);
-  Object.assign(paper.style, { left: `${left}px`, top: `${top}px`, transformOrigin: `${x - left}px ${y - top}px` });
-  paper.classList.remove('open'); void paper.offsetWidth; paper.classList.add('open');
+  const right = ox < innerWidth * 0.55;
+  const left = clamp(right ? ox + 90 : ox - 90 - w, 16, innerWidth - w - 16);
+  const top = clamp(oy - h * 0.35, 70, innerHeight - h - 16);
+  Object.assign(paper.style, { left: `${left}px`, top: `${top}px` });
+  // leader line from the object to the note's edge
+  const ex = right ? left : left + w, ey = top + 28;
+  leader.style.setProperty('--lx', `${ox}px`); leader.style.setProperty('--ly', `${oy}px`);
+  leader.style.setProperty('--la', `${Math.atan2(ey - oy, ex - ox)}rad`);
+  leader.style.width = `${Math.hypot(ex - ox, ey - oy)}px`;
+  paper.classList.remove('open'); leader.classList.remove('open'); void paper.offsetWidth;
+  leader.classList.add('open'); paper.classList.add('open');
+  pinned = i;
   objs[i].rot.y += 2.5; // a happy spin for the one you picked
   paper.querySelector('.w-paper-close').focus({ preventScroll: true });
 }
-function closePaper() { if (paper && !paper.hidden) { paper.classList.remove('open'); setTimeout(() => { if (!paper.classList.contains('open')) paper.hidden = true; }, 260); } }
+function closePaper() {
+  if (!paper || paper.hidden) return;
+  paper.classList.remove('open'); leader.classList.remove('open'); pinned = -1;
+  setTimeout(() => { if (!paper.classList.contains('open')) paper.hidden = true; }, 700);
+}
+const grab = { i: -1, d: 10, x: 0, y: 0, moved: 0, wx: 0, wy: 0, wz: 0, last: 0 };
+let justDragged = false;
+function pointerToDepth(e, d, out) {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  return out.copy(ray.ray.direction).multiplyScalar(d / Math.max(0.2, -ray.ray.direction.z)).add(ray.ray.origin);
+}
+addEventListener('pointerdown', e => {
+  if (e.button !== 0 || !onEmpty(e.target)) return;
+  const i = pick(e);
+  if (i < 0) return;
+  grab.i = i; grab.d = Math.max(3, -objs[i].pos.z); grab.x = e.clientX; grab.y = e.clientY; grab.moved = 0;
+  objs[i].held = new THREE.Vector3().copy(objs[i].pos);
+  root.classList.add('obj-grab');
+  e.preventDefault();
+});
+addEventListener('pointermove', e => {
+  if (grab.i < 0) return;
+  grab.moved = Math.max(grab.moved, Math.hypot(e.clientX - grab.x, e.clientY - grab.y));
+  pointerToDepth(e, grab.d, objs[grab.i].held);
+}, { passive: true });
+addEventListener('pointerup', () => {
+  if (grab.i < 0) return;
+  const o = objs[grab.i];
+  justDragged = grab.moved > 6;
+  o.held = null; o.free = 1.6; // seconds of free flight before the spring takes over again
+  grab.i = -1; root.classList.remove('obj-grab');
+});
 addEventListener('click', e => {
+  if (justDragged) { justDragged = false; return; }
   if (paper && !paper.hidden && !e.target.closest('.w-paper')) { closePaper(); return; }
   if (!onEmpty(e.target)) return;
   const i = pick(e);
@@ -467,6 +525,25 @@ if (toggle && more) {
     if (open) more.querySelectorAll('[data-split], [data-rise]').forEach(el => el.classList.add('in'));
     pubRows = visiblePubs();
   });
+}
+
+// ---- smooth wheel scrolling: the page glides to where the wheel sends it ------------------
+const glide = { target: scrollY, on: false };
+const maxScroll = () => document.documentElement.scrollHeight - innerHeight;
+addEventListener('wheel', e => {
+  if (e.ctrlKey || e.target.closest('.news-list, .w-paper') || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  e.preventDefault();
+  if (!glide.on) glide.target = scrollY;
+  glide.target = clamp(glide.target + e.deltaY * (e.deltaMode === 1 ? 40 : 1), 0, maxScroll());
+  if (!glide.on) { glide.on = true; requestAnimationFrame(glideStep); }
+}, { passive: false });
+let glideLast = 0;
+function glideStep(now) {
+  const dt = Math.min(0.05, (now - (glideLast || now)) / 1000) || 1 / 60; glideLast = now;
+  const y = scrollY + (glide.target - scrollY) * (1 - Math.exp(-dt * 9));
+  if (Math.abs(glide.target - y) < 0.5) { scrollTo(0, glide.target); glide.on = false; glideLast = 0; return; }
+  scrollTo(0, y);
+  requestAnimationFrame(glideStep);
 }
 
 // ---- theme / size -------------------------------------------------------------------------------
@@ -537,11 +614,23 @@ function frame(now) {
     ta.x += Math.sin(t * 0.6 + o.phase) * 0.08;
     ta.y += Math.sin(t * 0.8 + o.phase * 1.3) * 0.1;
     // spring toward the target: a little lag makes the moves feel physical
-    const k = 26, c = 2 * Math.sqrt(k) * 0.9;
-    o.vel.x += ((ta.x - o.pos.x) * k - o.vel.x * c) * dt;
-    o.vel.y += ((ta.y - o.pos.y) * k - o.vel.y * c) * dt;
-    o.vel.z += ((ta.z - o.pos.z) * k - o.vel.z * c) * dt;
-    o.pos.addScaledVector(o.vel, dt);
+    if (o.held) {
+      // in the hand: follow it closely; velocity is what you throw with
+      const nx = o.pos.x + (o.held.x - o.pos.x) * (1 - Math.exp(-dt * 22));
+      const ny = o.pos.y + (o.held.y - o.pos.y) * (1 - Math.exp(-dt * 22));
+      o.vel.set((nx - o.pos.x) / dt, (ny - o.pos.y) / dt, 0);
+      o.pos.x = nx; o.pos.y = ny;
+      o.rot.x += o.vel.y * dt * 0.4; o.rot.y += o.vel.x * dt * 0.4;
+    } else {
+      // thrown: fly free with a little drag, the spring fades back in
+      const free = o.free > 0 ? (o.free -= dt, clamp(o.free / 1.6, 0, 1)) : 0;
+      const k = 26 * (1 - free * 0.97), c = 2 * Math.sqrt(26) * 0.9 * (1 - free * 0.85);
+      o.vel.x += ((ta.x - o.pos.x) * k - o.vel.x * c) * dt;
+      o.vel.y += ((ta.y - o.pos.y) * k - o.vel.y * c) * dt;
+      o.vel.z += ((ta.z - o.pos.z) * k - o.vel.z * c) * dt;
+      if (free > 0) { o.rot.x += o.vel.y * dt * 0.3; o.rot.y += o.vel.x * dt * 0.3; }
+      o.pos.addScaledVector(o.vel, dt);
+    }
     o.scale += (sc * (i === hovered ? 1.18 : 1) - o.scale) * (1 - Math.exp(-dt * (i === hovered ? 9 : 4)));
     // turn: own pace, faster for the paper in front, a kick from scrolling
     const boost = (state.a === 'pubs' || state.b === 'pubs') && i === state.pubActive ? 3.2 : 1;

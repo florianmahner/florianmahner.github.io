@@ -25,16 +25,19 @@ main { position: relative; z-index: 1; }
   padding: 22vh max(var(--gutter), env(safe-area-inset-right)) 12vh max(var(--gutter), env(safe-area-inset-left));
   display: flex; flex-direction: column; justify-content: center;
 }
-.ch > * { width: min(100%, 44rem); }
-@media (min-width: 961px) { .ch > * { margin-right: 44%; } }
+/* Everything sits in the middle of the screen; the objects move around it. */
+.ch { align-items: center; }
+.ch > * { width: min(100%, 44rem); margin-inline: auto; }
+.block-heading { text-align: center; }
 
 .w-about p { color: var(--ink); max-width: 36rem; }
 .w-about p + p { margin-top: 1rem; }
 .w-about p:first-child {
   font-size: var(--fs-heading); font-weight: 600; line-height: 1.22; letter-spacing: -.025em;
-  color: var(--strong); max-width: 30em; margin-bottom: 2.25rem;
+  color: var(--strong); max-width: 26em; margin: 0 auto 2.75rem; text-align: center;
 }
-@media (min-width: 961px) { .ch-about > * { width: min(100%, 52rem); } }
+.w-about p:not(:first-child) { margin-inline: auto; }
+@media (min-width: 961px) { .ch-about > * { width: min(100%, 56rem); } }
 
 .w-news { width: min(100%, 26rem); }
 
@@ -119,9 +122,24 @@ main { position: relative; z-index: 1; }
   background: var(--ink); animation: w-blink 1s steps(1) infinite;
 }
 @keyframes w-blink { 50% { opacity: 0; } }
-/* Selected publications: each paper gets the whole screen for a moment,
-   with its title large; the wheel of objects turns it to the front. */
-.w-selected .w-pub { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; }
+/* Selected publications: the section holds still (sticky) while vertical
+   scrolling slides the papers past sideways (--tx from JS). Each paper is
+   one centred scene with its title large. */
+.ch-pubs { padding-left: 0; padding-right: 0; padding-top: 0; }
+.ch-pubs > .w-hscroll { width: 100%; }
+.world .w-hscroll { height: calc(var(--n) * 90vh + 40vh); }
+.world .w-hpin { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 3rem; }
+.world .w-track { display: flex; flex-direction: row; gap: 0; transform: translate3d(var(--tx, 0px), 0, 0); will-change: transform; }
+.world .w-track .w-pub { flex: 0 0 100vw; padding: 0 max(var(--gutter), 8vw); align-items: center; text-align: center; }
+.world .w-track .w-links { justify-content: center; margin-left: 0; }
+.world .w-track .pub-authors { margin-inline: auto; }
+.world.rows-live .w-track .w-pub.on { transform: none; }
+/* the papers you are not on lean back as they slide away */
+.world .w-track .w-pub { transition: opacity .5s ease, filter .5s ease; }
+.world.rows-live .w-track .w-pub:not(.on) { filter: blur(2px); }
+.w-selected .w-pub { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; }
+.w-more, .ch-pubs > .w-note { width: min(100% - 2 * var(--gutter), 44rem); margin-inline: auto; }
+.w-note { justify-content: center; }
 .w-selected .pub-title { font-size: var(--fs-heading); line-height: 1.14; letter-spacing: -.03em; max-width: 17em; margin: .6rem 0 .9rem; }
 .w-selected .pub-authors { max-width: 34rem; }
 .w-more { margin-top: 2.5rem; }
@@ -130,21 +148,49 @@ main { position: relative; z-index: 1; }
 
 /* Every object is a paper: hovering one shows a hand, clicking opens its window
    right where you clicked. */
-.world.obj-hover, .world.obj-hover body { cursor: pointer; }
+.world.obj-hover, .world.obj-hover body { cursor: grab; }
+.world.obj-grab, .world.obj-grab body { cursor: grabbing; user-select: none; }
 .w-paper { display: none; }
+/* A clicked paper is a note pinned in the world: no box, just text on a soft
+   halo, tied to its object by a thin line that draws itself. */
+.w-leader { display: none; }
 .world .w-paper {
-  display: block; position: fixed; z-index: 4; width: min(27rem, calc(100vw - 32px));
-  background: var(--card); border: var(--border); box-shadow: var(--shadow);
-  transform: scale(.05); opacity: 0;
-  transition: transform .45s cubic-bezier(.2, .9, .2, 1.06), opacity .2s ease;
+  display: block; position: fixed; z-index: 4; width: min(25rem, calc(100vw - 32px));
+  padding: 1rem 1.25rem 1rem 1.25rem;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 94%, transparent) 72%, transparent);
+  border-left: 1.5px solid var(--ink);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path .7s cubic-bezier(.7, 0, .15, 1) .18s;
 }
 .world .w-paper[hidden] { display: none; }
-.world .w-paper.open { transform: none; opacity: 1; }
-.w-paper .card-bar { color: var(--quiet); }
-.w-paper-body { padding: 1rem 1.25rem 1.1rem; }
-.w-paper .w-pub { min-height: 0; display: block; opacity: 1 !important; transform: none !important; }
+.world .w-paper.open { clip-path: inset(-20px -20px -20px -2px); }
+.world .w-leader {
+  display: block; position: fixed; z-index: 4; height: 1.5px; background: var(--ink);
+  transform-origin: 0 50%; transform: translate(var(--lx), var(--ly)) rotate(var(--la)) scaleX(0);
+  transition: transform .35s cubic-bezier(.6, 0, .2, 1); pointer-events: none;
+}
+.world .w-leader.open { transform: translate(var(--lx), var(--ly)) rotate(var(--la)) scaleX(1); }
+.world .w-leader::before { content: ''; position: absolute; left: -4px; top: -3.25px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.w-paper-venue { color: var(--quiet); }
+.w-paper .w-close { top: .9rem; right: .2rem; }
+.w-paper .w-pub { min-height: 0; display: block; opacity: 1 !important; transform: none !important; text-align: left; padding: 0; }
 .w-paper .pub-venue { display: none; }
-.w-paper .pub-title { font-size: var(--fs-lead); margin-top: 0; }
+.w-paper .pub-title { font-size: var(--fs-lead); margin-top: .3rem; }
+.w-paper .w-links { justify-content: flex-start; margin-left: -7px; }
+
+/* Background: each step has its year written large and hollow behind it. */
+.w-edus { gap: 0; }
+.w-edu { position: relative; padding: 9vh 0; text-align: center; }
+.w-edu .edu-meta { max-width: 30rem; margin-inline: auto; }
+.world .w-edu::before {
+  content: attr(data-year); position: absolute; left: 50%; top: 50%; z-index: -1;
+  font-family: var(--mono); font-size: var(--fs-name); font-weight: 500; letter-spacing: -.02em;
+  color: transparent; -webkit-text-stroke: 1px var(--quiet);
+  transform: translate(-50%, -50%) scale(1.6); opacity: 0;
+  transition: opacity 1s ease, transform 1.4s cubic-bezier(.2, .8, .1, 1);
+}
+.world .w-edu.on::before { opacity: .35; transform: translate(-50%, -50%) scale(2.2); }
+.world.rows-live .w-edu.on { transform: none; }
 
 /* the window can be dragged by its bar (--wx/--wy), closed and reopened */
 .world .w-desk.open .w-news { transform: translate(var(--wx, 0px), var(--wy, 0px)); }
