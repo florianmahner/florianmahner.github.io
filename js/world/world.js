@@ -502,7 +502,11 @@ function readPage() {
   scrubText();
   if (newsWin && newsWin.closest('.w-step-two')) {
     const r = newsWin.getBoundingClientRect();
-    showLog(clamp((vh * 0.92 - r.top) / (vh * 0.55), 0, 1));
+    // news.log stays hidden until its screen arrives, then rises in and types
+    const col = newsWin.closest('.w-col-news');
+    const arrive = clamp((vh * 0.85 - r.top) / (vh * 0.3), 0, 1);
+    if (col) { col.style.opacity = smoother(arrive).toFixed(3); col.style.transform = `translateY(${((1 - smoother(arrive)) * 40).toFixed(1)}px)`; }
+    showLog(clamp((vh * 0.75 - r.top) / (vh * 0.5), 0, 1));
   }
   if (ns) {
     const r = ns.getBoundingClientRect();
@@ -718,6 +722,7 @@ function theme() {
   key.intensity = dark.matches ? 0.7 : 1.2;
   rim.intensity = dark.matches ? 0.6 : 0.9;
 }
+let tanHalf = Math.tan(THREE.MathUtils.degToRad(17.5));
 function resize() {
   vh = innerHeight;
   small = innerWidth <= 640;
@@ -726,6 +731,7 @@ function resize() {
   aspect = innerWidth / innerHeight;
   camera.aspect = aspect;
   camera.updateProjectionMatrix();
+  tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
 }
 
 // ---- loop -----------------------------------------------------------------------------------------
@@ -800,6 +806,13 @@ function frame(now) {
     // gentle float, so nothing is ever perfectly still
     ta.x += Math.sin(t * 0.6 + o.phase) * 0.08;
     ta.y += Math.sin(t * 0.8 + o.phase * 1.3) * 0.1;
+    // keep every object fully on screen, whatever the window size
+    {
+      const zc = Math.max(1, camera.position.z - ta.z);
+      const hh = zc * tanHalf, hw = hh * aspect, rr = 0.6 * Math.max(sc, 0.3);
+      ta.x = clamp(ta.x, -hw + rr, hw - rr);
+      ta.y = clamp(ta.y, -hh + rr + 0.15, hh - rr - 0.35); // room for the header
+    }
     // spring toward the target: a little lag makes the moves feel physical
     if (o.held) {
       // in the hand: follow it closely; velocity is what you throw with
