@@ -485,3 +485,4 @@ html[data-scene="flow"] #stage { display: none; }
   .pub-more > .card { flex-basis: 84%; }
   .news .news-list { max-height: 20rem; }
 }
+.pub-more[hidden] { display: none; }
