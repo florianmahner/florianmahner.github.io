@@ -61,7 +61,11 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
   screen size.
 - **All publication cards look the same** — no highlighted/coloured card.
 - News is a card titled `news.log` on the right of the hero, not a separate
-  page; older items expand in place (`show older`, same mono style).
+  page; all items sit in one list that scrolls inside the card (soft fade at
+  the bottom), no "show older" button.
+- Publications: the selected three show by default; `show more` / `show less`
+  opens the rest as a sideways-scrolling row of the same cards (`.pub-more`),
+  next to a `Google Scholar` link for the full list. Don't say "All 10".
 - The name sits on one line, medium size, above the About/News row.
 - Violet is only for links and the dot after the name — never card chrome.
 - Dark mode: cards are lighter than the page and the offset shadow darker
@@ -109,13 +113,34 @@ All motion lives in `js/motion.js`, configured by `background` and `intro` in
 - News: add to the **top** of `_data/news.json` (newest first, the file
   order is the display order). `date` is `YYYY-MM`; `text` is inline
   markdown, written as a full first-person sentence ending in "!", e.g.
-  "Our paper [Title](url) was accepted to NeurIPS 2026!". The first four
-  show; the rest sit behind "Show older".
+  "Our paper [Title](url) was accepted to NeurIPS 2026!". All items are in
+  the scrolling news.log list.
 - Publication: add to `_data/publications.json`; `selected: true` features it
   on the homepage. Keep `venue` short (e.g. "NeurIPS"); a venue containing
   "arXiv" renders as a grey preprint label.
 - Education: add to `_data/education.json`. `startLabel` overrides the
   `startYear–endYear` range for open-ended entries ("Oct 2026–present").
+
+## World view (`/world/`)
+
+An immersive alternative to the homepage, published but not linked and
+`noindex`. Files: `world.njk`, `world.11tydata.js`, `css/world.css`,
+`js/world/world.js` (three.js via the import map, loaded only there).
+
+- Real 3D objects float on a fixed canvas behind the content; the camera
+  leans toward the cursor; objects can be grabbed and thrown.
+- About opens the page: the first paragraph alone, then a held second screen
+  where the research text shows first and news.log slides in after, with the
+  objects lining up as markers beside the visible news items (the rest wait
+  far back in space). Three columns from 1480px, two below.
+- Selected publications are a pinned sideways scene (Nature Machine
+  Intelligence first), one paper per step, each with its own object
+  arrangement; Background is a calm centred list.
+- Motion follows activity: full while scrolling or sliding, almost still
+  while reading. Reduced motion gets a plain page.
+- Dev-only experiment pages (not built): `/split/`, `/news-ideas/`,
+  `/layout-ideas/`; `?scene=objects` / `?scene=flow` on the homepage are lab
+  modes that do nothing unless asked for.
 
 ## Gotchas
 
