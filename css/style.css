@@ -301,6 +301,10 @@ a:focus-visible, button:focus-visible {
   flex-wrap: wrap;
   gap: .5rem;
   margin-top: -.5rem;            /* sits close under the cards */
+  /* Optical correction: the hero ends in a card whose 5px shadow eats into the
+     gap above, while this text line carries extra space below its glyphs.
+     Pulling the next section up by that much makes both gaps look equal. */
+  margin-bottom: -.25rem;
   line-height: 1.4;
   color: var(--quiet);
 }
@@ -391,7 +395,7 @@ a:focus-visible, button:focus-visible {
   .news-more { min-height: 40px; padding: 0 1rem; }
   /* "All N publications" sits right under the cards, so the gap to the next
      section matches every other section gap. */
-  .block-foot { margin-top: -1.35rem; }
+  .block-foot { margin-top: -1.35rem; margin-bottom: -1rem; }
   .pub-card, .edu-card { grid-column: span 12; }
   .pub-icon { width: 2.75rem; height: 2.75rem; }   /* 44px tap targets */
   .pub-links { top: .3rem; right: .3rem; }
