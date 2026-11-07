@@ -92,7 +92,7 @@ function setupLog() {
   while (walker.nextNode()) if (walker.currentNode.textContent.trim()) nodes.push(walker.currentNode);
   for (const node of nodes) {
     const frag = document.createDocumentFragment();
-    for (const ch of node.textContent.replace(/\s+/g, ' ')) {
+    for (const ch of node.textContent.replace(/[ \t\n\r]+/g, ' ')) { // keep the thin space before "!"
       const c = document.createElement('span'); c.className = 'tc on'; c.textContent = ch;
       frag.appendChild(c); log.chars.push(c);
     }
