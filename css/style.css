@@ -379,19 +379,18 @@ a:focus-visible, button:focus-visible {
   .hero { row-gap: 2.5rem; }
 }
 @media (max-width: 640px) {
-  :root { --gap: 1.25rem; --block-gap: 2.25rem; }
+  :root { --gap: 1.25rem; --block-gap: 2.25rem; --fs-small: .875rem; }
   .hero { row-gap: var(--block-gap); }
   /* Compact cards and a shorter news card on phones. */
   .pub-card { padding: 1rem 1.05rem; gap: .45rem; }
   .pub-title { font-size: 1.0625rem; line-height: 1.32; }
-  .pub-authors { font-size: .875rem; line-height: 1.5; }
+  .pub-authors { line-height: 1.5; }
   .edu-card { padding: .85rem .95rem; }
-  .edu-degree { font-size: 1rem; }
-  .edu-meta { font-size: .875rem; line-height: 1.45; }
+  .edu-meta { line-height: 1.45; }
   .card-bar { padding: .4rem .8rem; }
   .news-list { padding: .1rem 0 .5rem; }
   .news-year { padding: .65rem 1rem 0; }
-  .news-item { padding: .3rem 1rem; font-size: .875rem; line-height: 1.45; }
+  .news-item { padding: .3rem 1rem; line-height: 1.45; }
   .news-more { min-height: 40px; padding: 0 1rem; }
   /* "All N publications" sits right under the cards, so the gap to the next
      section matches every other section gap. */
@@ -418,7 +417,7 @@ a:focus-visible, button:focus-visible {
   .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; scroll-snap-stop: always; }
   .js .swipe > .reveal { opacity: 1; transform: none; transition: none; }
   .swipe > .edu-card { flex-basis: 72%; }
-  .name-row { margin-top: 2.25rem; }
+  .name-row { margin-top: 1.25rem; }
   .hero { margin-top: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
