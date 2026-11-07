@@ -1,5 +1,5 @@
 {# Contact icons — icon-only links, each with an aria-label and a 44px tap
-   target. Shown in a row under the name on every screen size. #}
+   target. Shown on the name's line, right-aligned, on desktop; under the name on phones. #}
 {% macro socialIcons(site) %}
 {%- set svg = 'width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"' -%}
 <a class="icon-link" href="mailto:{{ site.email }}" aria-label="Email"><svg {{ svg | safe }}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
