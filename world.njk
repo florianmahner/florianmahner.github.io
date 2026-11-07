@@ -1,0 +1,90 @@
+{% import "icons.njk" as icons %}
+{%- set svg = 'width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"' -%}
+{% set selected = publications | selectattr("selected") %}
+{% set rest = publications | rejectattr("selected") %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ site.fullName }}</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#eeeff1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preload" href="/fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/world.css">
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <script>
+    // Motion only when the reader allows it; otherwise this is a plain page.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('world');
+  </script>
+  <script type="module" src="/js/world/world.js"></script>
+</head>
+<body>
+<header class="w-top">
+  <h1 class="w-name"><a href="#top">Florian P<span class="accent-dot">.</span> Mahner</a></h1>
+  <nav class="name-links" aria-label="Contact">{{ icons.socialIcons(site) }}</nav>
+</header>
+
+<main id="top">
+  <section class="ch ch-about" data-ch="about" aria-label="About">
+    <div class="w-about">{% mdfile "about" %}</div>
+  </section>
+
+  {% if news and news.length %}
+  <section class="ch ch-news" data-ch="news" aria-labelledby="news-heading">
+    <aside class="card news w-news">
+      <h2 class="card-bar mono" id="news-heading">news.log</h2>
+      <div class="news-list">
+        {% set last = "" %}
+        {% for item in news %}
+          {% set y = item.date | yearOf %}
+          {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
+          <p class="news-item" data-rise><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+  {% endif %}
+
+  <section class="ch ch-pubs" data-ch="pubs" aria-labelledby="publications-heading">
+    <h2 class="block-heading" id="publications-heading" data-split>Selected publications</h2>
+    <div class="w-pubs">
+      {% for pub in selected.concat(rest) %}
+      <article class="w-pub" data-row>
+        <p class="pub-venue mono">{{ pub.venue }} · {{ pub.year }}</p>
+        <h3 class="pub-title" data-split>{{ pub.title }}</h3>
+        <p class="pub-authors">{{ pub.authors | highlightAuthor(site.highlightAuthor) | safe }}</p>
+        <p class="w-links">
+          {%- if pub.pdf %}<a class="pub-icon" href="{{ pub.pdf }}" target="_blank" rel="noopener noreferrer" aria-label="PDF of {{ pub.title }}" title="PDF"><svg {{ svg | safe }}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></a>{% endif -%}
+          {%- if pub.html %}<a class="pub-icon" href="{{ pub.html }}" target="_blank" rel="noopener noreferrer" aria-label="Web page for {{ pub.title }}" title="Web"><svg {{ svg | safe }}><path d="M10 14L20 4"/><path d="M15 4h5v5"/><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/></svg></a>{% endif -%}
+          {%- if pub.code %}<a class="pub-icon" href="{{ pub.code }}" target="_blank" rel="noopener noreferrer" aria-label="Code for {{ pub.title }}" title="Code"><svg {{ svg | safe }}><path d="M8 7l-5 5 5 5"/><path d="M16 7l5 5-5 5"/></svg></a>{% endif -%}
+        </p>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="w-note mono">* equal contribution</p>
+  </section>
+
+  <section class="ch ch-bg" data-ch="bg" aria-labelledby="background-heading">
+    <h2 class="block-heading" id="background-heading" data-split>Background</h2>
+    <div class="w-edus">
+      {% for edu in education %}
+      <div class="w-edu" data-row>
+        <p class="edu-years mono">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}–{{ edu.endYear }}{% endif %}</p>
+        <h3 class="edu-degree" data-split>{{ edu.degree }} {{ edu.field }}</h3>
+        <p class="edu-meta">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <footer class="ch ch-end" data-ch="end">
+    <div class="name-links">{{ icons.socialIcons(site) }}</div>
+    <p class="mono">&copy; {% year %} {{ site.fullName }}</p>
+  </footer>
+</main>
+</body>
+</html>
