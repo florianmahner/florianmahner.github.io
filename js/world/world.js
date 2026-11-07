@@ -86,7 +86,7 @@ function scrubText() {
     const r = sc.el.getBoundingClientRect();
     // lighting starts as it comes up the screen and is complete once it sits
     // centred, so the first paragraph is fully lit on arrival
-    const start = vh * 0.95, done = vh / 2 - r.height / 2;
+    const start = vh * 0.95, done = Math.max(vh / 2 - r.height / 2, vh * 0.86 - r.height);
     const k = clamp((start - r.top) / Math.max(1, start - done), 0, 1);
     // whole lines arrive, never half-faded words
     if (!sc.lines) groupLines(sc);
@@ -95,6 +95,29 @@ function scrubText() {
     sc.lines.forEach((line, li) => { const on = li < n; for (const w of line) w.classList.toggle('lit', on); });
     sc.lit = n;
   }
+}
+
+// phones: the screen nearest the middle decides the object arrangement, and each
+// screen's text tilts up out of the depth as it arrives, then sits still
+let phoneKey = 0;
+const phoneSteps = () => [...document.querySelectorAll('.w-about .w-step')];
+function phoneScreens() {
+  const steps = phoneSteps(), mid = vh * 0.5;
+  let best = 0, bd = Infinity;
+  steps.forEach((st, k) => {
+    const r = st.getBoundingClientRect();
+    const d = Math.abs(r.top + r.height / 2 - mid);
+    if (d < bd) { bd = d; best = k; }
+    const e = smoother(clamp((vh - r.top) / (vh * 0.55), 0, 1));
+    const inner = st.firstElementChild;
+    if (inner) {
+      inner.style.transform = e >= 1 ? '' : `perspective(900px) translateY(${((1 - e) * 46).toFixed(1)}px) rotateX(${((1 - e) * 16).toFixed(2)}deg)`;
+      inner.style.opacity = e >= 1 ? '' : (0.15 + e * 0.85).toFixed(3);
+    }
+  });
+  phoneKey = (state.a === 'pubs' || state.b === 'pubs') && state.t > 0.5 ? 10 + Math.round(pubA)
+    : (state.b === 'bg' && state.t > 0.5) || (state.a === 'bg' && state.t <= 0.5) ? 20
+    : (state.b === 'end' && state.t > 0.5) ? 30 : best;
 }
 
 // news.log letters, revealed by the laptop scene as you scroll
@@ -200,6 +223,15 @@ function setupText() {
     const win = document.querySelector('.w-news'), sec = document.querySelector('.ch-news');
     if (win) colC.appendChild(win);
     if (sec) sec.remove();
+    if (innerWidth <= 760) {
+      // phones: one idea per screen instead of the held two-column stage
+      const mk = cls => { const d = document.createElement('div'); d.className = 'w-step w-phone-step' + (cls ? ' ' + cls : ''); return d; };
+      const s2 = mk(), s3 = mk(), s4 = mk('w-phone-news');
+      stage.before(s2); s2.after(s3); s3.after(s4);
+      about.forEach((p, k) => { if (k === 1) s2.appendChild(p); else if (k >= 2) s3.appendChild(p); });
+      s4.appendChild(colC);
+      stage.remove();
+    }
   }
   about.forEach(p => {
     p.setAttribute('data-scrub', '');
@@ -418,6 +450,15 @@ function pointAtScreen(px, py, d, out) {
   return out.copy(dir).multiplyScalar(d / Math.max(0.2, -dir.z)).add(_ray.ray.origin);
 }
 const markerOn = [];
+// a stable shuffle of the objects for each phone screen
+const orders = {};
+function phoneOrder(key) {
+  if (orders[key]) return orders[key];
+  const idx = [...Array(N).keys()];
+  let seed = key * 9301 + 49297;
+  for (let k = idx.length - 1; k > 0; k--) { seed = (seed * 9301 + 49297) % 233280; const j = Math.floor((seed / 233280) * (k + 1)); [idx[k], idx[j]] = [idx[j], idx[k]]; }
+  return (orders[key] = idx);
+}
 let newsHover = false, waitPull = 0;
 const forms = {
   about(i, t, p, out) {
@@ -443,7 +484,7 @@ const forms = {
     const sc = narrow ? c[3] * 0.58 : g[3]; // smaller on tall narrow screens
     const rows = rects.newsRows;
     markerOn[i] = false;
-    const km = stageEl ? newsReveal : k;
+    const km = (stageEl || phone) ? newsReveal : k;
     if (rows && rows.length && km > 0) {
       const k = km; // within this branch, alignment follows the news reveal
       // every object joins one column in front of the news: one per item,
@@ -480,7 +521,7 @@ const forms = {
       out.lerpVectors(a, m, k);
       // only while About is the arrangement on screen (not while blending away)
       const aboutW = (state.a === 'about' ? 1 - state.t : 0) + (state.b === 'about' ? state.t : 0);
-      markerOn[i] = k > 0.5 && (!phone || aboutW > 0.5);
+      markerOn[i] = k > 0.5 && (!phone || (aboutW > 0.5 && extra < 0)); // phones: waiting ones join the top area
       const markerScale = size / 0.85;
       return sc + (markerScale - sc) * k;
     }
@@ -544,7 +585,7 @@ const trackPapers = track ? [...track.children].map(el => ({ el, title: el.query
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
 const newsItems = [...document.querySelectorAll('.w-col-news .news-item')];
-const stageEl = document.querySelector('.w-stage'), researchCol = document.querySelector('.w-step-two > .w-col:first-child');
+const stageEl = document.querySelector('.w-stage') || null, researchCol = document.querySelector('.w-step-two > .w-col:first-child');
 let newsReveal = 0;
 const newsMoreBtn = document.querySelector('.w-col-news .news-more');
 const newsBox = document.querySelector('.w-col-news .news-list');
@@ -580,10 +621,11 @@ function readPage() {
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
   scrubText();
+  if (phone) phoneScreens();
   rects.newsMore = newsMoreBtn && !newsMoreBtn.closest('[hidden]') ? newsMoreBtn.getBoundingClientRect() : null;
   rects.newsRows = newsItems.length ? newsItems.map(el => el.getBoundingClientRect()) : null;
   rects.newsBox = newsBox ? newsBox.getBoundingClientRect() : null;
-  if (newsWin && newsWin.closest('.w-step-two')) {
+  if (newsWin && newsWin.closest('.w-step-two, .w-phone-news')) {
     const r = newsWin.getBoundingClientRect();
     // staged: first only the research text, then it steps back a little and
     // news.log slides in from the right while the objects line up beside it
@@ -934,17 +976,29 @@ function frame(now) {
     // gentle float, so nothing is ever perfectly still
     ta.x += Math.sin(t * 0.4 + o.phase) * 0.04;
     ta.y += Math.sin(t * 0.5 + o.phase * 1.3) * 0.05;
-    // phones: a calm shelf along the bottom edge, so objects never cover text;
-    // the current paper's object stands a little taller
+    // phones: the top part of each screen belongs to the objects; every new
+    // screen deals them into a fresh arrangement (5 x 2 slots, shuffled), and
+    // for a paper its own object comes to the centre, large
     let shelfScale = 0;
     if (phone && !markerOn[i]) {
-      const inPubs = state.a === 'pubs' || state.b === 'pubs';
-      const own = inPubs ? clamp(1 - Math.abs(i - pubA), 0, 1) : 0;
-      const sx = ((i + 0.5) / N) * innerWidth;
-      const sy = vh - 44 - own * 10 + Math.sin(ts * 0.6 + i) * 2;
-      pointAtScreen(sx, sy, 9.5, ta);
-      const halfH = 9.5 * tanHalf;
-      shelfScale = ((24 + own * 14) / (vh / (2 * halfH))) / 0.85;
+      const top = 112, bandH = Math.max(120, vh * 0.36 - top);
+      const order = phoneOrder(phoneKey);
+      const slot = order.indexOf(i);
+      const hero = phoneKey >= 10 && phoneKey < 20 && i === phoneKey - 10;
+      let sx, sy, px;
+      if (hero) { sx = innerWidth / 2; sy = top + bandH * 0.55; px = 84; }
+      else {
+        // two staggered rows of five, never touching
+        const col = slot % 5, row = Math.floor(slot / 5);
+        const fx = row ? [0.16, 0.36, 0.56, 0.76, 0.94][col] : [0.06, 0.26, 0.46, 0.66, 0.86][col];
+        sx = 18 + fx * (innerWidth - 36);
+        sy = top + bandH * (row ? 0.8 : 0.22) + Math.sin(ts * 0.5 + i) * 3;
+        px = 26 + ((i * 7 + phoneKey * 3) % 4) * 6;
+        if (phoneKey >= 10 && phoneKey < 20) px *= 0.75;
+      }
+      const D = 9.5 + (hero ? 0 : (slot % 3));
+      pointAtScreen(sx, sy, D, ta);
+      shelfScale = (px / (vh / (2 * D * tanHalf))) / 0.85;
     }
     // keep every object fully on screen, whatever the window size
     // (markers follow their news item, even when it scrolls off)
@@ -1051,5 +1105,6 @@ readPage();
 objs.forEach((o, i) => { forms.about(i, 0, 0, o.pos); o.pos.z -= 25 + i * 2; });
 root.classList.add('world-ready');
 start();
+
 
 

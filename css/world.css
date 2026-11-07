@@ -541,3 +541,22 @@ main { position: relative; z-index: 1; }
   .world .w-stage > .w-step-two { position: static; height: auto; padding: 6vh 0 10vh; gap: 3rem; }
   .world .w-hpin > .w-note { flex-wrap: wrap; justify-content: center; gap: .4rem 1.25rem; padding: 0 16px; width: 100%; }
 }
+
+/* ---- phones, take two: one idea per screen ---------------------------------------------- */
+/* The top part of each screen belongs to the 3D objects; the text sits calmly in
+   the lower part and tilts into view as it arrives (JS). The bottom shelf is gone. */
+@media (max-width: 760px) {
+  .world #world { z-index: 0; }
+  .world body::after { content: none; }
+  .world main { padding-bottom: 0; }
+  .world .w-about .w-step, .world .w-about .w-step:first-child {
+    min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 0 13vh;
+  }
+  .world .w-about .w-step > * { transform-origin: 50% 100%; will-change: transform, opacity; }
+  .world .w-about .w-phone-step p { font-size: var(--fs-lead); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; }
+  .world .w-about .w-phone-step p + p { margin-top: 1rem; }
+  .world .w-phone-news .w-col-news { width: 100%; }
+  .world .w-phone-news .w-col-news .w-news .news-list { max-height: 48vh; }
+  .world .w-hpin { justify-content: flex-end; padding-bottom: 11vh; }
+}
