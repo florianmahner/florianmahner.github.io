@@ -371,3 +371,6 @@ main { position: relative; z-index: 1; }
 .world .w-col-news .w-news .tc { display: inline; visibility: hidden; }
 .world .w-col-news .w-news .tc.on { visibility: visible; }
 .world .w-col-news .w-news .news-list p:not(:has(.tc.on)) { display: block; }
+.world .w-col-news .w-news { transform: none; opacity: 1; clip-path: none; position: static; display: block; }
+.world .w-col-news .w-news .card-bar { opacity: 1; transform: none; }
+.world .w-about .w-col p + p { margin-top: 1.25rem; }
