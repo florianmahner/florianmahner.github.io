@@ -126,7 +126,8 @@ function showLog(k) {
   if (n > 0) log.chars[n - 1].after(log.caret); else log.list.prepend(log.caret);
   // like a terminal, the newest typed line stays in view
   const last = log.chars[Math.max(0, n - 1)];
-  if (last) { const lp = last.closest('p'); if (lp) log.list.scrollTop = Math.max(0, lp.offsetTop + lp.offsetHeight - log.list.clientHeight); }
+  // the file reads from the top (newest first), so only the printer view follows the caret
+  if (last && !log.list.closest('.w-col-news')) { const lp = last.closest('p'); if (lp) log.list.scrollTop = Math.max(0, lp.offsetTop + lp.offsetHeight - log.list.clientHeight); }
 }
 
 function invite(p) {
@@ -373,8 +374,13 @@ const forms = {
     const c = cloud[i];
     const k = smoother(clamp((p - 0.3) / 0.35, 0, 1));
     const ax = 0.62 + (c[0] - 0.25) * 0.5, ay = c[1];
-    const bx = -0.86 + (i / (N - 1)) * 1.72, by = -0.84 + (i % 2) * 0.05;
-    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (13 - c[2]) * k, out);
+    // second screen: loose groups in the free space above and below the text,
+    // at different depths, never one straight line
+    const top = i % 3 === 0;
+    const bx = -0.9 + ((i * 0.618) % 1) * 1.8;
+    const by = top ? 0.7 + ((i * 0.37) % 1) * 0.12 : -0.62 - ((i * 0.53) % 1) * 0.28;
+    const bd = 10 + ((i * 0.71) % 1) * 8;
+    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
     return c[3] + (0.75 - c[3]) * k;
   },
   news(i, t, p, out) {
