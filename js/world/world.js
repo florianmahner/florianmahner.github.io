@@ -401,6 +401,15 @@ function paperScene(j, i, t, s, o) {
   o.set(Math.cos(th) * (s.hw + 1.4), Math.sin(th) * (s.hh + 1.4), Math.sin(th) * 0.8);
   return 0.7;
 }
+// where a screen point (px) lands at a given depth, through the real camera
+const _ndc = new THREE.Vector2(), _ray = new THREE.Raycaster();
+function pointAtScreen(px, py, d, out) {
+  _ndc.set((px / innerWidth) * 2 - 1, -(py / innerHeight) * 2 + 1);
+  _ray.setFromCamera(_ndc, camera);
+  const dir = _ray.ray.direction;
+  return out.copy(dir).multiplyScalar(d / Math.max(0.2, -dir.z)).add(_ray.ray.origin);
+}
+const markerOn = [];
 const forms = {
   about(i, t, p, out) {
     // first screen: a loose cloud in the open space right of the text;
@@ -419,19 +428,24 @@ const forms = {
     const by = top ? 0.7 + ((i * 0.37) % 1) * 0.12 : -0.62 - ((i * 0.53) % 1) * 0.28;
     const bd = 10 + ((i * 0.71) % 1) * 8;
     const sc = narrow ? c[3] * 0.58 : c[3]; // smaller on tall narrow screens
-    const row = rects.newsRows && rects.newsRows[i];
-    if (row && k > 0) {
-      // fly over and line up as a marker just left of its news item
+    const rows = rects.newsRows;
+    markerOn[i] = false;
+    if (rows && rows.length && k > 0) {
+      // every object joins one column in front of the news: one per item,
+      // the rest continue the column below the list, a little smaller
       const D = 9.5;
       const halfH = D * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const pxPerWorld = vh / (2 * halfH);
-      const mx = row.left + 22, my = row.top + 12;
-      const nmx = (mx / innerWidth) * 2 - 1, nmy = -((my / vh) * 2 - 1);
+      const first = rows[0], last = rows[rows.length - 1];
+      const extra = i - rows.length;
+      const mx = first.left + 22;
+      const my = extra < 0 ? rows[i].top + 12 : last.bottom + 40 + extra * 46;
       const a = new THREE.Vector3(), m = new THREE.Vector3();
       screenToWorld(ax, ay, c[2], a);
-      screenToWorld(nmx, nmy, D, m);
+      pointAtScreen(mx, my, D, m); // exact, whatever the camera is doing
       out.lerpVectors(a, m, k);
-      const markerScale = 34 / pxPerWorld / 0.85; // about 34px across
+      markerOn[i] = k > 0.5;
+      const markerScale = (extra < 0 ? 34 : 26) / pxPerWorld / 0.85;
       return sc + (markerScale - sc) * k;
     }
     screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
@@ -808,6 +822,7 @@ function frame(now) {
   lean.y += (lean.ty - lean.y) * (1 - Math.exp(-dt * 3));
   camera.position.set(lean.x * 0.55, -lean.y * 0.35, 0);
   camera.lookAt(lean.x * 0.15, -lean.y * 0.1, -10);
+  camera.updateMatrixWorld();
 
   // text bends a touch with scroll speed
   const skew = clamp(scrollV * -0.0009, -2.2, 2.2);
@@ -838,7 +853,8 @@ function frame(now) {
     ta.x += Math.sin(t * 0.6 + o.phase) * 0.08;
     ta.y += Math.sin(t * 0.8 + o.phase * 1.3) * 0.1;
     // keep every object fully on screen, whatever the window size
-    {
+    // (markers follow their news item, even when it scrolls off)
+    if (!markerOn[i]) {
       const zc = Math.max(1, camera.position.z - ta.z);
       const hh = zc * tanHalf, hw = hh * aspect, rr = 0.8 * Math.max(sc, 0.3) + 0.15;
       ta.x = clamp(ta.x, -hw + rr, hw - rr);
