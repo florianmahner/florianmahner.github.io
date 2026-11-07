@@ -119,6 +119,58 @@ main { position: relative; z-index: 1; }
   background: var(--ink); animation: w-blink 1s steps(1) infinite;
 }
 @keyframes w-blink { 50% { opacity: 0; } }
+/* Selected publications: each paper gets the whole screen for a moment,
+   with its title large; the wheel of objects turns it to the front. */
+.w-selected .w-pub { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; }
+.w-selected .pub-title { font-size: var(--fs-heading); line-height: 1.14; letter-spacing: -.03em; max-width: 17em; margin: .6rem 0 .9rem; }
+.w-selected .pub-authors { max-width: 34rem; }
+.w-more { margin-top: 2.5rem; }
+.w-note { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: baseline; }
+.w-note .text-button { color: var(--link); font: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+/* Every object is a paper: hovering one shows a hand, clicking opens its window
+   right where you clicked. */
+.world.obj-hover, .world.obj-hover body { cursor: pointer; }
+.w-paper { display: none; }
+.world .w-paper {
+  display: block; position: fixed; z-index: 4; width: min(27rem, calc(100vw - 32px));
+  background: var(--card); border: var(--border); box-shadow: var(--shadow);
+  transform: scale(.05); opacity: 0;
+  transition: transform .45s cubic-bezier(.2, .9, .2, 1.06), opacity .2s ease;
+}
+.world .w-paper[hidden] { display: none; }
+.world .w-paper.open { transform: none; opacity: 1; }
+.w-paper .card-bar { color: var(--quiet); }
+.w-paper-body { padding: 1rem 1.25rem 1.1rem; }
+.w-paper .w-pub { min-height: 0; display: block; opacity: 1 !important; transform: none !important; }
+.w-paper .pub-venue { display: none; }
+.w-paper .pub-title { font-size: var(--fs-lead); margin-top: 0; }
+
+/* the window can be dragged by its bar (--wx/--wy), closed and reopened */
+.world .w-desk.open .w-news { transform: translate(var(--wx, 0px), var(--wy, 0px)); }
+.world .w-news.dragging { transition: none; box-shadow: var(--shadow-lift); }
+.world .w-news .card-bar { cursor: grab; user-select: none; padding-right: 2.5rem; }
+.world .w-news.dragging .card-bar { cursor: grabbing; }
+.world .w-file { cursor: default; user-select: none; }
+.w-close { display: none; }
+.world .w-close {
+  display: block; position: absolute; top: .45rem; right: .6rem; width: 14px; height: 14px;
+  border: 1.5px solid var(--line); background: var(--card); cursor: pointer; padding: 0;
+}
+.world .w-close::after { content: ''; position: absolute; inset: -15px; } /* 44px tap area */
+.world .w-close:hover { background: var(--ink); }
+/* zoom outlines between icon and window */
+.w-zoom { position: absolute; z-index: 2; border: 1.5px solid var(--ink); pointer-events: none; opacity: 0; animation: w-zoom .5s ease-out forwards; }
+@keyframes w-zoom { 0% { opacity: 0; } 25% { opacity: .9; } 100% { opacity: 0; } }
+/* a log file has line numbers; each one appears when its line starts typing */
+.world .w-news .news-list { counter-reset: ln; }
+.world .w-news .news-list p { counter-increment: ln; position: relative; padding-left: 2.1rem; }
+.world .w-news .news-list p::before {
+  content: counter(ln); position: absolute; left: 0; width: 1.4rem; text-align: right;
+  font-family: var(--mono); font-size: var(--fs-mono); color: var(--quiet); opacity: 0; transition: opacity .2s;
+}
+.world .w-news .news-list p.typed::before { opacity: .7; }
+
 @media (max-width: 640px) {
   .world .w-desk { padding-left: 0; padding-top: 6.5rem; }
   .world .w-news { transform-origin: 2.75rem -3.5rem; }

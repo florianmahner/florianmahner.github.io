@@ -68,13 +68,18 @@ function magnetic() {
   });
 }
 
-// news.log as a tiny desktop: the cursor double-clicks the file, the window
-// opens out of the icon, and the log types itself out. Click to skip ahead.
+// news.log as a tiny desktop. The cursor double-clicks the file; outline
+// frames zoom out of the icon and the window opens; the log types itself out
+// with line numbers. The window can be dragged by its title bar, closed back
+// into the icon, and reopened with a double-click. Click the text to skip.
 function desktop() {
   const desk = document.querySelector('.w-desk');
   if (!desk) return;
   const file = desk.querySelector('.w-file'), cursor = desk.querySelector('.w-cursor');
-  const list = desk.querySelector('.news-list');
+  const win = desk.querySelector('.w-news'), bar = win.querySelector('.card-bar');
+  const list = win.querySelector('.news-list');
+  const lines = [...list.querySelectorAll('p')];
+
   // every letter becomes its own (hidden) span; links and bold stay intact
   const walker = document.createTreeWalker(list, NodeFilter.SHOW_TEXT);
   const nodes = [];
@@ -88,40 +93,101 @@ function desktop() {
     }
     node.replaceWith(frag);
   }
+  // the full text stays available to screen readers while letters are hidden
+  list.setAttribute('aria-label', list.textContent);
   const caret = document.createElement('span'); caret.className = 'caret'; caret.setAttribute('aria-hidden', 'true');
-  const wait = ms => new Promise(r => setTimeout(r, ms));
-  let skip = false;
-  desk.querySelector('.w-news').addEventListener('click', () => { skip = true; });
 
-  async function play() {
-    const w = desk.clientWidth;
-    desk.style.setProperty('--cx', `${w * 0.78}px`); desk.style.setProperty('--cy', '300px');
-    desk.classList.add('go');
-    await wait(450);
-    const fr = file.getBoundingClientRect(), dr = desk.getBoundingClientRect();
-    desk.style.setProperty('--cx', `${fr.left - dr.left + fr.width * 0.55}px`);
-    desk.style.setProperty('--cy', `${fr.top - dr.top + fr.height * 0.35}px`);
-    await wait(950);
-    for (let k = 0; k < 2; k++) { file.classList.add('press', 'sel'); await wait(90); file.classList.remove('press'); await wait(110); }
-    desk.classList.add('open');
-    await wait(250);
-    desk.classList.add('done');
-    await wait(350);
+  // window chrome: two quiet control squares and a close box
+  const close = document.createElement('button');
+  close.type = 'button'; close.className = 'w-close'; close.setAttribute('aria-label', 'Close news.log');
+  win.appendChild(close);
+
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  let run = 0, skip = false, isOpen = false;
+  list.addEventListener('click', () => { skip = true; });
+
+  // outline frames that travel from one box to another (the classic zoom)
+  function zoom(from, to) {
+    const dr = desk.getBoundingClientRect();
+    for (let k = 1; k <= 6; k++) {
+      const t = k / 6, f = document.createElement('div');
+      f.className = 'w-zoom';
+      const L = from.left + (to.left - from.left) * t - dr.left, T = from.top + (to.top - from.top) * t - dr.top;
+      const W = from.width + (to.width - from.width) * t, H = from.height + (to.height - from.height) * t;
+      Object.assign(f.style, { left: `${L}px`, top: `${T}px`, width: `${W}px`, height: `${H}px`, animationDelay: `${k * 35}ms` });
+      desk.appendChild(f);
+      setTimeout(() => f.remove(), 700 + k * 35);
+    }
+  }
+
+  async function type(id, fast) {
     let i = 0;
     while (i < chars.length) {
-      if (skip) { chars.slice(i).forEach(c => c.classList.add('on')); break; }
+      if (id !== run) return;
+      if (skip || fast === 'instant') { chars.slice(i).forEach(c => c.classList.add('on')); lines.forEach(l => l.classList.add('typed')); break; }
       const c = chars[i++];
       c.classList.add('on');
+      c.closest('p')?.classList.add('typed');
       c.after(caret);
-      // a typist's rhythm: quick letters, a breath at spaces and line ends
       const next = chars[i];
       const lineEnd = next && c.closest('p') !== next.closest('p');
-      await wait(lineEnd ? 260 : c.textContent === ' ' ? 22 : 9 + Math.random() * 14);
+      // a typist's rhythm: quick letters, a breath at spaces and line ends
+      await wait(fast ? 2 : lineEnd ? 240 : c.textContent === ' ' ? 24 : 8 + Math.random() * 14);
     }
-    const lastP = list.querySelector('p:last-child');
-    if (lastP) lastP.appendChild(caret);
+    lines[lines.length - 1]?.appendChild(caret);
   }
-  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); play(); } }, { threshold: 0.35 });
+
+  async function open({ withCursor, fast }) {
+    const id = ++run; skip = false;
+    win.style.removeProperty('--wx'); win.style.removeProperty('--wy'); drag.x = drag.y = 0;
+    if (withCursor) {
+      desk.style.setProperty('--cx', `${desk.clientWidth * 0.8}px`); desk.style.setProperty('--cy', '320px');
+      desk.classList.add('go');
+      await wait(450);
+      const fr = file.getBoundingClientRect(), dr = desk.getBoundingClientRect();
+      desk.style.setProperty('--cx', `${fr.left - dr.left + fr.width * 0.55}px`);
+      desk.style.setProperty('--cy', `${fr.top - dr.top + fr.height * 0.35}px`);
+      await wait(950);
+    }
+    for (let k = 0; k < 2; k++) { file.classList.add('press', 'sel'); await wait(85); file.classList.remove('press'); await wait(105); }
+    if (id !== run) return;
+    chars.forEach(c => c.classList.remove('on')); lines.forEach(l => l.classList.remove('typed'));
+    zoom(file.getBoundingClientRect(), win.getBoundingClientRect());
+    await wait(230);
+    desk.classList.add('open'); isOpen = true;
+    file.classList.remove('sel');
+    await wait(260);
+    desk.classList.add('done');
+    await wait(300);
+    type(id, fast);
+  }
+
+  function shut() {
+    run++; isOpen = false;
+    zoom(win.getBoundingClientRect(), file.getBoundingClientRect());
+    desk.classList.remove('open');
+    caret.remove();
+  }
+  close.addEventListener('click', shut);
+  file.addEventListener('dblclick', () => { if (!isOpen) open({ fast: true }); });
+  file.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !isOpen) { e.preventDefault(); open({ fast: true }); } });
+
+  // drag the window by its title bar
+  const drag = { x: 0, y: 0, on: false, sx: 0, sy: 0 };
+  bar.addEventListener('pointerdown', e => {
+    if (!isOpen || e.button !== 0) return;
+    drag.on = true; drag.sx = e.clientX - drag.x; drag.sy = e.clientY - drag.y;
+    bar.setPointerCapture(e.pointerId); win.classList.add('dragging');
+  });
+  bar.addEventListener('pointermove', e => {
+    if (!drag.on) return;
+    drag.x = clamp(e.clientX - drag.sx, -260, 260); drag.y = clamp(e.clientY - drag.sy, -160, 220);
+    win.style.setProperty('--wx', `${drag.x}px`); win.style.setProperty('--wy', `${drag.y}px`);
+  });
+  const end = () => { drag.on = false; win.classList.remove('dragging'); };
+  bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
+
+  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); open({ withCursor: true }); } }, { threshold: 0.35 });
   io.observe(desk);
 }
 
@@ -287,7 +353,9 @@ const forms = {
 
 // ---- where are we on the page? ---------------------------------------------------------------
 const chapters = $$('[data-ch]').map(el => ({ el, name: el.dataset.ch }));
-const pubRows = $$('.w-pub'), bgRows = $$('.w-edu');
+const visiblePubs = () => $$('.w-pubs .w-pub').filter(r => !r.closest('[hidden]'));
+let pubRows = visiblePubs();
+const bgRows = $$('.w-edu');
 let vh = innerHeight;
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
@@ -325,7 +393,7 @@ function readPage() {
   const inPubs = state.a === 'pubs' || state.b === 'pubs';
   const inBg = state.a === 'bg' || state.b === 'bg';
   const pr = inPubs ? rowIn(pubRows) : -1, br = inBg ? rowIn(bgRows) : -1;
-  if (pr >= 0) { state.pubActive = pr; rects.row = pubRows[pr].getBoundingClientRect(); }
+  if (pr >= 0) { state.pubActive = +pubRows[pr].dataset.pub; rects.row = pubRows[pr].getBoundingClientRect(); }
   const live = (state.a === 'pubs' && state.t < 0.5) || (state.b === 'pubs' && state.t >= 0.5) || (state.a === 'bg' && state.t < 0.5) || (state.b === 'bg' && state.t >= 0.5);
   if (live !== state.rowsLive) { root.classList.toggle('rows-live', live); state.rowsLive = live; }
   pubRows.forEach((r, k) => r.classList.toggle('on', k === pr));
@@ -341,6 +409,65 @@ addEventListener('pointermove', e => {
   pointerOn = true;
 }, { passive: true });
 document.addEventListener('pointerleave', () => { pointerOn = false; });
+
+// ---- objects you can click: each one is a paper ---------------------------------------------
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let hovered = -1;
+// only empty page space counts, so text and links keep working normally
+const onEmpty = el => !el.closest('p, h1, h2, h3, a, button, .card, .w-file, .w-paper, li');
+function pick(e) {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(objs.map(o => o.mesh), false)[0];
+  return hit ? objs.findIndex(o => o.mesh === hit.object) : -1;
+}
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  const i = onEmpty(e.target) ? pick(e) : -1;
+  if (i !== hovered) { hovered = i; root.classList.toggle('obj-hover', i >= 0); }
+}, { passive: true });
+const paper = document.getElementById('w-paper');
+function openPaper(i, x, y) {
+  const src = document.querySelector(`.w-pubs .w-pub[data-pub="${i}"]`);
+  if (!src || !paper) return;
+  const body = paper.querySelector('.w-paper-body');
+  body.replaceChildren(src.cloneNode(true));
+  const art = body.firstElementChild;
+  art.removeAttribute('data-row'); art.classList.remove('on');
+  // the clone carries split words; show them all at once
+  art.querySelectorAll('[data-split], [data-rise]').forEach(el => el.classList.add('in'));
+  paper.querySelector('.w-paper-venue').textContent = src.querySelector('.pub-venue')?.textContent || '';
+  paper.hidden = false;
+  const w = paper.offsetWidth, h = paper.offsetHeight;
+  const left = clamp(x + 24, 16, innerWidth - w - 16), top = clamp(y - h / 2, 70, innerHeight - h - 16);
+  Object.assign(paper.style, { left: `${left}px`, top: `${top}px`, transformOrigin: `${x - left}px ${y - top}px` });
+  paper.classList.remove('open'); void paper.offsetWidth; paper.classList.add('open');
+  objs[i].rot.y += 2.5; // a happy spin for the one you picked
+  paper.querySelector('.w-paper-close').focus({ preventScroll: true });
+}
+function closePaper() { if (paper && !paper.hidden) { paper.classList.remove('open'); setTimeout(() => { if (!paper.classList.contains('open')) paper.hidden = true; }, 260); } }
+addEventListener('click', e => {
+  if (paper && !paper.hidden && !e.target.closest('.w-paper')) { closePaper(); return; }
+  if (!onEmpty(e.target)) return;
+  const i = pick(e);
+  if (i >= 0) openPaper(i, e.clientX, e.clientY);
+});
+paper?.querySelector('.w-paper-close').addEventListener('click', closePaper);
+addEventListener('keydown', e => { if (e.key === 'Escape') closePaper(); });
+
+// "All N publications" opens the rest of the list in place
+const toggle = document.getElementById('toggle-publications'), more = document.getElementById('all-publications');
+if (toggle && more) {
+  const label = toggle.textContent;
+  toggle.addEventListener('click', () => {
+    const open = more.hidden;
+    more.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Show selected only' : label;
+    if (open) more.querySelectorAll('[data-split], [data-rise]').forEach(el => el.classList.add('in'));
+    pubRows = visiblePubs();
+  });
+}
 
 // ---- theme / size -------------------------------------------------------------------------------
 function theme() {
@@ -399,10 +526,11 @@ function frame(now) {
     if (pointerOn) {
       pv.copy(o.pos).project(camera);
       const dx = (pv.x - lean.tx) * aspect, dy = pv.y + lean.ty, d = Math.hypot(dx, dy);
-      if (d < 0.32 && d > 1e-4) {
-        const f = (1 - d / 0.32) ** 2 * 1.6 * (-o.pos.z / 10);
-        ta.x += (dx / d) * f; ta.y += (dy / d) * f;
-        o.rot.y += f * dt * 2.5;
+      const R = 0.16 + (o.scale * 0.9) / Math.max(1, -o.pos.z) * 2.2; // bigger on screen, wider reach
+      if (d < R && d > 1e-4) {
+        const f = (1 - d / R) ** 2 * 2.6 * (-o.pos.z / 10);
+        ta.x += (dx / d) * f; ta.y += (dy / d) * f; ta.z += f * 0.6;
+        o.rot.y += f * dt * 4; o.rot.x += f * dt * 2;
       }
     }
     // gentle float, so nothing is ever perfectly still
@@ -414,7 +542,7 @@ function frame(now) {
     o.vel.y += ((ta.y - o.pos.y) * k - o.vel.y * c) * dt;
     o.vel.z += ((ta.z - o.pos.z) * k - o.vel.z * c) * dt;
     o.pos.addScaledVector(o.vel, dt);
-    o.scale += (sc - o.scale) * (1 - Math.exp(-dt * 4));
+    o.scale += (sc * (i === hovered ? 1.18 : 1) - o.scale) * (1 - Math.exp(-dt * (i === hovered ? 9 : 4)));
     // turn: own pace, faster for the paper in front, a kick from scrolling
     const boost = (state.a === 'pubs' || state.b === 'pubs') && i === state.pubActive ? 3.2 : 1;
     o.rot.x += o.spin.x * dt * boost + scrollV * 0.00004;

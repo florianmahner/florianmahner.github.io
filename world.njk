@@ -58,9 +58,8 @@
 
   <section class="ch ch-pubs" data-ch="pubs" aria-labelledby="publications-heading">
     <h2 class="block-heading" id="publications-heading" data-split>Selected publications</h2>
-    <div class="w-pubs">
-      {% for pub in selected.concat(rest) %}
-      <article class="w-pub" data-row>
+    {% macro paper(pub, idx, svg, site) %}
+      <article class="w-pub" data-row data-pub="{{ idx }}">
         <p class="pub-venue mono">{{ pub.venue }} · {{ pub.year }}</p>
         <h3 class="pub-title" data-split>{{ pub.title }}</h3>
         <p class="pub-authors">{{ pub.authors | highlightAuthor(site.highlightAuthor) | safe }}</p>
@@ -70,10 +69,23 @@
           {%- if pub.code %}<a class="pub-icon" href="{{ pub.code }}" target="_blank" rel="noopener noreferrer" aria-label="Code for {{ pub.title }}" title="Code"><svg {{ svg | safe }}><path d="M8 7l-5 5 5 5"/><path d="M16 7l5 5-5 5"/></svg></a>{% endif -%}
         </p>
       </article>
-      {% endfor %}
+    {% endmacro %}
+    <div class="w-pubs w-selected">
+      {% for pub in selected %}{{ paper(pub, loop.index0, svg, site) }}{% endfor %}
     </div>
-    <p class="w-note mono">* equal contribution</p>
+    <div class="w-pubs w-more" id="all-publications" hidden>
+      {% for pub in rest %}{{ paper(pub, selected.length + loop.index0, svg, site) }}{% endfor %}
+    </div>
+    <p class="w-note mono">
+      {% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">All {{ publications.length }} publications</button>{% endif %}
+      <span>* equal contribution</span>
+    </p>
   </section>
+  <div class="w-paper" id="w-paper" role="dialog" aria-modal="false" aria-label="Publication" hidden>
+    <div class="card-bar mono"><span class="w-paper-venue"></span></div>
+    <button type="button" class="w-close w-paper-close" aria-label="Close"></button>
+    <div class="w-paper-body"></div>
+  </div>
 
   <section class="ch ch-bg" data-ch="bg" aria-labelledby="background-heading">
     <h2 class="block-heading" id="background-heading" data-split>Background</h2>
