@@ -153,7 +153,9 @@ a {
   border-radius: 3px;
   transition: background-color .15s ease, box-shadow .15s ease;
 }
-a:hover { background: var(--link-hover); box-shadow: 0 0 0 2px var(--link-hover); }
+@media (hover: hover) and (pointer: fine) {
+  a:hover { background: var(--link-hover); box-shadow: 0 0 0 2px var(--link-hover); }
+}
 a:focus-visible, button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -244,7 +246,10 @@ a:focus-visible, button:focus-visible {
   box-shadow: var(--shadow);
   transition: transform .2s ease, box-shadow .2s ease;
 }
-.card.lift:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lift); }
+/* Hover lift only with a real mouse; on touch a tap would leave cards shifted. */
+@media (hover: hover) and (pointer: fine) {
+  .card.lift:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lift); }
+}
 .card-bar {
   margin: 0;
   padding: .45rem .8rem;
@@ -335,7 +340,9 @@ a:focus-visible, button:focus-visible {
 
 /* Background card */
 .edu-card { padding: 1rem 1.1rem; box-shadow: var(--shadow-sm); }
-.edu-card.lift:hover { box-shadow: var(--shadow); }
+@media (hover: hover) and (pointer: fine) {
+  .edu-card.lift:hover { box-shadow: var(--shadow); }
+}
 .edu-years { color: var(--quiet); }
 .edu-degree { color: var(--strong); margin-top: .3rem; font-size: var(--fs-body); font-weight: 600; line-height: 1.4; }
 .edu-meta { font-size: var(--fs-small); color: var(--muted); }
@@ -382,7 +389,11 @@ a:focus-visible, button:focus-visible {
     scrollbar-width: none;
   }
   .swipe::-webkit-scrollbar { display: none; }
-  .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; }
+  /* One card per swipe; cards are simply there (no per-card fade-in, which
+     would animate mid-swipe), and the row gets its own compositing layer. */
+  .swipe { scroll-behavior: auto; -webkit-overflow-scrolling: touch; transform: translateZ(0); }
+  .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; scroll-snap-stop: always; }
+  .js .swipe > .reveal { opacity: 1; transform: none; transition: none; }
   .swipe > .edu-card { flex-basis: 72%; }
   .name-row { margin-top: 2.25rem; }
   .hero { margin-top: 1rem; }

@@ -11,7 +11,7 @@
      hops, lands with squash-and-stretch and sends out one soft ring.
 
    Both are skipped for prefers-reduced-motion; the grid pauses in background
-   tabs. On localhost a small panel (bottom left) toggles the grid and replays
+   tabs and stays static (CSS dots) on touch devices. On localhost a small panel (bottom left) toggles the grid and replays
    the intro. ?bg= and ?intro= override the defaults for testing.
    ========================================================================== */
 (function () {
@@ -21,6 +21,7 @@
   var isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
   var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
   var dark = window.matchMedia('(prefers-color-scheme: dark)');
+  var coarse = window.matchMedia('(pointer: coarse)');
   var params = new URLSearchParams(location.search);
 
   // ---- breathing dot grid ---------------------------------------------------
@@ -113,7 +114,9 @@
     raf = requestAnimationFrame(loop);
   }
   function setBackground(name) {
-    on = name === 'breathe' && !calm.matches;
+    // Touch devices keep the static CSS dots: a full-screen canvas redrawing
+    // while you scroll costs smoothness on phones.
+    on = name === 'breathe' && !calm.matches && !coarse.matches;
     root.classList.toggle('bg-live', on);
     canvas.style.display = on ? '' : 'none';
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
