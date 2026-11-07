@@ -312,16 +312,16 @@ a:focus-visible, button:focus-visible {
 #all-publications[hidden] { display: none; }
 
 /* Publication card */
-.pub-card { position: relative; display: flex; flex-direction: column; gap: .6rem; padding: 1.25rem 1.35rem; }
+.pub-card { display: flex; flex-direction: column; gap: .6rem; padding: 1.25rem 1.35rem; }
 .pub-venue { color: var(--quiet); }
 .pub-title { color: var(--strong); font-size: var(--fs-title); font-weight: 650; line-height: 1.35; letter-spacing: -.015em; }
 .pub-authors { font-size: var(--fs-small); color: var(--muted); }
 .author { white-space: nowrap; }
 .author.self { color: var(--strong); font-weight: 600; }
-/* PDF / Web / Code as icons in the top-right corner; the venue line leaves
-   room for up to three of them. */
-.pub-venue { padding-right: 6.5rem; }
-.pub-links { position: absolute; top: .65rem; right: .7rem; display: flex; }
+/* PDF / Web / Code as icons at the start of the top line, then the venue.
+   The negative margin lines the first icon's glyph up with the text edge. */
+.pub-head { display: flex; align-items: center; gap: .35rem; margin: -.45rem 0 -.3rem; }
+.pub-links { display: flex; margin-left: -.55rem; }
 .pub-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 2.1rem; height: 2.1rem; color: var(--ink); border-radius: 4px;
@@ -367,7 +367,8 @@ a:focus-visible, button:focus-visible {
   :root { --gap: 1.25rem; }
   .pub-card, .edu-card { grid-column: span 12; }
   .pub-icon { width: 2.75rem; height: 2.75rem; }   /* 44px tap targets */
-  .pub-links { top: .3rem; right: .3rem; }
+  .pub-links { margin-left: -.8rem; }
+  .pub-head { margin: -.7rem 0 -.5rem; gap: .1rem; }
   /* Phones: publications and background scroll sideways, one card tall. */
   .swipe {
     grid-column: span 12;
