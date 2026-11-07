@@ -57,8 +57,8 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
 - **No horizontal rules between sections**, no section numbers ("01", "02"),
   no arrows (→ ↗ ←), no filler text (domain name, entry counts).
 - **Links are violet with no underline**; hover adds a soft violet highlight.
-- **Contact links are icons only**: on the name's line, right-aligned, on
-  desktop; in a row under the name on phones (≤640px).
+- **Contact links are icons only**, in one row under the name on every
+  screen size.
 - **All publication cards look the same** — no highlighted/coloured card.
 - News is a card titled `news.log` on the right of the hero, not a separate
   page; older items expand in place (`show older`, same mono style).

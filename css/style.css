@@ -183,15 +183,13 @@ a:focus-visible, button:focus-visible {
 .edu-card { grid-column: span 3; }
 
 /* Contact icons */
-/* Name and contact icons share one line: name left, icons right, centred on
-   the name. The -11px aligns the last icon's glyph (not its 44px tap area)
-   with the right edge of the News card below. Phones stack them. */
+/* Contact icons sit in a row under the name on every screen size. The -11px
+   aligns the first icon's glyph (not its 44px tap area) with the name. */
 .name-row {
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 1rem; flex-wrap: wrap;
+  display: flex; flex-direction: column; align-items: flex-start; gap: .75rem;
   margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
-.name-links { display: flex; flex-wrap: wrap; margin-right: -11px; }
+.name-links { display: flex; flex-wrap: wrap; margin-left: -11px; }
 .icon-link {
   display: inline-flex;
   align-items: center;
@@ -371,8 +369,7 @@ a:focus-visible, button:focus-visible {
   .swipe::-webkit-scrollbar { display: none; }
   .swipe > .card { flex: 0 0 84%; scroll-snap-align: start; }
   .swipe > .edu-card { flex-basis: 72%; }
-  .name-row { flex-direction: column; align-items: flex-start; gap: .75rem; margin-top: 2.25rem; }
-  .name-links { margin: 0 0 0 -11px; }
+  .name-row { margin-top: 2.25rem; }
   .hero { margin-top: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
