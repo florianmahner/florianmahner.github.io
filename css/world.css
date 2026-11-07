@@ -250,3 +250,36 @@ main { position: relative; z-index: 1; }
   .w-pubs, .w-edus { gap: 2.25rem; }
   .world.rows-live [data-row].on { transform: none; }
 }
+
+/* ---- news.log on a 3D laptop --------------------------------------------------------- */
+/* The block is held in place while scrolling opens the lid and types the log;
+   JS fits the window onto the laptop screen every frame. */
+.world .ch-news { padding: 0; }
+.world .ch-news > .w-nscroll { width: 100%; height: 280vh; }
+.world .w-npin { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.world .w-npin .w-news {
+  position: absolute; left: 0; top: 0; margin: 0;
+  display: flex; flex-direction: column;
+  transition: none; transform-origin: 0 0; opacity: 0; clip-path: none;
+}
+.world .w-npin .w-news .news-list { flex: 1; overflow: hidden; }
+.world .w-news .news-list p::before { opacity: .7; }
+
+/* ---- Selected publications: nothing gets clipped ------------------------------------- */
+.world .w-hpin { justify-content: safe center; gap: 2rem; padding: 4.5rem 0 2rem; }
+.world .w-track .w-pub { min-height: 0; }
+
+/* ---- Background: a quiet timeline ------------------------------------------------------ */
+/* One thin line with a dot per step; the step you are on fills its dot. */
+.w-edus { position: relative; width: min(100%, 36rem); margin-inline: auto; gap: 0; }
+.w-edu { text-align: left; padding: 1.4rem 0 1.4rem 2.25rem; border-left: 1.5px solid var(--line); }
+.w-edu .edu-meta { margin-inline: 0; }
+.world .w-edu::before {
+  content: ''; left: -6px; top: 1.75rem; width: 10.5px; height: 10.5px;
+  border-radius: 50%; border: 1.5px solid var(--line); background: var(--bg);
+  font-size: 0; -webkit-text-stroke: 0; opacity: 1; transform: none;
+  transition: background .3s ease, transform .4s cubic-bezier(.2, .8, .1, 1);
+}
+.world .w-edu.on::before { background: var(--ink); transform: scale(1.25); opacity: 1; }
+.w-edu:first-child { padding-top: .25rem; }
+.w-edu:first-child::before { top: .6rem; }

@@ -68,127 +68,34 @@ function magnetic() {
   });
 }
 
-// news.log as a tiny desktop. The cursor double-clicks the file; outline
-// frames zoom out of the icon and the window opens; the log types itself out
-// with line numbers. The window can be dragged by its title bar, closed back
-// into the icon, and reopened with a double-click. Click the text to skip.
-function desktop() {
-  const desk = document.querySelector('.w-desk');
-  if (!desk) return;
-  const file = desk.querySelector('.w-file'), cursor = desk.querySelector('.w-cursor');
-  const win = desk.querySelector('.w-news'), bar = win.querySelector('.card-bar');
-  const list = win.querySelector('.news-list');
-  const lines = [...list.querySelectorAll('p')];
-
-  // every letter becomes its own (hidden) span; links and bold stay intact
+// news.log letters, revealed by the laptop scene as you scroll
+const log = { chars: [], shown: -1, list: null, caret: null };
+function setupLog() {
+  const list = document.querySelector('.w-news .news-list');
+  if (!list) return;
+  log.list = list;
   const walker = document.createTreeWalker(list, NodeFilter.SHOW_TEXT);
   const nodes = [];
   while (walker.nextNode()) if (walker.currentNode.textContent.trim()) nodes.push(walker.currentNode);
-  const chars = [];
   for (const node of nodes) {
     const frag = document.createDocumentFragment();
     for (const ch of node.textContent.replace(/\s+/g, ' ')) {
-      const c = document.createElement('span'); c.className = 'tc'; c.textContent = ch;
-      frag.appendChild(c); chars.push(c);
+      const c = document.createElement('span'); c.className = 'tc on'; c.textContent = ch;
+      frag.appendChild(c); log.chars.push(c);
     }
     node.replaceWith(frag);
   }
-  // the full text stays available to screen readers while letters are hidden
-  list.setAttribute('aria-label', list.textContent);
-  const caret = document.createElement('span'); caret.className = 'caret'; caret.setAttribute('aria-hidden', 'true');
-
-  // window chrome: two quiet control squares and a close box
-  const close = document.createElement('button');
-  close.type = 'button'; close.className = 'w-close'; close.setAttribute('aria-label', 'Close news.log');
-  win.appendChild(close);
-
-  const wait = ms => new Promise(r => setTimeout(r, ms));
-  let run = 0, skip = false, isOpen = false;
-  list.addEventListener('click', () => { skip = true; });
-
-  // outline frames that travel from one box to another (the classic zoom)
-  function zoom(from, to) {
-    const dr = desk.getBoundingClientRect();
-    for (let k = 1; k <= 6; k++) {
-      const t = k / 6, f = document.createElement('div');
-      f.className = 'w-zoom';
-      const L = from.left + (to.left - from.left) * t - dr.left, T = from.top + (to.top - from.top) * t - dr.top;
-      const W = from.width + (to.width - from.width) * t, H = from.height + (to.height - from.height) * t;
-      Object.assign(f.style, { left: `${L}px`, top: `${T}px`, width: `${W}px`, height: `${H}px`, animationDelay: `${k * 35}ms` });
-      desk.appendChild(f);
-      setTimeout(() => f.remove(), 700 + k * 35);
-    }
-  }
-
-  async function type(id, fast) {
-    let i = 0;
-    while (i < chars.length) {
-      if (id !== run) return;
-      if (skip || fast === 'instant') { chars.slice(i).forEach(c => c.classList.add('on')); lines.forEach(l => l.classList.add('typed')); break; }
-      const c = chars[i++];
-      c.classList.add('on');
-      c.closest('p')?.classList.add('typed');
-      c.after(caret);
-      const next = chars[i];
-      const lineEnd = next && c.closest('p') !== next.closest('p');
-      // a typist's rhythm: quick letters, a breath at spaces and line ends
-      await wait(fast ? 2 : lineEnd ? 240 : c.textContent === ' ' ? 24 : 8 + Math.random() * 14);
-    }
-    lines[lines.length - 1]?.appendChild(caret);
-  }
-
-  async function open({ withCursor, fast }) {
-    const id = ++run; skip = false;
-    win.style.removeProperty('--wx'); win.style.removeProperty('--wy'); drag.x = drag.y = 0;
-    if (withCursor) {
-      desk.style.setProperty('--cx', `${desk.clientWidth * 0.8}px`); desk.style.setProperty('--cy', '320px');
-      desk.classList.add('go');
-      await wait(450);
-      const fr = file.getBoundingClientRect(), dr = desk.getBoundingClientRect();
-      desk.style.setProperty('--cx', `${fr.left - dr.left + fr.width * 0.55}px`);
-      desk.style.setProperty('--cy', `${fr.top - dr.top + fr.height * 0.35}px`);
-      await wait(950);
-    }
-    for (let k = 0; k < 2; k++) { file.classList.add('press', 'sel'); await wait(85); file.classList.remove('press'); await wait(105); }
-    if (id !== run) return;
-    chars.forEach(c => c.classList.remove('on')); lines.forEach(l => l.classList.remove('typed'));
-    zoom(file.getBoundingClientRect(), win.getBoundingClientRect());
-    await wait(230);
-    desk.classList.add('open'); isOpen = true;
-    file.classList.remove('sel');
-    await wait(260);
-    desk.classList.add('done');
-    await wait(300);
-    type(id, fast);
-  }
-
-  function shut() {
-    run++; isOpen = false;
-    zoom(win.getBoundingClientRect(), file.getBoundingClientRect());
-    desk.classList.remove('open');
-    caret.remove();
-  }
-  close.addEventListener('click', shut);
-  file.addEventListener('dblclick', () => { if (!isOpen) open({ fast: true }); });
-  file.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !isOpen) { e.preventDefault(); open({ fast: true }); } });
-
-  // drag the window by its title bar
-  const drag = { x: 0, y: 0, on: false, sx: 0, sy: 0 };
-  bar.addEventListener('pointerdown', e => {
-    if (!isOpen || e.button !== 0) return;
-    drag.on = true; drag.sx = e.clientX - drag.x; drag.sy = e.clientY - drag.y;
-    bar.setPointerCapture(e.pointerId); win.classList.add('dragging');
-  });
-  bar.addEventListener('pointermove', e => {
-    if (!drag.on) return;
-    drag.x = clamp(e.clientX - drag.sx, -260, 260); drag.y = clamp(e.clientY - drag.sy, -160, 220);
-    win.style.setProperty('--wx', `${drag.x}px`); win.style.setProperty('--wy', `${drag.y}px`);
-  });
-  const end = () => { drag.on = false; win.classList.remove('dragging'); };
-  bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
-
-  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); open({ withCursor: true }); } }, { threshold: 0.35 });
-  io.observe(desk);
+  list.setAttribute('aria-label', list.textContent); // screen readers get the whole log
+  log.caret = document.createElement('span'); log.caret.className = 'caret'; log.caret.setAttribute('aria-hidden', 'true');
+}
+function showLog(k) {
+  const n = Math.round(clamp(k, 0, 1) * log.chars.length);
+  if (n === log.shown) return;
+  const lo = Math.min(n, Math.max(0, log.shown)), hi = Math.max(n, log.shown < 0 ? log.chars.length : log.shown);
+  for (let i = lo; i < hi; i++) log.chars[i].classList.toggle('on', i < n);
+  log.shown = n;
+  if (n > 0) log.chars[n - 1].after(log.caret); else log.list.prepend(log.caret);
+  log.list.scrollTop = log.list.scrollHeight; // like a terminal, the newest line stays in view
 }
 
 function setupText() {
@@ -221,7 +128,7 @@ function setupText() {
   }, { rootMargin: '0px 0px -10% 0px' });
   $$('[data-split], [data-rise], [data-stream]').forEach(el => io.observe(el));
   magnetic();
-  desktop();
+  setupLog();
 }
 
 if (root.classList.contains('world')) setupText();
@@ -283,6 +190,43 @@ const objs = kinds.map((make, i) => {
   };
 });
 
+// ---- a laptop for news.log: base, keyboard, hinge, lid with a screen ----------------------
+const laptop = new THREE.Group();
+const lap = { W: 3.4, D: 2.3, H: 0.12, T: 0.07 };
+const shell = new THREE.MeshPhysicalMaterial({ roughness: 0.32, metalness: 0.55, clearcoat: 0.3 });
+const keysTex = (() => {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 420;
+  const g = c.getContext('2d');
+  g.fillStyle = '#26262a'; g.fillRect(0, 0, 1024, 420);
+  g.fillStyle = '#3a3a40';
+  const rows = [14, 14, 13, 12];
+  rows.forEach((n, r) => {
+    const kw = (1024 - 40) / 14.6;
+    for (let k = 0; k < n; k++) { g.beginPath(); g.roundRect(20 + k * kw + r * kw * 0.3, 20 + r * 92, kw - 8, 80, 8); g.fill(); }
+  });
+  g.beginPath(); g.roundRect(20 + 3.2 * 69, 20 + 4 * 92 - 4, 69 * 7, 36, 8); g.fill();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const base = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.H, lap.D, 4, 0.05), shell);
+base.position.y = lap.H / 2;
+const keys = new THREE.Mesh(new THREE.PlaneGeometry(lap.W * 0.86, lap.D * 0.4), new THREE.MeshStandardMaterial({ map: keysTex, roughness: 0.7 }));
+keys.rotation.x = -Math.PI / 2; keys.position.set(0, lap.H + 0.002, -lap.D * 0.16);
+const pad = new THREE.Mesh(new THREE.PlaneGeometry(lap.W * 0.32, lap.D * 0.26), new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.3 }));
+pad.rotation.x = -Math.PI / 2; pad.position.set(0, lap.H + 0.002, lap.D * 0.3);
+const hinge = new THREE.Group(); hinge.position.set(0, lap.H, -lap.D / 2);
+const lid = new THREE.Mesh(new RoundedBoxGeometry(lap.W, lap.T, lap.D, 4, 0.04), shell);
+lid.position.set(0, lap.T / 2, lap.D / 2);
+const screenMat = new THREE.MeshBasicMaterial({ toneMapped: false });
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(lap.W - 0.24, lap.D - 0.24), screenMat);
+screen.rotation.x = Math.PI / 2; screen.position.set(0, -0.002, lap.D / 2); // underside of the lid
+hinge.add(lid, screen);
+laptop.add(base, keys, pad, hinge);
+laptop.rotation.x = 0.35; // tipped toward you, so you see the keyboard
+laptop.visible = false;
+scene.add(laptop);
+const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([x, y]) => new THREE.Vector3(x * (lap.W - 0.24) / 2, y * (lap.D - 0.24) / 2, 0));
+const cw = new THREE.Vector3();
+
 // ---- arrangements, in screen terms: nx, ny in -1..1, d = distance from camera ------------
 let aspect = 1, small = false;
 const v = new THREE.Vector3();
@@ -313,7 +257,7 @@ const forms = {
   news(i, t, p, out) {
     // they dance around the news.log window: an orbit just outside its edges,
     // each with its own little bounce, passing behind it in depth
-    const s = anchorAt(rects.news || EMPTY, 11, out);
+    const s = anchorAt(rects.screen || rects.news || EMPTY, 9, out);
     const a = (i / N) * Math.PI * 2 + t * 0.32;
     const bob = Math.sin(t * 2.2 + i * 1.9) * 0.18;
     out.x += Math.cos(a) * (s.hw + 1.1);
@@ -357,6 +301,9 @@ let pubRows = visiblePubs();
 const bgRows = $$('.w-edu');
 let vh = innerHeight;
 const hs = document.querySelector('.w-hscroll'), track = document.querySelector('.w-track');
+const ns = document.querySelector('.w-nscroll'), npin = document.querySelector('.w-npin');
+const newsWin = document.querySelector('.w-news');
+let newsP = 0;
 let lastTx = 0;
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
@@ -386,6 +333,11 @@ function readPage() {
   const prog = r => clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
+  if (ns) {
+    const r = ns.getBoundingClientRect();
+    newsP = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
+    rects.npin = npin.getBoundingClientRect();
+  }
   if (hs) {
     // vertical scroll through the pinned section slides the track sideways
     const r = hs.getBoundingClientRect();
@@ -527,29 +479,54 @@ if (toggle && more) {
   });
 }
 
-// ---- smooth wheel scrolling: the page glides to where the wheel sends it ------------------
-const glide = { target: scrollY, on: false };
-const maxScroll = () => document.documentElement.scrollHeight - innerHeight;
-addEventListener('wheel', e => {
-  if (e.ctrlKey || e.target.closest('.news-list, .w-paper') || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-  e.preventDefault();
-  if (!glide.on) glide.target = scrollY;
-  glide.target = clamp(glide.target + e.deltaY * (e.deltaMode === 1 ? 40 : 1), 0, maxScroll());
-  if (!glide.on) { glide.on = true; requestAnimationFrame(glideStep); }
-}, { passive: false });
-let glideLast = 0;
+// ---- smooth scrolling: the wheel sets a target, the page eases to it ------------------------
+const se = document.scrollingElement || document.documentElement;
+const glide = { target: se.scrollTop, on: false, last: 0 };
+const maxScroll = () => se.scrollHeight - innerHeight;
+function glideTo(y) {
+  glide.target = clamp(y, 0, maxScroll());
+  if (!glide.on) { glide.on = true; glide.last = 0; requestAnimationFrame(glideStep); }
+}
 function glideStep(now) {
-  const dt = Math.min(0.05, (now - (glideLast || now)) / 1000) || 1 / 60; glideLast = now;
-  const y = scrollY + (glide.target - scrollY) * (1 - Math.exp(-dt * 9));
-  if (Math.abs(glide.target - y) < 0.5) { scrollTo({ top: glide.target, behavior: 'instant' }); glide.on = false; glideLast = 0; return; }
-  scrollTo({ top: y, behavior: 'instant' });
+  const dt = Math.min(0.05, (now - (glide.last || now)) / 1000) || 1 / 60; glide.last = now;
+  const cur = se.scrollTop;
+  const next = cur + (glide.target - cur) * (1 - Math.exp(-dt * 9));
+  if (Math.abs(glide.target - next) < 0.6) { se.scrollTop = glide.target; glide.on = false; armSnap(); return; }
+  se.scrollTop = next;
   requestAnimationFrame(glideStep);
+}
+addEventListener('wheel', e => {
+  if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.target.closest('.w-paper')) return;
+  e.preventDefault();
+  if (!glide.on) glide.target = se.scrollTop;
+  glideTo(glide.target + e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1));
+}, { passive: false });
+// scrollbar, keys, touch: keep the target in step so the wheel never fights them
+addEventListener('scroll', () => { if (!glide.on) { glide.target = se.scrollTop; armSnap(); } }, { passive: true });
+
+// in the sideways paper scene, come to rest with a paper exactly centred
+let snapTimer = 0;
+function armSnap() {
+  clearTimeout(snapTimer);
+  snapTimer = setTimeout(() => {
+    if (!hs || glide.on) return;
+    const r = hs.getBoundingClientRect(), span = r.height - vh;
+    if (r.top > 0 || r.bottom < vh || span <= 0) return;
+    const n = track.children.length;
+    if (n < 2) return;
+    const k = -r.top / span, j = Math.round(k * (n - 1));
+    const dy = (j / (n - 1) - k) * span;
+    if (Math.abs(dy) > 2) glideTo(se.scrollTop + dy);
+  }, 180);
 }
 
 // ---- theme / size -------------------------------------------------------------------------------
 function theme() {
   const p = palette[dark.matches ? 'dark' : 'light'];
   for (const t in mats) mats[t].color.set(p[t]);
+  shell.color.set(dark.matches ? 0x55524e : 0xd8dce3);
+  pad.material.color.set(dark.matches ? 0x4a4744 : 0xc9cdd5);
+  screenMat.color.set(getComputedStyle(root).getPropertyValue('--card').trim() || '#ffffff');
   scene.environmentIntensity = dark.matches ? 0.4 : 1;
   key.intensity = dark.matches ? 0.7 : 1.2;
   rim.intensity = dark.matches ? 0.6 : 0.9;
@@ -642,7 +619,43 @@ function frame(now) {
     o.mesh.rotation.copy(o.rot);
     o.mesh.scale.setScalar(Math.max(0.001, o.scale));
   });
+  placeLaptop(dt);
   renderer.render(scene, camera);
+}
+
+let lapW = 0;
+function placeLaptop(dt) {
+  const w = (state.a === 'news' ? 1 - state.t : 0) + (state.b === 'news' ? state.t : 0);
+  lapW += (w - lapW) * (1 - Math.exp(-dt * 5));
+  laptop.visible = lapW > 0.01 && !!rects.npin;
+  if (!laptop.visible) { if (newsWin) newsWin.style.opacity = '0'; rects.screen = null; return; }
+  anchorAt(rects.npin, small ? 9.5 : 7.4, laptop.position);
+  laptop.position.y -= 1.05;
+  laptop.position.z -= (1 - lapW) * 6; // it arrives from the back
+  laptop.scale.setScalar(0.6 + lapW * 0.4);
+  laptop.rotation.y = lean.x * 0.12;
+  // scrolling opens the lid first, then types the log
+  const open = smoother(clamp(newsP / 0.24, 0, 1));
+  hinge.rotation.x = -open * 1.92;
+  showLog((newsP - 0.26) / 0.64);
+  laptop.updateMatrixWorld(true);
+  // fit the HTML log over the screen as the camera sees it
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const c of corners) {
+    cw.copy(c).applyMatrix4(screen.matrixWorld).project(camera);
+    const x = (cw.x * 0.5 + 0.5) * innerWidth, y = (-cw.y * 0.5 + 0.5) * vh;
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  rects.screen = { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
+  if (!newsWin) return;
+  const pr = rects.npin, minW = Math.min(innerWidth - 32, 360);
+  const ww = Math.max(x1 - x0 - 16, minW), hh = Math.max(y1 - y0 - 16, 220);
+  const cx = (x0 + x1) / 2 - pr.left, cy = (y0 + y1) / 2 - pr.top;
+  Object.assign(newsWin.style, {
+    width: `${ww}px`, height: `${hh}px`,
+    transform: `translate(${(cx - ww / 2).toFixed(1)}px, ${(cy - hh / 2).toFixed(1)}px)`,
+    opacity: String(smoother(clamp((open - 0.82) / 0.18, 0, 1)) * Math.min(1, lapW * 1.4)),
+  });
 }
 function start() { if (running) return; running = true; last = 0; requestAnimationFrame(frame); }
 function stop() { running = false; }
