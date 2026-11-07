@@ -44,7 +44,8 @@ export default function(eleventyConfig) {
   for (const f of ["index", "gsap-core", "CSSPlugin", "ScrollTrigger", "Observer", "SplitText"]) {
     vendor[`node_modules/gsap/${f}.js`] = `vendor/gsap/${f}.js`;
   }
-  eleventyConfig.addPassthroughCopy(vendor);
+  // only for the local /world/ experiment; the live site does not need them
+  if (process.env.ELEVENTY_RUN_MODE !== "build") eleventyConfig.addPassthroughCopy(vendor);
 
   // Self-hosted variable fonts from @fontsource-variable/* — no third-party
   // font CDN. Inter carries wght + opsz; Geist Mono carries wght.
