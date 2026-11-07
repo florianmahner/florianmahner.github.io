@@ -15,10 +15,11 @@ Personal academic website. **Eleventy (11ty) v3**, Nunjucks templates, vanilla
 CSS, no client-side framework and no build step beyond 11ty.
 
 - `eleventy.config.js` — config, filters, shortcodes, font passthrough
+- `js/motion.js` — breathing dot grid and the name intro (see Motion)
 - `index.njk` — the whole homepage: hero (name, About, News card),
   Selected publications, Background, footer
 - `_includes/base.njk` — homepage layout: head/SEO/JSON-LD, inline JS
-  (scroll reveal, News + publications toggles, bouncing accent dot)
+  (scroll reveal, News + publications toggles)
 - `_includes/pub-row.njk` — `pubRow()` macro; one publication card, used by
   both the selected and the expanded list
 - `_includes/icons.njk` — `socialIcons()` macro; icon-only contact links
@@ -65,7 +66,6 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
 - Violet is only for links and the dot after the name — never card chrome.
 - Dark mode: cards are lighter than the page and the offset shadow darker
   (black), or the 3D window look goes flat. Text is warm off-white, never #fff.
-- No cursor-driven background animation (tried and removed).
 
 ### Tokens (`:root` in `css/style.css`)
 
@@ -85,11 +85,23 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
 
 ### Motion
 
-The accent dot does a physics bounce on load (JS in `base.njk`, skipped in a
-background tab); `.reveal`
-elements rise in via IntersectionObserver (gated by the `.js` class so
-no-JS readers see everything); cards lift on hover. All of it is off under
-`prefers-reduced-motion`.
+All motion lives in `js/motion.js`, configured by `background` and `intro` in
+`_data/site.json` (rendered as `data-bg` / `data-intro` on `<html>`):
+
+- `background: "breathe"` — a slow wave rolls across the dot grid, drawn on a
+  fixed canvas at 30 fps; colours come from `--dots`, so dark mode just works.
+  `"none"` keeps the static CSS dots.
+- `intro: "type-hop"` — the name types in (CSS clip-path steps), the dot blinks
+  once like a cursor, then hops with squash-and-stretch and sends out one ring
+  (`.accent-dot.ring`). `"none"` shows it at rest.
+- `.reveal` elements rise in via IntersectionObserver (`base.njk`, gated by
+  the `.js` class so no-JS readers see everything); cards lift on hover.
+- Everything is off under `prefers-reduced-motion`; the grid pauses in hidden
+  tabs. On localhost a small panel (bottom left) toggles the grid and replays
+  the intro; `?bg=` and `?intro=` override the defaults.
+- Rejected, don't bring back: cursor-driven pulling/swirling grid, graph /
+  cluster / attractor backgrounds ("looks like astro stuff"), a dot falling
+  from the top.
 
 ## Content
 

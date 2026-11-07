@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bg="{{ site.background or 'none' }}" data-intro="{{ site.intro or 'none' }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +26,7 @@
   <link rel="preload" href="/fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js')</script>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/motion.js" defer></script>
 
   <script type="application/ld+json">
   {
@@ -163,52 +164,6 @@
     bindToggle(newsBtn, document.getElementById('news-older'), 'show less', 'show older');
     var pubBtn = document.getElementById('toggle-publications');
     if (pubBtn) bindToggle(pubBtn, document.getElementById('all-publications'), 'Show selected only', pubBtn.textContent);
-  })();
-
-  // Hero accent dot — physics-driven bounce. CSS keyframes can only lerp
-  // between samples (visible kinks at apex/contact); a per-frame integrator
-  // gives a genuinely parabolic trajectory.
-  (function() {
-    var dot = document.querySelector('.hero-name .accent-dot');
-    if (!dot) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (document.hidden) return;   // background tab: rAF is paused, so skip it
-
-    var fs = parseFloat(getComputedStyle(dot).fontSize);
-    if (!fs || isNaN(fs)) return;
-
-    var H0 = 1.6 * fs;             // initial drop height (above rest)
-    var X0 = 0.5 * fs;             // initial horizontal offset
-    var e  = 0.8;                  // coefficient of restitution
-    var g  = 36 * fs;              // gravity, px/s^2
-
-    var t1 = Math.sqrt(2 * H0 / g);
-    var T  = t1 * (1 + 2 * e / (1 - e));
-    var vx = -X0 / T;
-
-    var x = X0, height = H0, vy = 0, startTime = null, lastTime = null;
-
-    function apply() {
-      dot.style.transform = 'translate(' + x.toFixed(2) + 'px, ' + (-height).toFixed(2) + 'px)';
-    }
-    function step(now) {
-      if (startTime === null) { startTime = now; lastTime = now; }
-      var dt = Math.min(0.032, (now - lastTime) / 1000);
-      lastTime = now;
-      var elapsed = (now - startTime) / 1000;
-      vy -= g * dt;
-      height += vy * dt;
-      x += vx * dt;
-      if (height < 0) { height = 0; vy = -vy * e; }
-      if (elapsed < T && (height > 0.1 || Math.abs(vy) > 2 || Math.abs(x) > 0.1)) {
-        apply();
-        requestAnimationFrame(step);
-      } else {
-        dot.style.transform = '';
-      }
-    }
-    apply();
-    setTimeout(function() { requestAnimationFrame(step); }, 400);
   })();
 </script>
 </body>

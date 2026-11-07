@@ -29,6 +29,7 @@ export default function(eleventyConfig) {
   // Passthrough copy static assets to root
   eleventyConfig.addPassthroughCopy({ "public": "/" });
   eleventyConfig.addPassthroughCopy("css");
+  eleventyConfig.addPassthroughCopy("js");
 
   // Self-hosted variable fonts from @fontsource-variable/* — no third-party
   // font CDN. Inter carries wght + opsz; Geist Mono carries wght.
