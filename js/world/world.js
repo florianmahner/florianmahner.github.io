@@ -426,7 +426,7 @@ document.addEventListener('pointerleave', () => { pointerOn = false; });
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 let hovered = -1;
 // only empty page space counts, so text and links keep working normally
-const onEmpty = el => !el.closest('p, h1, h2, h3, a, button, .card, .w-file, .w-paper, li');
+const onEmpty = el => !el.closest('a, button, input, .w-news, .w-file, .w-paper');
 function pick(e) {
   ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   ray.setFromCamera(ndc, camera);
@@ -541,8 +541,8 @@ let glideLast = 0;
 function glideStep(now) {
   const dt = Math.min(0.05, (now - (glideLast || now)) / 1000) || 1 / 60; glideLast = now;
   const y = scrollY + (glide.target - scrollY) * (1 - Math.exp(-dt * 9));
-  if (Math.abs(glide.target - y) < 0.5) { scrollTo(0, glide.target); glide.on = false; glideLast = 0; return; }
-  scrollTo(0, y);
+  if (Math.abs(glide.target - y) < 0.5) { scrollTo({ top: glide.target, behavior: 'instant' }); glide.on = false; glideLast = 0; return; }
+  scrollTo({ top: y, behavior: 'instant' });
   requestAnimationFrame(glideStep);
 }
 

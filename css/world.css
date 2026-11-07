@@ -2,6 +2,9 @@
    the page; the content scrolls over it as chapters and slides in word by
    word. Without .world (reduced motion, no JS) it is a plain readable page. */
 
+/* the page glides with JS here; the browser's own smooth scrolling would fight it */
+html.world { scroll-behavior: auto; }
+
 #world {
   position: fixed; inset: 0; width: 100%; height: 100%;
   display: block; z-index: 0; pointer-events: none;
@@ -34,9 +37,11 @@ main { position: relative; z-index: 1; }
 .w-about p + p { margin-top: 1rem; }
 .w-about p:first-child {
   font-size: var(--fs-heading); font-weight: 600; line-height: 1.22; letter-spacing: -.025em;
-  color: var(--strong); max-width: 26em; margin: 0 auto 2.75rem; text-align: center;
+  color: var(--strong); max-width: 30em; margin-bottom: 2.25rem;
 }
-.w-about p:not(:first-child) { margin-inline: auto; }
+/* About keeps its left-aligned column */
+.ch-about { align-items: flex-start; }
+.ch-about > * { margin-inline: 0; }
 @media (min-width: 961px) { .ch-about > * { width: min(100%, 56rem); } }
 
 .w-news { width: min(100%, 26rem); }
