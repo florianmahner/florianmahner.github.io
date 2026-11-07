@@ -75,6 +75,73 @@ main { position: relative; z-index: 1; }
 .world .w-top { transition: opacity .6s ease .2s; }
 .world:not(.world-ready) .w-top { opacity: 0; }
 
+/* ---- more motion ----------------------------------------------------------------- */
+/* Section headings: letters roll up out of a slot, one after another. */
+.world [data-chars] .wd > span { transform: none; transition: none; }
+.world [data-chars] .chr { display: inline-block; transform: translateY(115%) rotate(8deg); transform-origin: 0 100%;
+  transition: transform .9s cubic-bezier(.2, .8, .1, 1) var(--d, 0ms); }
+.world [data-chars].in .chr { transform: none; }
+
+/* news.log is a little desktop: a file icon, a cursor that double-clicks it,
+   a window that opens out of the icon, and the log typing itself out. */
+.w-desk { position: relative; width: min(100%, 36rem); }
+.w-file, .w-cursor { display: none; }
+.world .w-desk { padding-left: 7.5rem; min-height: 24rem; }
+.world .w-file {
+  display: flex; flex-direction: column; align-items: center; gap: .35rem;
+  position: absolute; left: 0; top: 0; width: 5.5rem; padding: .5rem .25rem;
+  color: var(--ink); opacity: 0; transform: translateY(10px);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.2, .8, .1, 1);
+}
+.world .w-file span { padding: 1px 5px; }
+.world .w-desk.go .w-file { opacity: 1; transform: none; }
+.world .w-file.sel span { background: var(--ink); color: var(--card); }
+.world .w-file.sel svg { color: var(--link); }
+.world .w-file.press { transform: scale(.94); transition-duration: .08s; }
+.world .w-cursor {
+  display: block; position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none;
+  opacity: 0; transform: translate(var(--cx, 420px), var(--cy, 260px));
+  transition: transform .85s cubic-bezier(.45, 0, .2, 1), opacity .3s ease;
+}
+.world .w-desk.go .w-cursor { opacity: 1; }
+.world .w-desk.done .w-cursor { opacity: 0; }
+.world .w-news {
+  transform-origin: -4.5rem 1.6rem;
+  transform: scale(.06); opacity: 0;
+  transition: transform .55s cubic-bezier(.2, .9, .2, 1.05), opacity .25s ease;
+}
+.world .w-desk.open .w-news { transform: none; opacity: 1; }
+/* typewriter: letters appear one by one; a block caret follows the last one */
+.world .w-news .tc { visibility: hidden; }
+.world .w-news .tc.on { visibility: visible; }
+.world .w-news .caret {
+  display: inline-block; width: .55em; height: 1.05em; margin-left: 1px; vertical-align: -.15em;
+  background: var(--ink); animation: w-blink 1s steps(1) infinite;
+}
+@keyframes w-blink { 50% { opacity: 0; } }
+@media (max-width: 640px) {
+  .world .w-desk { padding-left: 0; padding-top: 6.5rem; }
+  .world .w-news { transform-origin: 2.75rem -3.5rem; }
+}
+.world [data-stream] { opacity: 0; transform: translateX(46px); filter: blur(6px);
+  transition: opacity .7s ease var(--d, 0ms), transform 1s cubic-bezier(.2, .8, .1, 1) var(--d, 0ms), filter .8s ease var(--d, 0ms); }
+.world [data-stream].in { opacity: 1; transform: none; filter: none; }
+
+/* List rows slide in from the left. */
+.world .w-pub > [data-rise], .world .w-edu > [data-rise] { transform: translateX(-26px); }
+.world .w-pub > [data-rise].in, .world .w-edu > [data-rise].in { transform: none; }
+
+/* Chapters behave like pages: as one scrolls away it sinks back, softens and
+   fades (--leave 0..1, set from scroll), while the next one rises in. Fast
+   scrolling also bends the text a touch, as if it had weight. */
+.world .ch > * {
+  transform: skewY(var(--skew, 0deg)) translateY(calc(var(--leave, 0) * -6vh)) scale(calc(1 - var(--leave, 0) * .06));
+  opacity: calc(1 - var(--leave, 0) * .9);
+  filter: blur(calc(var(--leave, 0) * 5px));
+  transform-origin: 0 50%;
+}
+.world .icon-link { transition: transform .35s cubic-bezier(.2, .8, .1, 1); }
+
 @media (max-width: 640px) {
   .ch { padding-top: 16vh; padding-bottom: 10vh; }
   .w-pubs, .w-edus { gap: 2.25rem; }

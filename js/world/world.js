@@ -41,6 +41,90 @@ function splitWords(el) {
   }
 }
 
+// years tick up to their value, ending exactly on the real text
+function countUp(el) {
+  const final = el.textContent;
+  if (!/\d{4}/.test(final)) return;
+  el.setAttribute('aria-label', final);
+  const t0 = performance.now(), dur = 1100;
+  const tick = now => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    let n = 0;
+    el.textContent = final.replace(/\d{4}/g, m => String(Math.round(+m - (1 - e) * (18 + 6 * n++))));
+    if (k < 1) requestAnimationFrame(tick); else el.textContent = final;
+  };
+  requestAnimationFrame(tick);
+}
+
+// contact icons lean toward the cursor
+function magnetic() {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  $$('.icon-link').forEach(a => {
+    a.addEventListener('pointermove', e => {
+      const r = a.getBoundingClientRect();
+      a.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.35}px, ${(e.clientY - r.top - r.height / 2) * 0.35}px)`;
+    });
+    a.addEventListener('pointerleave', () => { a.style.transform = ''; });
+  });
+}
+
+// news.log as a tiny desktop: the cursor double-clicks the file, the window
+// opens out of the icon, and the log types itself out. Click to skip ahead.
+function desktop() {
+  const desk = document.querySelector('.w-desk');
+  if (!desk) return;
+  const file = desk.querySelector('.w-file'), cursor = desk.querySelector('.w-cursor');
+  const list = desk.querySelector('.news-list');
+  // every letter becomes its own (hidden) span; links and bold stay intact
+  const walker = document.createTreeWalker(list, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) if (walker.currentNode.textContent.trim()) nodes.push(walker.currentNode);
+  const chars = [];
+  for (const node of nodes) {
+    const frag = document.createDocumentFragment();
+    for (const ch of node.textContent.replace(/\s+/g, ' ')) {
+      const c = document.createElement('span'); c.className = 'tc'; c.textContent = ch;
+      frag.appendChild(c); chars.push(c);
+    }
+    node.replaceWith(frag);
+  }
+  const caret = document.createElement('span'); caret.className = 'caret'; caret.setAttribute('aria-hidden', 'true');
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  let skip = false;
+  desk.querySelector('.w-news').addEventListener('click', () => { skip = true; });
+
+  async function play() {
+    const w = desk.clientWidth;
+    desk.style.setProperty('--cx', `${w * 0.78}px`); desk.style.setProperty('--cy', '300px');
+    desk.classList.add('go');
+    await wait(450);
+    const fr = file.getBoundingClientRect(), dr = desk.getBoundingClientRect();
+    desk.style.setProperty('--cx', `${fr.left - dr.left + fr.width * 0.55}px`);
+    desk.style.setProperty('--cy', `${fr.top - dr.top + fr.height * 0.35}px`);
+    await wait(950);
+    for (let k = 0; k < 2; k++) { file.classList.add('press', 'sel'); await wait(90); file.classList.remove('press'); await wait(110); }
+    desk.classList.add('open');
+    await wait(250);
+    desk.classList.add('done');
+    await wait(350);
+    let i = 0;
+    while (i < chars.length) {
+      if (skip) { chars.slice(i).forEach(c => c.classList.add('on')); break; }
+      const c = chars[i++];
+      c.classList.add('on');
+      c.after(caret);
+      // a typist's rhythm: quick letters, a breath at spaces and line ends
+      const next = chars[i];
+      const lineEnd = next && c.closest('p') !== next.closest('p');
+      await wait(lineEnd ? 260 : c.textContent === ' ' ? 22 : 9 + Math.random() * 14);
+    }
+    const lastP = list.querySelector('p:last-child');
+    if (lastP) lastP.appendChild(caret);
+  }
+  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); play(); } }, { threshold: 0.35 });
+  io.observe(desk);
+}
+
 function setupText() {
   const about = $$('.w-about p');
   if (about[0]) about[0].setAttribute('data-split', '');
@@ -49,11 +133,29 @@ function setupText() {
   $$('.w-pub, .w-edu').forEach(el => {
     for (const c of el.children) if (!c.hasAttribute('data-split')) { c.setAttribute('data-rise', ''); c.style.setProperty('--d', '160ms'); }
   });
+  $$('.block-heading').forEach(h => h.setAttribute('data-chars', ''));
   $$('[data-split]').forEach(splitWords);
+  // headings go one step further: every letter rolls in on its own
+  $$('[data-chars] .wd > span').forEach(w => {
+    const txt = w.textContent; w.textContent = '';
+    for (const ch of txt) { const c = document.createElement('span'); c.className = 'chr'; c.textContent = ch; w.appendChild(c); }
+  });
+  $$('[data-chars]').forEach(h => h.querySelectorAll('.chr').forEach((c, i) => c.style.setProperty('--d', `${i * 32}ms`)));
   const io = new IntersectionObserver(entries => {
-    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }, { rootMargin: '0px 0px -12% 0px' });
-  $$('[data-split], [data-rise]').forEach(el => io.observe(el));
+    // things arriving together are staggered, so they flow in rather than pop
+    let k = 0;
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const el = e.target;
+      if (el.hasAttribute('data-stream')) el.style.setProperty('--d', `${300 + k++ * 90}ms`);
+      el.classList.add('in');
+      io.unobserve(el);
+      if (el.classList.contains('edu-years')) countUp(el);
+    }
+  }, { rootMargin: '0px 0px -10% 0px' });
+  $$('[data-split], [data-rise], [data-stream]').forEach(el => io.observe(el));
+  magnetic();
+  desktop();
 }
 
 if (root.classList.contains('world')) setupText();
@@ -128,6 +230,14 @@ const cloud = [
   [0.32, 0.78, 13, 0.85], [0.6, -0.02, 16, 1.4], [0.9, -0.38, 7.5, 0.8], [0.25, -0.8, 12, 0.9], [0.74, 0.88, 10, 0.75],
 ];
 // each returns [position, scale] for object i at time t (seconds), progress p (0..1 inside the chapter)
+// an element's on-screen box, as a centre and half-size at depth d
+const box = { cx: 0, cy: 0, hw: 0.3, hh: 0.3 };
+function anchorAt(r, d, out) {
+  const nx = ((r.left + r.width / 2) / innerWidth) * 2 - 1, ny = -(((r.top + r.height / 2) / vh) * 2 - 1);
+  screenToWorld(nx, ny, d, out);
+  const halfH = d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * (small ? 1.35 : 1);
+  return { hw: (r.width / innerWidth) * halfH * aspect, hh: (r.height / vh) * halfH };
+}
 const forms = {
   about(i, t, p, out) {
     const c = cloud[i];
@@ -135,14 +245,22 @@ const forms = {
     return c[3];
   },
   news(i, t, p, out) {
-    const a = (i / N) * Math.PI * 2 + t * 0.18;
-    screenToWorld(0.52, 0.02, 12, out);
-    out.x += Math.cos(a) * 2.4; out.y += Math.sin(a) * 1.15; out.z += Math.sin(a) * 1.6;
-    return 0.95;
+    // they dance around the news.log window: an orbit just outside its edges,
+    // each with its own little bounce, passing behind it in depth
+    const s = anchorAt(rects.news || EMPTY, 11, out);
+    const a = (i / N) * Math.PI * 2 + t * 0.32;
+    const bob = Math.sin(t * 2.2 + i * 1.9) * 0.18;
+    out.x += Math.cos(a) * (s.hw + 1.1);
+    out.y += Math.sin(a) * (s.hh + 0.7) + bob;
+    out.z += Math.sin(a + 1.2) * 1.4;
+    return 0.8 + 0.15 * Math.sin(t * 1.7 + i);
   },
   pubs(i, t, p, out, active) {
     const th = ((i - active) / N) * Math.PI * 2;
-    screenToWorld(0.5, 0, 11.5, out);
+    // the wheel rides along beside the paper you are reading
+    const r = rects.row;
+    const ny = r ? clamp(-(((r.top + r.height / 2) / vh) * 2 - 1), -0.5, 0.5) : 0;
+    screenToWorld(small ? 0.55 : 0.5, ny, 11.5, out);
     const R = 2.9;
     out.y += Math.sin(th) * R;
     out.z += (Math.cos(th) - 1) * R * 1.25;
@@ -158,9 +276,10 @@ const forms = {
     return d < 3 ? Math.max(0, (d - 0.6) / 2.4) : 1;
   },
   end(i, t, p, out) {
-    // a small cluster on a Fibonacci sphere, turning as a whole
+    // a small cluster above the contact links, turning as a whole
     const y = 1 - (i + 0.5) / N * 2, r = Math.sqrt(1 - y * y), a = i * 2.39996 + t * 0.25;
-    screenToWorld(0, 0.32, 13, out);
+    anchorAt(rects.end || EMPTY, 13, out);
+    out.y += 2.1;
     out.x += Math.cos(a) * r * 1.4; out.y += y * 1.4; out.z += Math.sin(a) * r * 1.4;
     return 0.62;
   },
@@ -170,12 +289,23 @@ const forms = {
 const chapters = $$('[data-ch]').map(el => ({ el, name: el.dataset.ch }));
 const pubRows = $$('.w-pub'), bgRows = $$('.w-edu');
 let vh = innerHeight;
+const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
+const rects = {};
+const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
 const state = { a: 'about', b: 'about', t: 0, pA: 0, pB: 0, pubActive: 0, rowsLive: false };
 function readPage() {
   // one pass of layout reads per frame
   const mid = vh * 0.5;
-  const rects = chapters.map(c => c.el.getBoundingClientRect());
-  const centers = rects.map(r => r.top + r.height / 2);
+  const rectsCh = chapters.map(c => c.el.getBoundingClientRect());
+  if (newsCard) rects.news = newsCard.getBoundingClientRect();
+  if (endEl) rects.end = endEl.getBoundingClientRect();
+  // chapters leave like pages: sink back and soften as their bottom passes up
+  chapters.forEach((c, k) => {
+    const r = rectsCh[k];
+    const leave = k === chapters.length - 1 ? 0 : smoother(clamp((vh * 0.55 - r.bottom) / (vh * 0.5), 0, 1));
+    if (Math.abs((c.leave || 0) - leave) > 0.003) { c.el.style.setProperty('--leave', leave.toFixed(3)); c.leave = leave; }
+  });
+  const centers = rectsCh.map(r => r.top + r.height / 2);
   let i = 0;
   while (i < chapters.length - 1 && centers[i + 1] < mid) i++;
   const j = Math.min(i + 1, chapters.length - 1);
@@ -185,7 +315,7 @@ function readPage() {
   const raw = span > 0 ? clamp((mid - centers[i]) / span, 0, 1) : 0;
   state.t = smoother(clamp((raw - 0.25) / 0.5, 0, 1));
   const prog = r => clamp((mid - r.top) / Math.max(1, r.height), 0, 1);
-  state.pA = prog(rects[i]); state.pB = prog(rects[j]);
+  state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
   const rowIn = rows => {
     let best = -1, bd = Infinity;
@@ -195,7 +325,7 @@ function readPage() {
   const inPubs = state.a === 'pubs' || state.b === 'pubs';
   const inBg = state.a === 'bg' || state.b === 'bg';
   const pr = inPubs ? rowIn(pubRows) : -1, br = inBg ? rowIn(bgRows) : -1;
-  if (pr >= 0) state.pubActive = pr;
+  if (pr >= 0) { state.pubActive = pr; rects.row = pubRows[pr].getBoundingClientRect(); }
   const live = (state.a === 'pubs' && state.t < 0.5) || (state.b === 'pubs' && state.t >= 0.5) || (state.a === 'bg' && state.t < 0.5) || (state.b === 'bg' && state.t >= 0.5);
   if (live !== state.rowsLive) { root.classList.toggle('rows-live', live); state.rowsLive = live; }
   pubRows.forEach((r, k) => r.classList.toggle('on', k === pr));
@@ -208,7 +338,9 @@ addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse') return;
   lean.tx = (e.clientX / innerWidth) * 2 - 1;
   lean.ty = (e.clientY / innerHeight) * 2 - 1;
+  pointerOn = true;
 }, { passive: true });
+document.addEventListener('pointerleave', () => { pointerOn = false; });
 
 // ---- theme / size -------------------------------------------------------------------------------
 function theme() {
@@ -230,6 +362,8 @@ function resize() {
 
 // ---- loop -----------------------------------------------------------------------------------------
 const ta = new THREE.Vector3(), tb = new THREE.Vector3();
+const pv = new THREE.Vector3();
+let lastSkew = 0, pointerOn = false;
 let last = 0, t = 0, pubA = 0, scrollV = 0, lastY = scrollY, running = false;
 function frame(now) {
   if (!running) return;
@@ -248,12 +382,29 @@ function frame(now) {
   camera.position.set(lean.x * 0.55, -lean.y * 0.35, 0);
   camera.lookAt(lean.x * 0.15, -lean.y * 0.1, -10);
 
+  // text bends a touch with scroll speed
+  const skew = clamp(scrollV * -0.0009, -2.2, 2.2);
+  if (Math.abs(skew - lastSkew) > 0.01) { root.style.setProperty('--skew', `${skew.toFixed(2)}deg`); lastSkew = skew; }
+  const speed = Math.min(Math.abs(scrollV), 4000);
+
   const fa = forms[state.a], fb = forms[state.b];
   objs.forEach((o, i) => {
     const sa = fa(i, t, state.pA, ta, pubA);
     const sb = fb(i, t, state.pB, tb, pubA);
     ta.lerp(tb, state.t);
     const sc = sa + (sb - sa) * state.t;
+    // fast scrolling scatters them a little; they gather again when you stop
+    ta.x *= 1 + speed * 0.00006; ta.y *= 1 + speed * 0.00004;
+    // the cursor pushes objects aside (measured on screen, applied in depth)
+    if (pointerOn) {
+      pv.copy(o.pos).project(camera);
+      const dx = (pv.x - lean.tx) * aspect, dy = pv.y + lean.ty, d = Math.hypot(dx, dy);
+      if (d < 0.32 && d > 1e-4) {
+        const f = (1 - d / 0.32) ** 2 * 1.6 * (-o.pos.z / 10);
+        ta.x += (dx / d) * f; ta.y += (dy / d) * f;
+        o.rot.y += f * dt * 2.5;
+      }
+    }
     // gentle float, so nothing is ever perfectly still
     ta.x += Math.sin(t * 0.6 + o.phase) * 0.08;
     ta.y += Math.sin(t * 0.8 + o.phase * 1.3) * 0.1;

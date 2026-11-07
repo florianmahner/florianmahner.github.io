@@ -35,6 +35,12 @@
 
   {% if news and news.length %}
   <section class="ch ch-news" data-ch="news" aria-labelledby="news-heading">
+    <div class="w-desk">
+    <div class="w-file" aria-hidden="true">
+      <svg width="44" height="52" viewBox="0 0 44 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 2h24l12 12v36H4z" fill="var(--card)"/><path d="M28 2v12h12"/><path d="M11 24h22M11 31h22M11 38h14" stroke-linecap="round"/></svg>
+      <span class="mono">news.log</span>
+    </div>
+    <svg class="w-cursor" aria-hidden="true" width="22" height="26" viewBox="0 0 22 26"><path d="M2 2l17 12-7.5 1.2L15.5 23l-3.4 1.4-4-7.6L2.5 21.5z" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/></svg>
     <aside class="card news w-news">
       <h2 class="card-bar mono" id="news-heading">news.log</h2>
       <div class="news-list">
@@ -46,6 +52,7 @@
         {% endfor %}
       </div>
     </aside>
+    </div>
   </section>
   {% endif %}
 
