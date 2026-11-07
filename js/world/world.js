@@ -124,6 +124,15 @@ function showLog(k) {
   for (let i = lo; i < hi; i++) log.chars[i].classList.toggle('on', i < n);
   log.shown = n;
   if (n > 0) log.chars[n - 1].after(log.caret); else log.list.prepend(log.caret);
+  const col = log.list.closest('.w-col-news');
+  if (col) {
+    const fx = clamp(log.caret.offsetLeft / Math.max(1, log.list.clientWidth), 0, 1);
+    col.style.setProperty('--carr', ((0.5 - fx) * 34).toFixed(1) + 'px');
+    if (log.keys && log.keys.length && n > 0) {
+      const key = log.keys[(n * 7) % log.keys.length];
+      key.classList.add('hit'); setTimeout(() => key.classList.remove('hit'), 90);
+    }
+  }
   // like a terminal, the newest typed line stays in view
   const last = log.chars[Math.max(0, n - 1)];
   // the file reads from the top (newest first), so only the printer view follows the caret
@@ -149,6 +158,31 @@ function invite(p) {
   }
 }
 
+// a typewriter drawn like the site's windows: white fill, black outline,
+// steel offset shadow. The page (news.log) is fed through its roller.
+function typewriter() {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 360 150'); svg.setAttribute('class', 'w-type'); svg.setAttribute('aria-hidden', 'true');
+  const keys = [];
+  for (const [y, n] of [[74, 10], [95, 9], [116, 8]])
+    for (let k = 0; k < n; k++) keys.push('<circle class="tw-key" cx="' + (180 + (k - (n - 1) / 2) * 25) + '" cy="' + y + '" r="6.5"/>');
+  svg.innerHTML =
+    '<path class="tw-shadow" d="M46 41H326L352 143Q354 149 348 149H24Q18 149 20 143Z"/>' +
+    '<path class="tw-fill" d="M42 37H322L348 139Q350 145 344 145H20Q14 145 16 139Z"/>' +
+    '<rect class="tw-fill" x="150" y="37" width="60" height="13" rx="3"/>' +
+    keys.join('') +
+    '<rect class="tw-key tw-space" x="112" y="128" width="136" height="8" rx="4"/>' +
+    '<g class="w-carriage">' +
+      '<rect class="tw-shadow" x="24" y="14" width="316" height="22" rx="11"/>' +
+      '<rect class="tw-fill" x="20" y="10" width="316" height="22" rx="11"/>' +
+      '<circle class="tw-fill" cx="11" cy="21" r="9"/><circle class="tw-fill" cx="345" cy="21" r="9"/>' +
+      '<path class="tw-line" d="M20 15L4 4"/>' +
+    '</g>';
+  log.keys = [...svg.querySelectorAll('.tw-key')];
+  return svg;
+}
+
 function setupText() {
   const about = $$('.w-about p');
   // two screens: the opening paragraph alone, then the research paragraphs
@@ -157,13 +191,13 @@ function setupText() {
   if (host) {
     const one = document.createElement('div'); one.className = 'w-step';
     const two = document.createElement('div'); two.className = 'w-step w-step-two';
-    const colA = document.createElement('div'), colB = document.createElement('div');
-    colA.className = colB.className = 'w-col';
-    host.prepend(one); one.after(two); two.append(colA, colB);
-    // research paragraphs (and the invitation) on the left, news.log on the right
-    about.forEach((p, k) => (k === 0 ? one : colA).appendChild(p));
+    const colA = document.createElement('div'), colB = document.createElement('div'), colC = document.createElement('div');
+    colA.className = colB.className = 'w-col'; colC.className = 'w-col w-col-news';
+    host.prepend(one); one.after(two); two.append(colA, colB, colC);
+    // research | central theme + invitation | news.log on the right
+    about.forEach((p, k) => (k === 0 ? one : k === 1 ? colA : colB).appendChild(p));
     const win = document.querySelector('.w-news'), sec = document.querySelector('.ch-news');
-    if (win) { colB.appendChild(win); colB.classList.add('w-col-news'); }
+    if (win) { colC.appendChild(win); colC.appendChild(typewriter()); }
     if (sec) sec.remove();
   }
   about.forEach(p => {
@@ -197,7 +231,7 @@ function setupText() {
       if (el.classList.contains('edu-years')) countUp(el);
     }
   }, { rootMargin: '0px 0px -10% 0px' });
-  $$('[data-split], [data-rise], [data-stream]').forEach(el => io.observe(el));
+  $$('[data-split], [data-rise], [data-stream], .w-edus').forEach(el => io.observe(el));
   magnetic();
   setupLog();
 }

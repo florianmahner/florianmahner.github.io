@@ -410,3 +410,73 @@ main { position: relative; z-index: 1; }
 .world .w-about .w-news p + p { margin-top: .7rem; }
 .world .w-about .w-news .news-year { font-family: var(--mono); font-size: var(--fs-mono); color: var(--quiet); }
 .world .w-about .w-news strong { color: var(--strong); }
+
+/* ---- first screen: back to its approved line width ------------------------------------- */
+.world .w-about .w-step:first-child p { max-width: 64rem; }
+
+/* ---- second screen: research | central theme + invitation | news.log ----------------- */
+.w-step-two {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 23rem);
+  justify-content: stretch; gap: clamp(2rem, 3.5vw, 3.5rem);
+}
+@media (max-width: 1200px) {
+  .w-step-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .w-col-news { grid-column: 2; }
+}
+@media (max-width: 860px) {
+  .w-step-two { grid-template-columns: 1fr; }
+  .w-col-news { grid-column: auto; }
+}
+
+/* ---- news.log: the site's own window again, no line numbers --------------------------- */
+.world .w-col-news .w-news {
+  position: relative; z-index: 0;
+  background: var(--card); background-image: none;
+  border: var(--border); box-shadow: var(--shadow);
+  padding: 0; clip-path: none !important;
+  transform: translateX(var(--carr, 0px)) !important;
+  transition: transform .16s ease-out !important;
+  margin-bottom: -16px; /* the page goes down into the roller */
+}
+.world .w-col-news .w-news::after { content: none; }
+.world .w-col-news .w-news .card-bar {
+  position: static; padding: .45rem .85rem; background: var(--bar);
+  border-bottom: var(--border); color: var(--ink); text-align: left;
+}
+.world .w-col-news .w-news .news-list { padding: .9rem 1rem 1.6rem; max-height: 22rem; }
+.world .w-news .news-list p::before { content: none; display: none; }
+.world .w-news .news-list p { padding-left: 0; }
+
+/* ---- the typewriter under it --------------------------------------------------------------- */
+.w-type { display: none; }
+.world .w-type { display: block; position: relative; z-index: 1; width: calc(100% + 24px); margin: 0 -12px; height: auto; overflow: visible; }
+.w-type .tw-fill { fill: var(--card); stroke: var(--line); stroke-width: 1.5; stroke-linejoin: round; }
+.w-type .tw-shadow { fill: var(--shadow-color); }
+.w-type .tw-line { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-linecap: round; }
+.w-type .tw-key { fill: var(--bar); stroke: var(--line); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; transition: transform .08s ease-out; }
+.w-type .tw-key.hit { transform: translateY(2.5px) scale(.92); fill: var(--ink); }
+.w-type .w-carriage { transform: translateX(var(--carr, 0px)); transition: transform .16s ease-out; }
+
+/* ---- Background: a horizontal timeline that draws itself (desktop) ------------------------- */
+@media (min-width: 961px) {
+  .world .ch-bg > .w-edus { width: min(100%, 76rem); }
+  .world .w-edus {
+    display: flex; flex-direction: row-reverse; /* oldest on the left */
+    gap: clamp(1.5rem, 3vw, 3rem); padding: 0; position: relative;
+  }
+  .world .w-edus::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 2.6rem; height: 1.5px; background: var(--line);
+    transform: scaleX(0); transform-origin: 0 50%; transition: transform 1.4s cubic-bezier(.6, 0, .2, 1);
+  }
+  .world .w-edus.in::before { transform: scaleX(1); }
+  .world .w-edu, .world .w-edu:first-child { flex: 1 1 0; border-left: 0; padding: 0; text-align: left; transform: none; }
+  .world .w-edu .edu-years { margin-bottom: 2.4rem; }
+  .world .w-edu::before, .world .w-edu:first-child::before {
+    top: calc(2.6rem - 5px); left: 0; transform: scale(0);
+    transition: transform .5s cubic-bezier(.2, .9, .2, 1.2) var(--dd, 0s), background .3s ease;
+  }
+  .world .w-edus.in .w-edu::before { transform: scale(1); }
+  .world .w-edus.in .w-edu.on::before { transform: scale(1.3); }
+  .world .w-edu:nth-child(4) { --dd: .25s; } .world .w-edu:nth-child(3) { --dd: .55s; }
+  .world .w-edu:nth-child(2) { --dd: .85s; } .world .w-edu:nth-child(1) { --dd: 1.15s; }
+}
