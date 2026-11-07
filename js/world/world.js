@@ -785,6 +785,7 @@ function frame(now) {
 let lapW = 0, contentPx = 0, feedPx = 0, newsPs = 0;
 const newsBar = document.querySelector('.w-news .card-bar');
 function placePrinter(dt) {
+  if (!ns) { printer.visible = false; return; } // news.log lives on the About screen now
   const w = (state.a === 'news' ? 1 - state.t : 0) + (state.b === 'news' ? state.t : 0);
   lapW += (w - lapW) * (1 - Math.exp(-dt * 5));
   printer.visible = lapW > 0.01 && !!rects.npin;
