@@ -72,7 +72,10 @@ const scrubs = [];
 function scrubText() {
   for (const sc of scrubs) {
     const r = sc.el.getBoundingClientRect();
-    const k = clamp((vh * 0.8 - r.top) / (r.height + vh * 0.3), 0, 1);
+    // lighting starts as it comes up the screen and is complete once it sits
+    // centred, so the first paragraph is fully lit on arrival
+    const start = vh * 0.95, done = vh / 2 - r.height / 2;
+    const k = clamp((start - r.top) / Math.max(1, start - done), 0, 1);
     const n = Math.round(k * sc.words.length);
     if (n === sc.lit) continue;
     const lo = Math.min(n, Math.max(0, sc.lit)), hi = Math.max(n, sc.lit < 0 ? sc.words.length : sc.lit);
