@@ -491,3 +491,15 @@ main { position: relative; z-index: 1; }
 
 .world .w-col-news .news-more { margin: 1rem 0 0 3.6rem; }
 .world .w-col-news .news-more { display: inline-block; width: auto; background: none; border: 0; padding: 0; color: var(--link); cursor: pointer; }
+
+/* the note sits at the foot of the paper scene; Background follows closer */
+.world .w-hpin > .w-note { margin: 0 auto; }
+.world .ch-bg { padding-top: 4vh; }
+
+/* news.log: a scroll window with soft edges; objects follow the items inside it */
+.world .w-col-news .w-news .news-list {
+  max-height: min(58vh, 34rem); overflow-y: auto; overscroll-behavior: contain;
+  padding: .6rem .4rem 2.2rem 0; scrollbar-width: thin; scrollbar-color: var(--quiet) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.4rem, #000 calc(100% - 2.6rem), transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, #000 1.4rem, #000 calc(100% - 2.6rem), transparent 100%);
+}

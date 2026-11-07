@@ -389,7 +389,7 @@ const PAPER_SCENES = [
     const axis = i % 3, step = Math.floor(i / 3) + 1, d = step * 0.78;
     const ox = -(s.hw + 2.6), oy = -1.1;
     const tilt = Math.sin(t * 0.3) * 0.15;
-    if (axis === 0) o.set(ox + d, oy, 0);
+    if (axis === 0) o.set(ox - d, oy, 0);
     else if (axis === 1) o.set(ox, oy + d, 0);
     else o.set(ox - d * 0.45, oy - d * 0.25 + tilt, d * 0.9);
     return 0.62;
@@ -410,6 +410,7 @@ function pointAtScreen(px, py, d, out) {
   return out.copy(dir).multiplyScalar(d / Math.max(0.2, -dir.z)).add(_ray.ray.origin);
 }
 const markerOn = [];
+let newsHover = false, waitPull = 0;
 const forms = {
   about(i, t, p, out) {
     // first screen: a loose cloud in the open space right of the text;
@@ -437,15 +438,34 @@ const forms = {
       const halfH = D * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const pxPerWorld = vh / (2 * halfH);
       const first = rows[0], last = rows[rows.length - 1];
-      const extra = i - rows.length;
-      const mx = first.left + 22;
-      const my = extra < 0 ? rows[i].top + 12 : last.bottom + 40 + extra * 46;
+      const box = rects.newsBox;
+      const r = rows[i];
+      const inView = r && box && r.top + r.height * 0.5 > box.top + 8 && r.top + 12 < box.bottom - 8;
+      const extra = inView ? -1 : i;
       const a = new THREE.Vector3(), m = new THREE.Vector3();
       screenToWorld(ax, ay, c[2], a);
-      pointAtScreen(mx, my, D, m); // exact, whatever the camera is doing
+      let size;
+      if (extra < 0) {
+        // has a news item: sits right in front of it
+        pointAtScreen(first.left + 22, r.top + 12, D, m); // exact, whatever the camera is doing
+        size = 34 / pxPerWorld;
+      } else {
+        // no item yet: waits far back in space behind the list, small and
+        // drifting; hovering "show older" draws them a little closer
+        const ready = newsHover ? 1 : 0;
+        waitPull += (ready - waitPull) * 0.04;
+        const far = 30 + (extra % 3) * 6 - waitPull * 10;
+        // a small group below the list, next to "show older", never over text
+        // waiting just below the news window, far back in space
+        const gx = box ? box.left + box.width * 0.55 : first.left + 160, gy = box ? box.bottom + 46 : last.bottom + 40;
+        const mx = gx + Math.sin(t * 0.35 + i * 1.7) * 80 + ((i * 37) % 60) - 30;
+        const my = gy + Math.cos(t * 0.28 + i * 1.3) * 16;
+        pointAtScreen(mx, my, far, m);
+        size = (22 / pxPerWorld) * (far / D);
+      }
       out.lerpVectors(a, m, k);
       markerOn[i] = k > 0.5;
-      const markerScale = (extra < 0 ? 34 : 26) / pxPerWorld / 0.85;
+      const markerScale = size / 0.85;
       return sc + (markerScale - sc) * k;
     }
     screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (bd - c[2]) * k, out);
@@ -508,6 +528,8 @@ const trackPapers = track ? [...track.children].map(el => ({ el, title: el.query
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
 const newsItems = [...document.querySelectorAll('.w-col-news .news-item')];
+const newsMoreBtn = document.querySelector('.w-col-news .news-more');
+const newsBox = document.querySelector('.w-col-news .news-list');
 const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
 const state = { a: 'about', b: 'about', t: 0, pA: 0, pB: 0, pubActive: 0, rowsLive: false };
 function readPage() {
@@ -535,7 +557,9 @@ function readPage() {
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
   scrubText();
-  rects.newsRows = newsItems.length ? newsItems.filter(el => !el.closest('[hidden]')).map(el => el.getBoundingClientRect()) : null;
+  rects.newsMore = newsMoreBtn && !newsMoreBtn.closest('[hidden]') ? newsMoreBtn.getBoundingClientRect() : null;
+  rects.newsRows = newsItems.length ? newsItems.map(el => el.getBoundingClientRect()) : null;
+  rects.newsBox = newsBox ? newsBox.getBoundingClientRect() : null;
   if (newsWin && newsWin.closest('.w-step-two')) {
     const r = newsWin.getBoundingClientRect();
     // news.log stays hidden until its screen arrives, then rises in and types
@@ -681,6 +705,10 @@ addEventListener('keydown', e => { if (e.key === 'Escape') closePaper(); });
 
 // news "show older" / "show less"
 const newsMore = document.querySelector('.news-more'), newsOlder = document.getElementById('news-older');
+if (newsMore) {
+  newsMore.addEventListener('pointerenter', () => { newsHover = true; });
+  newsMore.addEventListener('pointerleave', () => { newsHover = false; });
+}
 if (newsMore && newsOlder) newsMore.addEventListener('click', () => {
   const open = newsOlder.hidden;
   newsOlder.hidden = !open;

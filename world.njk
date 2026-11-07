@@ -46,22 +46,12 @@
       <h2 class="card-bar mono" id="news-heading">news.log</h2>
       <div class="news-list">
         {% set last = "" %}
-        {% for item in news.slice(0, 4) %}
+        {% for item in news %}
           {% set y = item.date | yearOf %}
           {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
           <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
         {% endfor %}
-        {% if news.length > 4 %}
-        <div id="news-older" hidden>
-          {% for item in news.slice(4) %}
-            {% set y = item.date | yearOf %}
-            {% if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
-            <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
-          {% endfor %}
-        </div>
-        {% endif %}
       </div>
-      {% if news.length > 4 %}<button class="news-more mono" type="button" aria-expanded="false" aria-controls="news-older">show older</button>{% endif %}
     </aside>
     </div>
     </div>
@@ -88,15 +78,15 @@
         <div class="w-pubs w-selected w-track">
           {% for pub in selected %}{{ paper(pub, loop.index0, svg, site) }}{% endfor %}
         </div>
+        <p class="w-note mono">
+          {% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">All {{ publications.length }} publications</button>{% endif %}
+          <span>* equal contribution</span>
+        </p>
       </div>
     </div>
     <div class="w-pubs w-more" id="all-publications" hidden>
       {% for pub in rest %}{{ paper(pub, selected.length + loop.index0, svg, site) }}{% endfor %}
     </div>
-    <p class="w-note mono">
-      {% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">All {{ publications.length }} publications</button>{% endif %}
-      <span>* equal contribution</span>
-    </p>
   </section>
   <div class="w-paper" id="w-paper" role="dialog" aria-modal="false" aria-label="Publication" hidden>
     <button type="button" class="w-close w-paper-close" aria-label="Close"></button>
