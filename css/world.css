@@ -346,3 +346,8 @@ main { position: relative; z-index: 1; }
 .world .w-about .w-step-two p { font-size: var(--fs-lead); font-weight: 500; line-height: 1.45; letter-spacing: -.01em; max-width: none; }
 .w-col p + p { margin-top: 1.25rem; }
 @media (max-width: 860px) { .w-step-two { grid-template-columns: 1fr; align-content: center; } }
+
+/* papers in the sideways scene are moved and faded by JS frame by frame;
+   no CSS transitions or blur fighting it */
+.world .w-track .w-pub, .world .w-track .w-pub > * { transition: none !important; filter: none !important; }
+.world.rows-live .w-track .w-pub { opacity: 1; }

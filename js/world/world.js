@@ -403,7 +403,8 @@ const hs = document.querySelector('.w-hscroll'), track = document.querySelector(
 const ns = document.querySelector('.w-nscroll'), npin = document.querySelector('.w-npin');
 const newsWin = document.querySelector('.w-news');
 let newsP = 0;
-let lastTx = 0, txCur = 0;
+let lastTx = 0, txCur = 0, txVel = 0;
+const trackPapers = track ? [...track.children].map(el => ({ el, title: el.querySelector('.pub-title'), rest: [...el.querySelectorAll('.pub-venue, .pub-authors, .w-links')] })) : [];
 const EMPTY = { left: innerWidth * 0.6, top: innerHeight * 0.4, width: 10, height: 10 };
 const rects = {};
 const newsCard = document.querySelector('.w-news'), endEl = document.querySelector('.ch-end .name-links');
@@ -664,10 +665,24 @@ function frame(now) {
   // the wheel turns smoothly to the active paper, the short way round
   // slide the track to the chosen paper with a soft spring; it always lands centred
   if (track) {
+    // a critically damped spring: starts gently, glides, settles without a bump
     const target = -(state.pubIdx || 0) * innerWidth;
-    txCur += (target - txCur) * (1 - Math.exp(-dt * 6.5));
-    if (Math.abs(target - txCur) < 0.3) txCur = target;
-    if (Math.abs(txCur - lastTx) > 0.2) { track.style.setProperty('--tx', `${txCur.toFixed(1)}px`); lastTx = txCur; }
+    const kS = 38, kD = 2 * Math.sqrt(kS);
+    txVel += ((target - txCur) * kS - txVel * kD) * dt;
+    txCur += txVel * dt;
+    if (Math.abs(target - txCur) < 0.2 && Math.abs(txVel) < 2) { txCur = target; txVel = 0; }
+    if (Math.abs(txCur - lastTx) > 0.1) { track.style.setProperty('--tx', `${txCur.toFixed(1)}px`); lastTx = txCur; }
+    // each paper eases in layers: title and authors travel at different speeds,
+    // and fade and settle by how far they are from the centre
+    const pos = -txCur / innerWidth;
+    for (let k = 0; k < trackPapers.length; k++) {
+      const d = k - pos, a = Math.abs(d);
+      if (a > 1.6) continue;
+      const P = trackPapers[k];
+      P.el.style.opacity = (1 - Math.min(1, a) * 0.85).toFixed(3);
+      if (P.title) P.title.style.transform = `translate3d(${(d * -70).toFixed(1)}px,0,0)`;
+      if (P.rest) for (const r of P.rest) r.style.transform = `translate3d(${(d * -150).toFixed(1)}px,0,0)`;
+    }
   }
   const slidePos = -txCur / innerWidth; // 0..n-1, continuous while sliding
   let diff = (state.pinned ? slidePos : state.pubActive) - pubA;
