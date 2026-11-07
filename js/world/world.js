@@ -349,9 +349,14 @@ function paperScene(j, i, t, s, o) {
 }
 const forms = {
   about(i, t, p, out) {
+    // first screen: a loose cloud in the open space right of the text;
+    // second screen (text spans wider): a calm column along the right edge
     const c = cloud[i];
-    screenToWorld(c[0], c[1] + p * 0.25, c[2], out);
-    return c[3];
+    const k = smoother(clamp((p - 0.3) / 0.35, 0, 1));
+    const ax = 0.62 + (c[0] - 0.25) * 0.5, ay = c[1];
+    const bx = small ? 0.9 : 0.9 + (i % 2) * 0.05, by = 0.82 - (i / (N - 1)) * 1.64;
+    screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (13 - c[2]) * k, out);
+    return c[3] + (0.75 - c[3]) * k;
   },
   news(i, t, p, out) {
     // they dance around the news.log window: an orbit just outside its edges,

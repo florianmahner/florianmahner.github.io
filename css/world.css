@@ -351,3 +351,10 @@ main { position: relative; z-index: 1; }
    no CSS transitions or blur fighting it */
 .world .w-track .w-pub, .world .w-track .w-pub > * { transition: none !important; filter: none !important; }
 .world.rows-live .w-track .w-pub { opacity: 1; }
+
+/* About: one shared column for both screens, so their edges line up, and the
+   second screen follows closely instead of a full empty screen later */
+.world .ch-about > .w-about { width: min(100%, 64rem); margin-inline: 0; }
+.world .w-about .w-step:first-child p { max-width: none; }
+.w-step:first-child { min-height: 92vh; }
+.w-step-two { min-height: 0; padding: 8vh 0 14vh; align-content: start; }
