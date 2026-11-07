@@ -362,3 +362,12 @@ main { position: relative; z-index: 1; }
 /* reading effect: each line slides up and is fully there, nothing half-faded */
 .world [data-scrub] .wd { opacity: 0; transform: translateY(.35em); transition: opacity .55s ease, transform .7s cubic-bezier(.2, .8, .1, 1); }
 .world [data-scrub] .wd.lit { opacity: 1; transform: none; }
+
+/* second About screen: research on the left, news.log on the right */
+.world .ch-about > .w-about { width: min(100%, 76rem); }
+.w-step-two { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; }
+.w-col-news .w-news { width: 100%; }
+.world .w-col-news .w-news .news-list { max-height: 26rem; overflow: auto; overscroll-behavior: contain; }
+.world .w-col-news .w-news .tc { display: inline; visibility: hidden; }
+.world .w-col-news .w-news .tc.on { visibility: visible; }
+.world .w-col-news .w-news .news-list p:not(:has(.tc.on)) { display: block; }

@@ -157,7 +157,11 @@ function setupText() {
     const colA = document.createElement('div'), colB = document.createElement('div');
     colA.className = colB.className = 'w-col';
     host.prepend(one); one.after(two); two.append(colA, colB);
-    about.forEach((p, k) => (k === 0 ? one : k === 1 ? colA : colB).appendChild(p));
+    // research paragraphs (and the invitation) on the left, news.log on the right
+    about.forEach((p, k) => (k === 0 ? one : colA).appendChild(p));
+    const win = document.querySelector('.w-news'), sec = document.querySelector('.ch-news');
+    if (win) { colB.appendChild(win); colB.classList.add('w-col-news'); }
+    if (sec) sec.remove();
   }
   about.forEach(p => {
     p.setAttribute('data-scrub', '');
@@ -367,7 +371,7 @@ const forms = {
     const c = cloud[i];
     const k = smoother(clamp((p - 0.3) / 0.35, 0, 1));
     const ax = 0.62 + (c[0] - 0.25) * 0.5, ay = c[1];
-    const bx = small ? 0.9 : 0.9 + (i % 2) * 0.05, by = 0.82 - (i / (N - 1)) * 1.64;
+    const bx = -0.86 + (i / (N - 1)) * 1.72, by = -0.84 + (i % 2) * 0.05;
     screenToWorld(ax + (bx - ax) * k, ay + (by - ay) * k, c[2] + (13 - c[2]) * k, out);
     return c[3] + (0.75 - c[3]) * k;
   },
@@ -452,6 +456,10 @@ function readPage() {
   state.pA = prog(rectsCh[i]); state.pB = prog(rectsCh[j]);
   // the row nearest the middle of the screen
   scrubText();
+  if (newsWin && newsWin.closest('.w-step-two')) {
+    const r = newsWin.getBoundingClientRect();
+    showLog(clamp((vh * 0.92 - r.top) / (vh * 0.55), 0, 1));
+  }
   if (ns) {
     const r = ns.getBoundingClientRect();
     newsP = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
