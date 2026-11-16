@@ -100,24 +100,6 @@
   .news {
     --link-color: var(--news-accent);
   }
-
-  /* Alternatives kept for comparison, picked in the colour panel on the dev
-     server (js/playground.js). Remove them once the palette is settled. */
-
-  /* the first palette (canvas board 21): pinker ground, pink publications band, red footer */
-  :root[data-palette="pink"] {
-    --paper: #FCE8EE;
-    --band: #F9D3DE;
-    --mid: #F5A3C0;
-    --pubs-bg: var(--mid);
-    --footer-bg: var(--hot);
-  }
-
-  /* wine links: wine is the type colour, so these are set a step bolder to show */
-  :root[data-links="wine"] :is(.about, .band) {
-    --link-color: var(--ink);
-    --link-weight: 500;
-  }
 }
 
 @layer base {
@@ -341,7 +323,6 @@
      underlined only under the pointer */
   :is(.about, .news, .band) a {
     color: var(--link-color);
-    font-weight: var(--link-weight, inherit);
     text-decoration: none;
 
     &:hover {
@@ -615,71 +596,6 @@
   .s-ink { stroke: var(--ink); }
   .s-mid { stroke: var(--mid); }
   .s-hot { stroke: var(--hot); }
-
-  /* Year tile: a big year and one shape, in seven patterns. Each pattern
-     sets a ground, a label colour and the shape's box and fill. */
-  .tile-year {
-    position: relative;
-    container-type: inline-size;
-    background: var(--tile-bg);
-  }
-
-  .tile-label {
-    position: absolute;
-    left: 6%;
-    bottom: 7%;
-    font-size: 30cqi;
-    font-weight: 600;
-    letter-spacing: -0.05em;
-    line-height: 0.8;
-    color: var(--tile-label);
-  }
-
-  .tile-shape {
-    position: absolute;
-  }
-
-  [data-tile="1"] {
-    --tile-bg: var(--hot);
-    --tile-label: var(--paper);
-    & .tile-shape { right: -14%; top: -22%; width: 52%; aspect-ratio: 1; border-radius: 50%; background: var(--ink); }
-  }
-
-  [data-tile="2"] {
-    --tile-bg: var(--ink);
-    --tile-label: var(--mid);
-    & .tile-shape { right: 6%; top: 10%; width: 28%; aspect-ratio: 1; background-image: radial-gradient(circle, var(--paper) 0 30%, transparent 32%); background-size: 5cqi 5cqi; }
-  }
-
-  [data-tile="3"] {
-    --tile-bg: var(--paper);
-    --tile-label: var(--ink);
-    & .tile-shape { right: 0; top: 12%; width: 44%; height: 18%; background-image: repeating-linear-gradient(90deg, var(--hot) 0 2.2cqi, transparent 2.2cqi 4.4cqi); }
-  }
-
-  [data-tile="4"] {
-    --tile-bg: var(--hot);
-    --tile-label: var(--paper);
-    & .tile-shape { right: 9%; top: 0; width: 8%; height: 64%; background: var(--mid); }
-  }
-
-  [data-tile="5"] {
-    --tile-bg: var(--ink);
-    --tile-label: var(--mid);
-    & .tile-shape { right: -10%; top: 14%; width: 42%; aspect-ratio: 1; border-radius: 50%; background: var(--hot); }
-  }
-
-  [data-tile="6"] {
-    --tile-bg: var(--paper);
-    --tile-label: var(--hot);
-    & .tile-shape { right: 7%; top: 10%; width: 24%; aspect-ratio: 1; background: var(--ink); }
-  }
-
-  [data-tile="7"] {
-    --tile-bg: var(--hot);
-    --tile-label: var(--paper);
-    & .tile-shape { right: 6%; top: 10%; width: 36%; height: 30%; background-image: radial-gradient(circle, var(--mid) 0 30%, transparent 32%); background-size: 4cqi 4cqi; }
-  }
 }
 
 /* Nothing here is needed to read the page. Each effect is switched on only

@@ -48,6 +48,7 @@ function checkContent() {
     need("publications", i, p, ["title", "authors", "year", "venue"]);
     if (!p.html && !p.pdf) problems.push(`_data/publications.json, entry ${i + 1}: needs "html" or "pdf" to link to`);
     if (p.authors && !Array.isArray(p.authors)) problems.push(`_data/publications.json, entry ${i + 1}: "authors" must be a list`);
+    if (p.selected && !p.art) problems.push(`_data/publications.json, entry ${i + 1}: a selected paper needs an "art" drawing`);
     if (p.art && !fs.existsSync(path.join("_includes", "art", `${p.art}.svg`))) {
       problems.push(`_data/publications.json, entry ${i + 1}: no drawing _includes/art/${p.art}.svg`);
     }
@@ -66,10 +67,6 @@ function checkContent() {
 export default function(eleventyConfig) {
   eleventyConfig.on("eleventy.before", checkContent);
 
-  // true on the dev server, false in the production build; gates dev-only tools
-  const isBuild = process.env.ELEVENTY_RUN_MODE === "build";
-  eleventyConfig.addGlobalData("dev", !isBuild);
-
   // {% inlineCss "css/site.css" %} — the stylesheet's text, for a <style>
   // element. Comments and runs of whitespace are removed; nothing else is
   // rewritten, so what ships is the file as written.
@@ -80,50 +77,23 @@ export default function(eleventyConfig) {
       .trim());
   eleventyConfig.addWatchTarget("css/");
 
-  // Ignore non-template files
-  eleventyConfig.ignores.add("docs/**");
+  // Not templates
   eleventyConfig.ignores.add("README.md");
   eleventyConfig.ignores.add("CLAUDE.md");
   eleventyConfig.ignores.add(".claude/**");
   eleventyConfig.ignores.add("analytics/**");
   eleventyConfig.ignores.add("content/**");
 
-  // Passthrough copy static assets to root
+  // Static files: public/ goes to the site root, the one script to /js/.
+  // (The stylesheet is inlined into the page, so css/ is not copied.)
   eleventyConfig.addPassthroughCopy({ "public": "/" });
-  eleventyConfig.addPassthroughCopy("css");
-  // js/playground.js is a dev tool and stays out of the production build
-  eleventyConfig.addPassthroughCopy(process.env.ELEVENTY_RUN_MODE === "build" ? { "js/!(playground).js": "js" } : "js");
+  eleventyConfig.addPassthroughCopy("js");
 
-  // Self-hosted libraries for the 3D view (/world/): three.js, GSAP
-  // (ScrollTrigger, SplitText), Lenis. ES modules, mapped by the import map
-  // in world.njk. Only the files actually imported are copied.
-  const vendor = {
-    "node_modules/three/build/three.module.min.js": "vendor/three/three.module.min.js",
-    "node_modules/three/examples/jsm/geometries/RoundedBoxGeometry.js": "vendor/three/addons/geometries/RoundedBoxGeometry.js",
-    "node_modules/three/examples/jsm/environments/RoomEnvironment.js": "vendor/three/addons/environments/RoomEnvironment.js",
-    "node_modules/lenis/dist/lenis.mjs": "vendor/lenis/lenis.mjs",
-    "node_modules/lenis/dist/lenis.css": "vendor/lenis/lenis.css",
-  };
-  for (const f of ["index", "gsap-core", "CSSPlugin", "ScrollTrigger", "Observer", "SplitText"]) {
-    vendor[`node_modules/gsap/${f}.js`] = `vendor/gsap/${f}.js`;
-  }
-  // only for the local /world/ experiment; the live site does not need them
-  if (process.env.ELEVENTY_RUN_MODE !== "build") eleventyConfig.addPassthroughCopy(vendor);
-
-  // Self-hosted variable fonts from @fontsource-variable/* — no third-party
-  // font CDN. Inter carries wght + opsz; Geist Mono carries wght.
-  const fonts = {
-    inter: ["inter-latin-opsz-normal", "inter-latin-ext-opsz-normal"],
-    "geist-mono": ["geist-mono-latin-wght-normal", "geist-mono-latin-ext-wght-normal"],
-    // the homepage's typeface; Inter and Geist Mono remain for the dev-only lab pages
-    jost: ["jost-latin-wght-normal", "jost-latin-ext-wght-normal", "jost-latin-wght-italic"]
-  };
-  for (const [pkg, files] of Object.entries(fonts)) {
-    for (const f of files) {
-      eleventyConfig.addPassthroughCopy({
-        [`node_modules/@fontsource-variable/${pkg}/files/${f}.woff2`]: `fonts/${f}.woff2`
-      });
-    }
+  // Jost, self-hosted from @fontsource-variable/jost — no third-party font CDN.
+  for (const f of ["jost-latin-wght-normal", "jost-latin-ext-wght-normal", "jost-latin-wght-italic"]) {
+    eleventyConfig.addPassthroughCopy({
+      [`node_modules/@fontsource-variable/jost/files/${f}.woff2`]: `fonts/${f}.woff2`
+    });
   }
 
   // Highlight author name in author list. Each name is wrapped in its own
@@ -140,12 +110,6 @@ export default function(eleventyConfig) {
 
   // Inline markdown (links, emphasis) for one-line strings such as news items.
   eleventyConfig.addFilter("mdInline", str => str ? md.renderInline(str) : "");
-
-  // News sentences end in "!", and Inter's "!" sits very tight against the
-  // letter before it. A hair space (U+200A) gives it room without reading
-  // as a real space.
-  eleventyConfig.addFilter("newsText", str =>
-    str ? md.renderInline(str).replace(/!(\s*)$/, "\u200A!$1") : "");
 
   // News dates are "YYYY-MM" (or "YYYY-MM-DD").
   const MONTHS = ["January","February","March","April","May","June","July",

@@ -27,8 +27,6 @@
   {# the whole stylesheet is small, so it travels inside the page: no second request before first paint #}
   <style>{% inlineCss "css/site.css" %}</style>
   <script type="module" src="/js/site.js"></script>
-  {# colour playground: dev server only, never in the production build #}
-  {% if dev %}<script type="module" src="/js/playground.js"></script>{% endif %}
 
   <script type="application/ld+json">
   {

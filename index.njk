@@ -53,7 +53,7 @@ title: Florian P. Mahner
     {# the three selected papers: side by side on a desktop, a sideways row
        on a phone. Everything else is on Google Scholar. #}
     <ul class="cards" id="cards" aria-label="Publications">
-      {% for pub in selected %}{{ card.pubCard(pub, site.highlightAuthor, 0) }}{% endfor %}
+      {% for pub in selected %}{{ card.pubCard(pub, site.highlightAuthor) }}{% endfor %}
     </ul>
     <p class="pubs-foot">
       {% if site.social.scholar %}<a href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}
