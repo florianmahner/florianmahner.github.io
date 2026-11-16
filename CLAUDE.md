@@ -29,8 +29,10 @@ live reload is wanted, nothing heavier is needed).
   sideways (narrow windows), a mouse wheel over it moves the row
 - `_data/*.json` — all content: `site`, `education`, `publications`, `news`
 - `content/about.md` — About prose, injected via `{% mdfile "about" %}`
-- `public/` — copied to the site root: favicon, robots.txt, two thesis PDFs
-  and `vimrc` (not linked from the page, but may be linked from elsewhere)
+- `public/` — copied to the site root: favicon, robots.txt and `vimrc`
+- `archive/theses/` — the bachelor and master thesis PDFs, kept in the
+  repository but **not published** (owner's decision, 2026-11-16). To put
+  them online again, move them back to `public/pdf/`.
 - `analytics/` — a separate reporting tool (`npm run analytics`), not part
   of the site
 - Jost is self-hosted from `@fontsource-variable/jost` (copied to `/fonts/`)

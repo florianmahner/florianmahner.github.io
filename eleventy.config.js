@@ -83,8 +83,10 @@ export default function(eleventyConfig) {
   eleventyConfig.ignores.add(".claude/**");
   eleventyConfig.ignores.add("analytics/**");
   eleventyConfig.ignores.add("content/**");
+  eleventyConfig.ignores.add("archive/**"); // kept in the repository, not published
 
   // Static files: public/ goes to the site root, the one script to /js/.
+  // archive/ (the two thesis PDFs) is deliberately not copied.
   // (The stylesheet is inlined into the page, so css/ is not copied.)
   eleventyConfig.addPassthroughCopy({ "public": "/" });
   eleventyConfig.addPassthroughCopy("js");
