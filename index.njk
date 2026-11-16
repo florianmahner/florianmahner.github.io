@@ -48,15 +48,12 @@ title: Florian P. Mahner
   </div>
 
   {% set selected = publications | selectattr("selected") %}
-  {# after the selected three: the other journal papers; conference papers are left to Google Scholar #}
-  {% set rest = publications | rejectattr("selected") | rejectattr("conference") %}
   <section class="pubs" id="publications" aria-labelledby="publications-heading">
     <h2 class="heading" id="publications-heading">Selected publications</h2>
-    {# one sideways row holding every paper shown; the next one peeks in at
-       the right edge, so the row reads as something to scroll #}
+    {# the three selected papers: side by side on a desktop, a sideways row
+       on a phone. Everything else is on Google Scholar. #}
     <ul class="cards" id="cards" aria-label="Publications">
       {% for pub in selected %}{{ card.pubCard(pub, site.highlightAuthor, 0) }}{% endfor %}
-      {% for pub in rest %}{{ card.pubCard(pub, site.highlightAuthor, loop.index0) }}{% endfor %}
     </ul>
     <p class="pubs-foot">
       {% if site.social.scholar %}<a href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}

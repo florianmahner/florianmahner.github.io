@@ -93,12 +93,15 @@ alternating bands; a red footer. One typeface, Jost.
   Year headings stay.
 - News is a panel titled `News`; all items sit in one list that scrolls
   inside the panel (soft fade at the edges), no "show older" button.
-- Publications: one sideways row with the selected three first, then the
-  other journal papers. No `show more` button (removed 2026-11-16: the row
-  scrolls anyway); cards are sized so the next one peeks in at the right
-  edge. A `Google Scholar` link sits under the row. Each card is one link to
-  the paper's web page. No drawing sits on the plain light ground: every
-  tile has a coloured ground (wine, rosa or red).
+- Publications: only the three papers marked `selected` are shown (decided
+  2026-11-16; a longer row with the other journal papers and a `show more`
+  button were both tried and dropped). Three across on a desktop, a sideways
+  row on a phone, a `Google Scholar` link underneath. Each card is one link
+  to the paper's web page; every drawing has a coloured ground.
+- Phone header is board 21's, exactly: tall red field, large ring running
+  off the right edge with a vertical split, turning on scroll. A version
+  with the whole ring inside the screen was tried and dropped (2026-11-16).
+  From 640px up, ring, stripe and dots are one group placed from `--ring`.
 - Change only what is asked; no extra "improvements" alongside a fix.
 
 ### How the CSS is written (`css/site.css`)
