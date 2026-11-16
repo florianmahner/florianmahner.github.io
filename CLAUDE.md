@@ -60,7 +60,10 @@ GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to
 **Cloudflare Workers** via wrangler on push to master. `src/index.js` is a
 Worker that forces HTTPS and redirects to the canonical host
 **florianmahner.com** and adds security headers (CSP and others) to every
-response. Despite the repo name, this is *not* GitHub Pages.
+response. Despite the repo name, this is *not* GitHub Pages. GitHub will
+not let Pages be switched off for a `<user>.github.io` repository, so its
+source is set to "GitHub Actions" (Settings, Pages) with no Pages workflow:
+that stops the automatic branch build, which used to fail on every push.
 
 ## Design system
 
