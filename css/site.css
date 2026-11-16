@@ -1,0 +1,729 @@
+/* florianmahner.com — the whole stylesheet. It is inlined into the page at
+   build time (see `inlineCss` in eleventy.config.js).
+
+   Layers, lowest priority first:
+     fonts       font files and the size-matched fallback
+     tokens      colours and sizes; the only place a hex value appears
+     base        element defaults
+     layout      the page's sections, top to bottom
+     components  publication cards and their graphic tiles
+     motion      everything that moves, opt-in */
+@layer fonts, tokens, base, layout, components, motion;
+
+@layer fonts {
+  @font-face {
+    font-family: "Jost";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/fonts/jost-latin-wght-normal.woff2") format("woff2-variations");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: "Jost";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/fonts/jost-latin-ext-wght-normal.woff2") format("woff2-variations");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  @font-face {
+    font-family: "Jost";
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/fonts/jost-latin-wght-italic.woff2") format("woff2-variations");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  /* Arial squeezed to Jost's width and line box, so text barely moves when
+     Jost arrives. Numbers come from the two fonts' own metrics. */
+  @font-face {
+    font-family: "Jost Fallback";
+    src: local("Arial");
+    size-adjust: 95.9%;
+    ascent-override: 111.6%;
+    descent-override: 39.1%;
+    line-gap-override: 0%;
+  }
+}
+
+@layer tokens {
+  :root {
+    /* Palette: five colours, and nothing else on the page. Change the look here. */
+    --paper: #FBF3F1; /* ground */
+    --band: #F6E4E6;  /* the one tint: publications band, every second Background row */
+    --mid: #F8BFD3;   /* rosa */
+    --hot: #D9261C;   /* red */
+    --ink: #4A0A14;   /* wine: all type, the News block, the footer */
+
+    /* Roles: which palette colour each part of the page uses. */
+    --page-bg: var(--paper);
+    --page-text: var(--ink);
+    --hero-bg: var(--hot);
+    --hero-text: var(--paper);
+    --hero-dots: var(--paper);
+    --hero-stripe: var(--mid);
+    --ring-disc: var(--mid);
+    --ring-half: var(--ink);
+    --ring-eye: var(--hot);
+    --news-bg: var(--ink);
+    --news-text: var(--paper);
+    --news-accent: var(--mid);
+    --pubs-bg: var(--band);
+    --pubs-text: var(--ink);
+    --background-heading: var(--hot);
+    --band-years: var(--hot);
+    --footer-bg: var(--ink);
+    --footer-text: var(--paper);
+    --link-color: var(--hot); /* links in running text */
+
+    /* --r is the page's unit: 1rem on a phone, growing a little with the
+       width of the page. Every size below is a multiple of it. */
+    --r: clamp(1rem, 0.86rem + 0.4cqi, 1.1875rem);
+    --pad: clamp(calc(1.25 * var(--r)), 3.5cqi, calc(3 * var(--r)));       /* side gutter */
+    --section: clamp(calc(2.5 * var(--r)), 5cqi, calc(4.5 * var(--r)));    /* space above a section */
+    --card-gap: calc(1.5 * var(--r));
+
+    /* Type: exactly six sizes. Inside a size, hierarchy comes from weight. */
+    --fs-name: clamp(calc(3.25 * var(--r)), 15cqi, calc(13 * var(--r)));   /* hero name */
+    --fs-heading: clamp(calc(2.5 * var(--r)), 8cqi, calc(4.25 * var(--r))); /* News, Selected publications, Background */
+    --fs-year: calc(1.625 * var(--r));    /* years in News and Background, first About paragraph */
+    --fs-lead: calc(1.1875 * var(--r));   /* About, paper titles, Background rows */
+    --fs-body: var(--r);                  /* news items */
+    --fs-small: calc(0.875 * var(--r));   /* profile links, venues, authors, foot rows */
+
+    --font: "Jost", "Jost Fallback", "Futura", "Century Gothic", sans-serif;
+  }
+
+  /* links inside the dark News block take its accent so they stay readable */
+  .news {
+    --link-color: var(--news-accent);
+  }
+
+  /* Alternatives kept for comparison, picked in the colour panel on the dev
+     server (js/playground.js). Remove them once the palette is settled. */
+
+  /* the first palette (canvas board 21): pinker ground, pink publications band, red footer */
+  :root[data-palette="pink"] {
+    --paper: #FCE8EE;
+    --band: #F9D3DE;
+    --mid: #F5A3C0;
+    --pubs-bg: var(--mid);
+    --footer-bg: var(--hot);
+  }
+
+  /* wine links: wine is the type colour, so these are set a step bolder to show */
+  :root[data-links="wine"] :is(.about, .band) {
+    --link-color: var(--ink);
+    --link-weight: 500;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* The body is the container every cqi above is measured against. */
+  body {
+    margin: 0;
+    container-type: inline-size;
+    background: var(--page-bg);
+    color: var(--page-text);
+    font-family: var(--font);
+    font-size: var(--fs-body);
+    line-height: 1.4;
+  }
+
+  :where(h1, h2, h3, p, ul) {
+    margin: 0;
+  }
+
+  :where(ul) {
+    padding: 0;
+    list-style: none;
+  }
+
+  :where(strong) {
+    font-weight: 600;
+  }
+
+  /* Links inside running text: the text's own colour, underlined. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+
+    &:hover {
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  /* short links (names) stay on one line; set by the Markdown renderer */
+  .keep {
+    white-space: nowrap;
+  }
+
+  :focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer layout {
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    overflow: clip;
+    box-sizing: border-box;
+    min-height: calc(34 * var(--r));
+    padding: clamp(calc(0.5 * var(--r)), 1.5cqi, calc(1.25 * var(--r))) var(--pad) var(--pad);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* icons at the top, name at the bottom */
+    gap: calc(2 * var(--r));
+    background: var(--hero-bg);
+    color: var(--hero-text);
+  }
+
+  .hero-dots,
+  .hero-stripe,
+  .hero-ring {
+    position: absolute;
+  }
+
+  .hero-dots {
+    right: 24cqi;
+    top: calc(4.5 * var(--r));
+    width: 18cqi;
+    aspect-ratio: 1;
+    background-image: radial-gradient(circle, var(--hero-dots) 0 30%, transparent 32%);
+    background-size: 1.6cqi 1.6cqi;
+  }
+
+  .hero-stripe {
+    right: 4cqi;
+    top: 0;
+    width: 5cqi;
+    height: 100%;
+    background: var(--hero-stripe);
+  }
+
+  .hero-ring {
+    right: -5cqi;
+    top: calc(6 * var(--r));
+    width: clamp(calc(14 * var(--r)), 38cqi, calc(34 * var(--r)));
+    height: auto;
+  }
+
+  /* resting angle: the split runs diagonally, as on the design board */
+  .hero-ring { rotate: 55deg; }
+
+  .ring-disc { fill: var(--ring-disc); }
+  .ring-half { fill: var(--ring-half); }
+  .ring-eye { fill: var(--ring-eye); }
+
+  /* profile links: words in one row at the top of the hero */
+  .profiles {
+    position: relative;
+    display: flex;
+    gap: clamp(calc(0.75 * var(--r)), 2cqi, calc(1.5 * var(--r)));
+    font-size: var(--fs-small);
+    white-space: nowrap;
+
+    & a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .hero-name {
+    position: relative;
+    font-size: var(--fs-name);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 0.84;
+  }
+
+  /* ---- About and News ---- */
+  .about {
+    box-sizing: border-box;
+    padding: calc(0.8 * var(--section)) var(--pad) calc(0.7 * var(--section));
+    display: flex;
+    flex-direction: column;
+    gap: var(--r);
+    font-size: var(--fs-lead);
+
+    /* one measure for every paragraph, so they share a right edge; lines
+       are broken to avoid a stray short last line */
+    & p {
+      max-width: calc(46 * var(--r));
+      text-wrap: pretty;
+    }
+
+    /* the first paragraph (who and where) is the lead: one size up, the
+       same size as the years */
+    & p:first-child {
+      font-size: var(--fs-year);
+      line-height: 1.3;
+    }
+  }
+
+  .news {
+    background: var(--news-bg);
+    color: var(--news-text);
+  }
+
+  .news-in {
+    box-sizing: border-box;
+    padding: calc(0.8 * var(--section)) var(--pad) calc(0.7 * var(--section));
+  }
+
+  .news-heading {
+    color: var(--news-accent);
+  }
+
+  .news-list {
+    max-height: calc(22 * var(--r));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 0.75rem 2.5rem;
+    align-content: start;
+    scrollbar-width: thin;
+    scrollbar-color: var(--news-accent) transparent;
+
+    /* The list's edges are masked (see motion), which would also hide its
+       own focus ring, so the ring is drawn on the panel instead. */
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .news:has(.news-list:focus-visible) {
+    outline: 3px solid var(--news-accent);
+    outline-offset: -6px;
+  }
+
+  .news-year {
+    grid-column: 1 / -1;
+    font-size: var(--fs-year);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--news-accent);
+  }
+
+  /* links in running text (About, News, Background): coloured text,
+     underlined only under the pointer */
+  :is(.about, .news, .band) a {
+    color: var(--link-color);
+    font-weight: var(--link-weight, inherit);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* a news entry: the month in a narrow column on the left, the text on the right */
+  .news-item {
+    display: grid;
+    grid-template-columns: 3.2em minmax(0, 1fr);
+    column-gap: 0.75em;
+  }
+
+  .news-when {
+    font-weight: 600;
+    color: var(--news-accent);
+  }
+
+  /* ---- Section headings: one size and spacing for all three ---- */
+  .heading {
+    margin-bottom: clamp(var(--r), 2cqi, calc(1.5 * var(--r)));
+    font-size: var(--fs-heading);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.92;
+  }
+
+  /* these two sections are full-bleed, so their heading takes the gutter itself */
+  :is(.pubs, .background) > .heading {
+    margin-inline: var(--pad);
+  }
+
+  /* ---- Publications ---- */
+  .pubs {
+    padding: var(--section) 0 clamp(var(--r), 2cqi, calc(1.5 * var(--r)));
+    background: var(--pubs-bg);
+    color: var(--pubs-text);
+  }
+
+  .cards {
+    display: flex;
+    gap: var(--card-gap);
+    padding: 0 var(--pad) var(--r);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--pad);
+    scrollbar-width: none;
+  }
+
+  .pubs-foot {
+    margin: calc(0.25 * var(--r)) var(--pad) 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 calc(1.5 * var(--r));
+    font-size: var(--fs-small);
+
+    & > * {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    & a {
+      font-weight: 600;
+      text-decoration: none;
+    }
+  }
+
+  /* ---- Background ---- */
+  .background {
+    padding: var(--section) 0 clamp(calc(1.5 * var(--r)), 3cqi, calc(2.5 * var(--r)));
+
+    & .heading {
+      color: var(--background-heading);
+    }
+  }
+
+  /* One row per position, all at one size on one baseline: red bold years,
+     bold role, institution. Stacked on phones, three fixed columns from tablet width up so
+     the rows line up with each other. */
+  .band {
+    padding: calc(0.5 * var(--r)) var(--pad);
+    display: grid;
+    gap: calc(0.125 * var(--r)) calc(2 * var(--r));
+    align-items: baseline;
+    font-size: var(--fs-lead);
+    line-height: 1.3;
+
+    @container (min-width: 640px) {
+      grid-template-columns: calc(11.5 * var(--r)) minmax(0, 1fr) minmax(0, 1.2fr);
+    }
+  }
+
+  /* the years: red, bold and large, the same size as the years in News */
+  .band-years {
+    font-size: var(--fs-year);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--band-years);
+  }
+
+  .band-role {
+    font-size: inherit;
+    font-weight: 600;
+  }
+
+  /* ---- Footer ---- */
+  .footer {
+    padding: calc(1.25 * var(--r)) var(--pad);
+    background: var(--footer-bg);
+    color: var(--footer-text);
+    font-size: var(--fs-small);
+  }
+
+  /* ---- From tablet width up: a flat strip (canvas board "flacher Streifen,
+     mehr Platz unter dem Namen") ----
+     Profile links in the top left corner, the name on one line at the bottom
+     left, the ring on the right. The name's size drives the rest: the ring
+     is a fixed multiple of it and the strip a fixed multiple of the ring, so
+     the proportions hold at every width. */
+  @container (min-width: 640px) {
+    .hero {
+      --fs-name: clamp(calc(2.5 * var(--r)), 6.4cqi, calc(6 * var(--r)));
+      --ring: calc(1.7 * var(--fs-name));
+      min-height: calc(1.25 * var(--ring) + 1.25 * var(--r));
+      padding-bottom: calc(1.75 * var(--r));
+      justify-content: flex-end;
+    }
+
+    .profiles {
+      position: absolute;
+      left: var(--pad);
+      top: clamp(calc(0.5 * var(--r)), 1.5cqi, calc(1.25 * var(--r)));
+    }
+
+    .hero-name br {
+      display: none;
+    }
+
+    /* the ring sits centred in the hero's height, inside the gutter */
+    .hero-ring {
+      right: var(--pad);
+      top: calc(50% - var(--ring) / 2);
+      width: var(--ring);
+    }
+
+    .hero-dots {
+      right: calc(var(--pad) + var(--ring) * 0.72);
+      top: calc(50% - var(--ring) * 0.57);
+      width: calc(var(--ring) * 0.62);
+      background-size: calc(var(--ring) * 0.064) calc(var(--ring) * 0.064);
+    }
+
+    .hero-stripe {
+      right: calc(var(--pad) + var(--ring) * 0.43);
+      width: calc(var(--ring) * 0.14);
+    }
+  }
+
+  /* ---- Wide pages: News beside About ---- */
+  @container (min-width: 900px) {
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+
+    /* News takes exactly the height of About and scrolls inside it. */
+    .news {
+      position: relative;
+      min-height: 26rem;
+    }
+
+    .news-in {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .news-list {
+      flex: 1 1 0;
+      min-height: 0;
+      max-height: none;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+@layer components {
+  /* ---- Publication card ---- */
+  .card {
+    flex: 0 0 auto;
+    width: min(78cqi, 22rem);
+    scroll-snap-align: start;
+
+    @container (min-width: 900px) {
+      /* three across and a slice of the fourth, which shows there is more
+         to the right */
+      width: calc((100cqi - 2 * var(--pad) - 3 * var(--card-gap)) / 3.3);
+    }
+  }
+
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.75 * var(--r));
+    text-decoration: none;
+  }
+
+  .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.3125 * var(--r));
+  }
+
+  .card-venue {
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+
+  .card-title {
+    font-size: var(--fs-lead);
+    font-weight: 500;
+    line-height: 1.22;
+  }
+
+  .card-authors {
+    font-size: var(--fs-small);
+  }
+
+  /* a line breaks between authors, never inside a name */
+  .author {
+    white-space: nowrap;
+
+    &.self {
+      font-weight: 600;
+    }
+  }
+
+  /* ---- Graphic tiles ---- */
+  /* flatter than the drawings' own 4:3, so the picture does not outweigh
+     the text under it; every drawing keeps its content inside this crop */
+  .tile {
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  .art {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* palette classes used by the drawings in _includes/art/ */
+  .bg-paper { background: var(--paper); }
+  .bg-ink { background: var(--ink); }
+  .bg-mid { background: var(--mid); }
+  .bg-hot { background: var(--hot); }
+  .f-paper { fill: var(--paper); }
+  .f-ink { fill: var(--ink); }
+  .f-mid { fill: var(--mid); }
+  .f-hot { fill: var(--hot); }
+  .s-paper { stroke: var(--paper); }
+  .s-ink { stroke: var(--ink); }
+  .s-mid { stroke: var(--mid); }
+  .s-hot { stroke: var(--hot); }
+
+  /* Year tile: a big year and one shape, in seven patterns. Each pattern
+     sets a ground, a label colour and the shape's box and fill. */
+  .tile-year {
+    position: relative;
+    container-type: inline-size;
+    background: var(--tile-bg);
+  }
+
+  .tile-label {
+    position: absolute;
+    left: 6%;
+    bottom: 7%;
+    font-size: 30cqi;
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    color: var(--tile-label);
+  }
+
+  .tile-shape {
+    position: absolute;
+  }
+
+  [data-tile="1"] {
+    --tile-bg: var(--hot);
+    --tile-label: var(--paper);
+    & .tile-shape { right: -14%; top: -22%; width: 52%; aspect-ratio: 1; border-radius: 50%; background: var(--ink); }
+  }
+
+  [data-tile="2"] {
+    --tile-bg: var(--ink);
+    --tile-label: var(--mid);
+    & .tile-shape { right: 6%; top: 10%; width: 28%; aspect-ratio: 1; background-image: radial-gradient(circle, var(--paper) 0 30%, transparent 32%); background-size: 5cqi 5cqi; }
+  }
+
+  [data-tile="3"] {
+    --tile-bg: var(--paper);
+    --tile-label: var(--ink);
+    & .tile-shape { right: 0; top: 12%; width: 44%; height: 18%; background-image: repeating-linear-gradient(90deg, var(--hot) 0 2.2cqi, transparent 2.2cqi 4.4cqi); }
+  }
+
+  [data-tile="4"] {
+    --tile-bg: var(--hot);
+    --tile-label: var(--paper);
+    & .tile-shape { right: 9%; top: 0; width: 8%; height: 64%; background: var(--mid); }
+  }
+
+  [data-tile="5"] {
+    --tile-bg: var(--ink);
+    --tile-label: var(--mid);
+    & .tile-shape { right: -10%; top: 14%; width: 42%; aspect-ratio: 1; border-radius: 50%; background: var(--hot); }
+  }
+
+  [data-tile="6"] {
+    --tile-bg: var(--paper);
+    --tile-label: var(--hot);
+    & .tile-shape { right: 7%; top: 10%; width: 24%; aspect-ratio: 1; background: var(--ink); }
+  }
+
+  [data-tile="7"] {
+    --tile-bg: var(--hot);
+    --tile-label: var(--paper);
+    & .tile-shape { right: 6%; top: 10%; width: 36%; height: 30%; background-image: radial-gradient(circle, var(--mid) 0 30%, transparent 32%); background-size: 4cqi 4cqi; }
+  }
+}
+
+/* Nothing here is needed to read the page. Each effect is switched on only
+   for readers who have not asked for reduced motion, and only where the
+   browser supports it; otherwise the page is simply still. */
+@layer motion {
+  @property --fade-start {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  @property --fade-end {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  @keyframes fade-start { to { --fade-start: var(--fade); } }
+  @keyframes fade-end { from { --fade-end: var(--fade); } }
+  @keyframes ring-turn { from { rotate: -125deg; } }
+
+  /* News list: a soft edge wherever more news lies beyond it. Tied to the
+     reader's own scrolling, so it stays on under reduced motion. */
+  @supports (animation-timeline: scroll()) {
+    .news-list {
+      --fade: 2.5rem;
+      mask:
+        linear-gradient(black, black) no-clip subtract,
+        linear-gradient(to bottom, black, transparent) 0 0 / 100% var(--fade-start) no-repeat no-clip,
+        linear-gradient(to bottom, transparent, black) 0 100% / 100% var(--fade-end) no-repeat no-clip;
+      animation: fade-start linear both, fade-end linear both;
+      animation-timeline: scroll(self block);
+      animation-range: 0 var(--fade), calc(100% - var(--fade)) 100%;
+    }
+
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cards {
+      scroll-behavior: smooth;
+    }
+
+    /* a card's graphic lifts under the pointer */
+    .tile {
+      transition: translate 0.2s ease-out;
+    }
+
+    .card-link:hover .tile {
+      translate: 0 -0.375rem;
+    }
+
+    /* The hero ring turns once into its resting angle when the page opens.
+       (It used to turn with scrolling, but the hero leaves the screen too
+       quickly for that to be seen.) */
+    .hero-ring {
+      animation: ring-turn 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+    }
+  }
+}

@@ -2,79 +2,82 @@
 layout: base.njk
 title: Florian P. Mahner
 ---
-{% import "pub-row.njk" as pub_row %}
-{% import "icons.njk" as icons %}
-{% set NEWS_VISIBLE = 4 %}
+{% import "pub-card.njk" as card %}
 
-{# One news entry plus a year heading whenever the year changes. #}
-{% macro newsItems(items, prevYear) %}
-{%- set last = prevYear -%}
-{%- for item in items -%}
-  {%- set y = item.date | yearOf -%}
-  {%- if y != last %}<p class="news-year mono">{{ y }}</p>{% set last = y %}{% endif %}
-  <p class="news-item"><strong>{{ item.date | monthName }}:</strong> {{ item.text | newsText | safe }}</p>
-{%- endfor -%}
-{% endmacro %}
+<header class="hero">
+  <div class="hero-dots" aria-hidden="true"></div>
+  <div class="hero-stripe" aria-hidden="true"></div>
+  <svg class="hero-ring" aria-hidden="true" viewBox="0 0 200 200">
+    <circle class="ring-disc" cx="100" cy="100" r="100"/>
+    <path class="ring-half" d="M100 0 A100 100 0 0 1 100 200 Z"/>
+    <circle class="ring-eye" cx="100" cy="100" r="34"/>
+  </svg>
+  <nav class="profiles" aria-label="Profiles">
+    {% if site.social.github %}<a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub</a>{% endif %}
+    {% if site.social.scholar %}<a href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Scholar</a>{% endif %}
+    {% if site.social.linkedin %}<a href="https://www.linkedin.com/in/{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>{% endif %}
+    {% if site.social.orcid %}<a href="https://orcid.org/{{ site.social.orcid }}" target="_blank" rel="noopener noreferrer">ORCID</a>{% endif %}
+    <a href="mailto:{{ site.email }}">Email</a>
+  </nav>
+  <h1 class="hero-name">{{ site.name.first }} {{ site.name.middle }} <br>{{ site.name.last }}</h1>
+</header>
 
-<main class="page" id="top">
-
-  <div class="stage" id="stage" aria-hidden="true"></div>
-
-  <div class="name-row" data-flow="hero">
-    <h1 class="hero-name reveal" id="name">Florian P<span class="accent-dot">.</span> Mahner</h1>
-    <div class="name-links">{{ icons.socialIcons(site) }}</div>
-  </div>
-
-  <div class="grid hero" data-flow="hero">
-    <section class="span-8 about reveal" aria-labelledby="name">
+<main>
+  <div class="intro">
+    <section class="about" id="about" aria-label="About">
       {% mdfile "about" %}
     </section>
 
     {% if news and news.length %}
-    <aside class="card news span-4 reveal" aria-labelledby="news-heading">
-      <h2 class="card-bar mono" id="news-heading">news.log</h2>
-      {# all news in one list that scrolls inside the card #}
-      <div class="news-list" tabindex="0">
-        {{ newsItems(news, "") }}
+    <section class="news" id="news" aria-labelledby="news-heading">
+      <div class="news-in">
+        <h2 class="heading news-heading" id="news-heading">News</h2>
+        {# every item sits in one list that scrolls inside the panel #}
+        <div class="news-list" tabindex="0" role="group" aria-labelledby="news-heading">
+          {%- set last = "" -%}
+          {%- for item in news -%}
+          {%- set y = item.date | yearOf -%}
+          {%- if y != last %}
+          <p class="news-year">{{ y }}</p>{% set last = y %}{% endif %}
+          <p class="news-item"><span class="news-when">{{ item.date | monthName | truncate(3, true, "") }}</span><span>{{ item.text | mdInline | safe }}</span></p>
+          {%- endfor %}
+        </div>
       </div>
-    </aside>
+    </section>
     {% endif %}
   </div>
 
   {% set selected = publications | selectattr("selected") %}
-  {% set rest = publications | rejectattr("selected") %}
-  <section class="grid block" aria-labelledby="publications-heading" data-flow="pubs">
-    <h2 class="block-heading span-12" id="publications-heading">Selected publications</h2>
-    <div class="swipe">
-      {% for pub in selected %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
-    </div>
-    {# the other papers: hidden until asked for, then a row of the same cards that scrolls sideways #}
-    {% if rest.length %}
-    <div class="pub-more span-12" id="all-publications" tabindex="0" aria-label="More publications" hidden>
-      {% for pub in rest %}{{ pub_row.pubRow(pub, site.highlightAuthor) }}{% endfor %}
-    </div>
-    {% endif %}
-    <p class="block-foot span-12 mono">
-      <span class="foot-links">{% if rest.length %}<button class="text-button" id="toggle-publications" type="button" aria-expanded="false" aria-controls="all-publications">show more</button>{% endif %}
-      {% if site.social.scholar %}<a class="pub-scholar" href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}</span>
+  {# after the selected three: the other journal papers; conference papers are left to Google Scholar #}
+  {% set rest = publications | rejectattr("selected") | rejectattr("conference") %}
+  <section class="pubs" id="publications" aria-labelledby="publications-heading">
+    <h2 class="heading" id="publications-heading">Selected publications</h2>
+    {# one sideways row holding every paper shown; the next one peeks in at
+       the right edge, so the row reads as something to scroll #}
+    <ul class="cards" id="cards" aria-label="Publications">
+      {% for pub in selected %}{{ card.pubCard(pub, site.highlightAuthor, 0) }}{% endfor %}
+      {% for pub in rest %}{{ card.pubCard(pub, site.highlightAuthor, loop.index0) }}{% endfor %}
+    </ul>
+    <p class="pubs-foot">
+      {% if site.social.scholar %}<a href="{{ site.social.scholar }}" target="_blank" rel="noopener noreferrer">Google Scholar</a>{% endif %}
       <span>* equal contribution</span>
     </p>
   </section>
 
-  <section class="grid block" aria-labelledby="background-heading" data-flow="bg">
-    <h2 class="block-heading span-12" id="background-heading">Background</h2>
-    <div class="swipe">
+  <section class="background" id="background" aria-labelledby="background-heading">
+    <h2 class="heading" id="background-heading">Background</h2>
+    <ul class="bands">
       {% for edu in education %}
-      <div class="card edu-card lift reveal">
-        <p class="edu-years mono">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}–{{ edu.endYear }}{% endif %}</p>
-        <h3 class="edu-degree">{{ edu.degree }} {{ edu.field }}</h3>
-        <p class="edu-meta">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
-      </div>
+      <li class="band">
+        <p class="band-years">{% if edu.startLabel %}{{ edu.startLabel }}{% else %}{{ edu.startYear }}–{{ edu.endYear }}{% endif %}</p>
+        <h3 class="band-role">{{ edu.degree }} {{ edu.field }}</h3>
+        <p class="band-place">{% if edu.group %}<a href="{{ edu.groupUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.group }}</a>, {% endif %}<a href="{{ edu.institutionUrl }}" target="_blank" rel="noopener noreferrer">{{ edu.institution }}</a>{% if edu.institution2 %} and <a href="{{ edu.institution2Url }}" target="_blank" rel="noopener noreferrer">{{ edu.institution2 }}</a>{% endif %}</p>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
   </section>
-
-  <footer class="footer" data-flow="footer">
-    <p class="mono">&copy; {% year %} {{ site.fullName }}</p>
-  </footer>
 </main>
+
+<footer class="footer">
+  <p>&copy; {% year %} {{ site.fullName }}</p>
+</footer>

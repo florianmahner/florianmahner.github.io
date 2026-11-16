@@ -14,10 +14,72 @@ md.renderer.rules.link_open = function(tokens, i, opts, env, self) {
     tokens[i].attrJoin("target", "_blank");
     tokens[i].attrJoin("rel", "noopener noreferrer");
   }
+  // A short link (a person's name, a group) must not break across two lines:
+  // "Klaus-Robert" at the end of one line and "Müller" on the next reads
+  // badly. Links of one or two words are kept together; longer ones wrap.
+  const label = tokens[i + 1] && tokens[i + 1].type === "text" ? tokens[i + 1].content.trim() : "";
+  if (label && label.split(/\s+/).length <= 2) tokens[i].attrJoin("class", "keep");
   return defaultLinkOpen(tokens, i, opts, env, self);
 };
 
+// ---- Content checks -------------------------------------------------------
+// Run before every build. A missing field or a malformed date stops the build
+// with a message naming the file and entry, instead of producing a page with
+// a hole in it.
+function checkContent() {
+  const read = name => JSON.parse(fs.readFileSync(path.join("_data", `${name}.json`), "utf-8"));
+  const problems = [];
+  const need = (file, i, entry, fields) => {
+    for (const f of fields) {
+      if (entry[f] === undefined || entry[f] === null || entry[f] === "") {
+        problems.push(`_data/${file}.json, entry ${i + 1}: "${f}" is missing`);
+      }
+    }
+  };
+
+  read("news").forEach((n, i) => {
+    need("news", i, n, ["date", "text"]);
+    if (n.date && !/^\d{4}-(0[1-9]|1[0-2])(-\d{2})?$/.test(n.date)) {
+      problems.push(`_data/news.json, entry ${i + 1}: date "${n.date}" is not YYYY-MM or YYYY-MM-DD`);
+    }
+  });
+
+  read("publications").forEach((p, i) => {
+    need("publications", i, p, ["title", "authors", "year", "venue"]);
+    if (!p.html && !p.pdf) problems.push(`_data/publications.json, entry ${i + 1}: needs "html" or "pdf" to link to`);
+    if (p.authors && !Array.isArray(p.authors)) problems.push(`_data/publications.json, entry ${i + 1}: "authors" must be a list`);
+    if (p.art && !fs.existsSync(path.join("_includes", "art", `${p.art}.svg`))) {
+      problems.push(`_data/publications.json, entry ${i + 1}: no drawing _includes/art/${p.art}.svg`);
+    }
+  });
+
+  read("education").forEach((e, i) => {
+    need("education", i, e, ["degree", "field", "institution", "institutionUrl"]);
+    if (!e.startLabel && !(e.startYear && e.endYear)) {
+      problems.push(`_data/education.json, entry ${i + 1}: needs "startLabel" or both "startYear" and "endYear"`);
+    }
+  });
+
+  if (problems.length) throw new Error("Content check failed:\n  " + problems.join("\n  "));
+}
+
 export default function(eleventyConfig) {
+  eleventyConfig.on("eleventy.before", checkContent);
+
+  // true on the dev server, false in the production build; gates dev-only tools
+  const isBuild = process.env.ELEVENTY_RUN_MODE === "build";
+  eleventyConfig.addGlobalData("dev", !isBuild);
+
+  // {% inlineCss "css/site.css" %} — the stylesheet's text, for a <style>
+  // element. Comments and runs of whitespace are removed; nothing else is
+  // rewritten, so what ships is the file as written.
+  eleventyConfig.addShortcode("inlineCss", file =>
+    fs.readFileSync(file, "utf-8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\s+/g, " ")
+      .trim());
+  eleventyConfig.addWatchTarget("css/");
+
   // Ignore non-template files
   eleventyConfig.ignores.add("docs/**");
   eleventyConfig.ignores.add("README.md");
@@ -29,7 +91,8 @@ export default function(eleventyConfig) {
   // Passthrough copy static assets to root
   eleventyConfig.addPassthroughCopy({ "public": "/" });
   eleventyConfig.addPassthroughCopy("css");
-  eleventyConfig.addPassthroughCopy("js");
+  // js/playground.js is a dev tool and stays out of the production build
+  eleventyConfig.addPassthroughCopy(process.env.ELEVENTY_RUN_MODE === "build" ? { "js/!(playground).js": "js" } : "js");
 
   // Self-hosted libraries for the 3D view (/world/): three.js, GSAP
   // (ScrollTrigger, SplitText), Lenis. ES modules, mapped by the import map
@@ -51,7 +114,9 @@ export default function(eleventyConfig) {
   // font CDN. Inter carries wght + opsz; Geist Mono carries wght.
   const fonts = {
     inter: ["inter-latin-opsz-normal", "inter-latin-ext-opsz-normal"],
-    "geist-mono": ["geist-mono-latin-wght-normal", "geist-mono-latin-ext-wght-normal"]
+    "geist-mono": ["geist-mono-latin-wght-normal", "geist-mono-latin-ext-wght-normal"],
+    // the homepage's typeface; Inter and Geist Mono remain for the dev-only lab pages
+    jost: ["jost-latin-wght-normal", "jost-latin-ext-wght-normal", "jost-latin-wght-italic"]
   };
   for (const [pkg, files] of Object.entries(fonts)) {
     for (const f of files) {

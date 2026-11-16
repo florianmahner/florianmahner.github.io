@@ -2,6 +2,30 @@ const CANONICAL_HOST = "florianmahner.com";
 const INDEX_HTML = "/index.html";
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
+// Sent with every response. The site is static: its own files only, styles
+// inline in the page, no third-party requests, never framed.
+const SECURITY_HEADERS = {
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'none'",
+    "frame-ancestors 'none'"
+  ].join("; "),
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+};
+
+function withSecurityHeaders(response) {
+  const secured = new Response(response.body, response);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) secured.headers.set(name, value);
+  return secured;
+}
+
 function isLocalHost(hostname) {
   return LOCAL_HOSTS.has(hostname);
 }
@@ -58,6 +82,6 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request);
+    return withSecurityHeaders(await env.ASSETS.fetch(request));
   }
 };

@@ -11,44 +11,60 @@ npm run build    # production build to _site/
 
 ## Architecture
 
-Personal academic website. **Eleventy (11ty) v3**, Nunjucks templates, vanilla
-CSS, no client-side framework and no build step beyond 11ty.
+Personal academic website, one page. **Eleventy (11ty) v3**, Nunjucks
+templates, plain CSS, no client-side framework. Kept on purpose: Astro and a
+hand-written build script were both considered and turned down (Eleventy's
+live reload is wanted, nothing heavier is needed).
 
-- `eleventy.config.js` — config, filters, shortcodes, font passthrough
-- `js/motion.js` — breathing dot grid and the name intro (see Motion)
-- `index.njk` — the whole homepage: hero (name, About, News card),
-  Selected publications, Background, footer
-- `_includes/base.njk` — homepage layout: head/SEO/JSON-LD, inline JS
-  (scroll reveal, News + publications toggles)
-- `_includes/pub-row.njk` — `pubRow()` macro; one publication card, used by
-  both the selected and the expanded list
-- `_includes/icons.njk` — `socialIcons()` macro; icon-only contact links
-- `_data/*.json` — all content: `site`, `education`, `publications`, `news`,
-  `repos`, `tools`
+- `eleventy.config.js` — config, content checks, filters, shortcodes, fonts
+- `index.njk` — the whole homepage: hero, About + News, publications row,
+  Background bands, footer
+- `_includes/base.njk` — layout: head, SEO, JSON-LD; the stylesheet is
+  inlined here with `{% inlineCss "css/site.css" %}`
+- `_includes/pub-card.njk` — `pubCard()` macro; one publication card
+- `_includes/art/*.svg` — the drawings on the selected papers' cards,
+  coloured only through palette classes (`f-ink`, `s-mid`, `bg-hot`)
+- `css/site.css` — the entire homepage stylesheet
+- `js/site.js` — the only script: `show more` / `show less`
+- `_data/*.json` — all content: `site`, `education`, `publications`, `news`
+  (`repos`, `tools` are not rendered)
 - `content/about.md` — About prose, injected via `{% mdfile "about" %}`
-- `css/style.css` — the entire stylesheet
 - `public/` — static assets copied to output root
-- Fonts are self-hosted from `@fontsource-variable/inter` and
-  `@fontsource-variable/geist-mono` (copied to `/fonts/` at build)
+- Jost is self-hosted from `@fontsource-variable/jost` (copied to `/fonts/`)
 
 Filters/shortcodes: `highlightAuthor` (wraps each author in
 `<span class="author">`, adds `.self` for the site owner), `mdInline`,
-`monthName`, `yearOf`, `year`, `mdfile`.
+`monthName`, `yearOf`, `year`, `mdfile`, `inlineCss`.
+
+**Content checks:** `checkContent()` in `eleventy.config.js` runs before every
+build and fails it, naming file and entry, on a missing field, a malformed
+news date, or a publication `art` with no matching drawing.
+
+**Old files still in the repo:** `css/style.css`, `js/motion.js`,
+`_includes/pub-row.njk`, `_includes/icons.njk`, Inter and Geist Mono belong to
+the previous design and are used only by the dev-only lab pages (`/world/`,
+`/split/`, `/news-ideas/`, `/layout-ideas/`). The homepage uses none of them.
 
 ## Deployment
 
 GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to
 **Cloudflare Workers** via wrangler on push to master. `src/index.js` is a
 Worker that forces HTTPS and redirects to the canonical host
-**florianmahner.com**. Despite the repo name, this is *not* GitHub Pages.
+**florianmahner.com** and adds security headers (CSP and others) to every
+response. Despite the repo name, this is *not* GitHub Pages.
 
 ## Design system
 
-Soft grey dot-grid ground, white "window" cards with a black 1.5px border and
-a hard steel-blue offset shadow, Inter for text, Geist Mono for small labels
-(news.log, show older, dates, venues, PDF/Web links). Light by default; an
-automatic deep-warm dark theme follows the reader's system setting (`@media (prefers-color-scheme: dark)` block in
-`css/style.css` — every colour is a token, so that block is the whole theme).
+Source of truth: the design canvas, board "21 Aktuell"
+(https://claude.ai/artifact/XzaFbjy84MkqdN2ygXgaSn). The layout is agreed;
+**the colours are not final** (the pink palette is liked on phones, undecided
+on desktop; board 23 is a lavender/yellow/black alternative). Do not
+restructure the layout; work on individual elements and colour.
+
+Full-bleed colour bands, no cards or borders: a red hero with dot field,
+stripe and ring and the two-line name; About beside a dark News panel;
+publications as one sideways row of graphic-tile cards on pink; Background as
+alternating bands; a red footer. One typeface, Jost.
 
 ### Rules the owner has asked for — keep them
 
@@ -56,57 +72,65 @@ automatic deep-warm dark theme follows the reader's system setting (`@media (pre
   or Background; never invent copy, taglines or labels.
 - **No horizontal rules between sections**, no section numbers ("01", "02"),
   no arrows (→ ↗ ←), no filler text (domain name, entry counts).
-- **Links are violet with no underline**; hover adds a soft violet highlight.
-- **Contact links are icons only**, in one row under the name on every
-  screen size.
-- **All publication cards look the same** — no highlighted/coloured card.
-- News is a card titled `news.log` on the right of the hero, not a separate
-  page; all items sit in one list that scrolls inside the card (soft fade at
-  the bottom), no "show older" button.
-- Publications: the selected three show by default; `show more` / `show less`
-  opens the rest as a sideways-scrolling row of the same cards (`.pub-more`),
-  next to a `Google Scholar` link for the full list. Don't say "All 10".
-- The name sits on one line, medium size, above the About/News row.
-- Violet is only for links and the dot after the name — never card chrome.
-- Dark mode: cards are lighter than the page and the offset shadow darker
-  (black), or the 3D window look goes flat. Text is warm off-white, never #fff.
+- Header (canvas board "flacher Streifen, mehr Platz unter dem Namen", chosen
+  2026-11-16): from 640px up a flat red strip with the profile links as words
+  in the top left, the name on one line at the bottom left, and a medium ring
+  on the right (ring = 1.7 × name size; do not make it smaller). Phones keep
+  board 21's header (two lines, large ring). Type on red and on wine stays
+  light. Kajet's red and two-column links were tried and rejected.
+- The header before that, written down in case it is wanted back ("A2, Ring
+  etwas kleiner"): in the 640px block of `css/site.css`, `.hero` had
+  `--fs-name: clamp(calc(2.5 * var(--r)), 7.4cqi, calc(7.5 * var(--r)))`,
+  `--ring: calc(2.6 * var(--fs-name))`, `min-height: calc(1.3 * var(--ring))`,
+  `justify-content: center`, and no `padding-bottom` override. Everything
+  else in the header was the same.
+- Links in running text: plain underlines were never wanted. Coloured text
+  (red or wine, rosa inside News) is under trial in the colour panel.
+- `js/playground.js` is a dev-only colour panel (palette, link style, single
+  colours); it is not in the production build.
+- News entries are two columns (canvas board "zwei Spalten"): the month,
+  shortened to three letters and in rosa, on the left; the text on the right.
+  Year headings stay.
+- News is a panel titled `News`; all items sit in one list that scrolls
+  inside the panel (soft fade at the edges), no "show older" button.
+- Publications: one sideways row with the selected three first, then the
+  other journal papers. No `show more` button (removed 2026-11-16: the row
+  scrolls anyway); cards are sized so the next one peeks in at the right
+  edge. A `Google Scholar` link sits under the row. Each card is one link to
+  the paper's web page. No drawing sits on the plain light ground: every
+  tile has a coloured ground (wine, rosa or red).
+- Change only what is asked; no extra "improvements" alongside a fix.
 
-### Tokens (`:root` in `css/style.css`)
+### How the CSS is written (`css/site.css`)
 
-- Colour: `--bg` #eeeff1, `--ink` (body) and `--strong` (name, headings,
-  lead), `--muted`/`--quiet` greys for secondary text and labels, `--card`,
-  `--bar` (card title strips), `--line` (borders), `--shadow-color` (steel
-  #b2c1d9 light, #000 dark), `--accent` (the dot), `--link` #6d28d9.
-- Type: exactly six sizes — `--fs-name` (hero), `--fs-heading` (section
-  headings), `--fs-lead` (first About paragraph), `--fs-body` (body and card
-  titles, which are bold), `--fs-small` (authors, news; a smaller value on
-  phones), `--fs-mono` (labels). Never add a seventh; hierarchy inside a
-  card comes from weight, not size.
-- Layout: one 12-column grid (`.grid`, `--gap`). Under the one-line name the
-  hero is 8 + 4 columns,
-  publication cards span 4, Background cards span 3, so the News card lines
-  up with the third publication card. Breakpoints: 1100px (Background 2-up),
-  960px (hero stacks, publications 2-up), 640px (selected publications and Background become sideways-swipe rows via
-  `.swipe`, which is `display: contents` on larger screens).
+Follows Chrome's Modern Web Guidance
+(https://github.com/GoogleChrome/modern-web-guidance); consult the matching
+guide before adding a UI pattern.
 
-### Motion
-
-All motion lives in `js/motion.js`, configured by `background` and `intro` in
-`_data/site.json` (rendered as `data-bg` / `data-intro` on `<html>`):
-
-- `background: "breathe"` — a slow wave rolls across the dot grid, drawn on a
-  fixed canvas at 30 fps; colours come from `--dots`, so dark mode just works.
-  `"none"` keeps the static CSS dots.
-- `intro: "hop"` — the name is static; the dot pops in, then hops with
-  squash-and-stretch and sends out one ring (`.accent-dot.ring`). `"none"`
-  shows it at rest. (A typing reveal of the name was tried and removed.)
-- `.reveal` elements rise in via IntersectionObserver (`base.njk`, gated by
-  the `.js` class so no-JS readers see everything); cards lift on hover.
-- Everything is off under `prefers-reduced-motion`; the grid pauses in hidden
-  tabs. `?bg=` and `?intro=` override the defaults.
-- Rejected, don't bring back: cursor-driven pulling/swirling grid, graph /
-  cluster / attractor backgrounds ("looks like astro stuff"), a dot falling
-  from the top.
+- Cascade layers, in order: `fonts, tokens, base, layout, components, motion`.
+  Native nesting. No global `*` reset, no inline styles.
+- **Tokens, two tiers.** Palette: `--paper`, `--ink`, `--mid`, `--hot`,
+  `--hot-text`, `--band`. Roles (`--hero-bg`, `--news-accent`, `--pubs-bg`,
+  …) point at the palette. A hex value appears only in the palette block (and
+  once in `base.njk` as `theme-color`). Recolouring means editing the palette
+  or re-pointing roles, nothing else.
+- **Type: exactly six sizes** — `--fs-name`, `--fs-heading` (all three section
+  headings, same size), `--fs-year`, `--fs-lead`, `--fs-body`, `--fs-small`.
+  Never add a seventh; hierarchy inside a size comes from weight.
+- **Sizes** are multiples of `--r`, a unit that grows slightly with the page
+  width; `--pad` is the side gutter, `--section` the space above a section.
+  The body is the size container; widths use `cqi`, and the one layout switch
+  is `@container (min-width: 900px)`.
+- **Motion** lives in the `motion` layer and is opt-in: scroll-driven
+  animations behind `@supports`, spatial movement only inside
+  `prefers-reduced-motion: no-preference`. The ring turns as the hero scrolls
+  away; the bar under the publications row follows the row; the News list
+  fades at its edges; a card's tile lifts on hover. No JavaScript animation.
+- **No dark theme yet**; add it as a second palette block once colours settle.
+- **Browser support:** newly available features are allowed when
+  feature-detected and the page still reads fine without them.
+- Rejected earlier, don't bring back: cursor-driven grids, graph / cluster /
+  attractor backgrounds, a typing reveal of the name.
 
 ## Content
 
@@ -114,17 +138,40 @@ All motion lives in `js/motion.js`, configured by `background` and `intro` in
   order is the display order). `date` is `YYYY-MM`; `text` is inline
   markdown, written as a full first-person sentence ending in "!", e.g.
   "Our paper [Title](url) was accepted to NeurIPS 2026!". All items are in
-  the scrolling news.log list.
+  the scrolling News list.
+- `show more` lists journal papers only: mark a conference paper with
+  `"conference": true` and it stays off the page (Google Scholar has it).
+  Every paper shown needs a drawing (`art`) that depicts what it is about.
 - Publication: add to `_data/publications.json`; `selected: true` features it
-  on the homepage. Keep `venue` short (e.g. "NeurIPS"); a venue containing
-  "arXiv" renders as a grey preprint label.
+  on the homepage. The card links to `html` (or `pdf`). `art` names a drawing
+  in `_includes/art/`; without it the card gets a year tile.
 - Education: add to `_data/education.json`. `startLabel` overrides the
   `startYear–endYear` range for open-ended entries ("Oct 2026–present").
 
+## Classic view (`/classic/`)
+
+**Parked on 2026-11-16: the owner decided to stick with the red design, but
+asked to keep "the blue idea".** It is saved here and on the canvas
+"Florian Mahner: Modern" (https://claude.ai/artifact/XhbUj1x4NezSK5dJnpQXgQ;
+rows "Stand" and "Ohne Schwarz": steel-blue, pale-blue and soft-violet
+fields, drawings in dark blue). The versions with black fields were
+rejected.
+
+Dev-only comparison page (not built for production): the previous live
+design (dot grid, window cards, Inter and Geist Mono, name with violet dot,
+icon links) carrying the redesign's ideas, to see whether the two can be
+combined. Files: `classic.njk`, `classic.11tydata.js`,
+`_includes/classic-base.njk`, `_includes/classic-pub.njk`, `css/classic.css`
+(loaded after `css/style.css`). What it adds to the old look: a drawing as
+the top pane of every publication card (in ink, paper and two steel blues;
+violet stays for links and the dot), two-column news inside `news.log`,
+journal papers only under `show more` as a second row of cards, and
+Background as one window with a row per position.
+
 ## World view (`/world/`)
 
-An immersive alternative to the homepage, linked from the footer ("3D view";
-hidden on phones for now) and `noindex`. Files: `world.njk`,
+A local-only experiment from the previous design (not built for production,
+not linked from the homepage). Files: `world.njk`,
 `world.11tydata.js`, `css/world.css`, `js/world/app.js`.
 
 Built on open-source libraries, self-hosted under `/vendor/` (copied from

@@ -1,0 +1,11 @@
+<svg class="art bg-hot" role="img" aria-label="Graphic: three two-tone bars, each with a round marker at the point where the tones meet; on the third bar the marker sits further to the left" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+<rect class="f-ink" x="60" y="84" width="280" height="26" rx="13"/>
+<rect class="f-paper" x="60" y="84" width="173.6" height="26" rx="13"/>
+<circle class="f-mid" cx="233.6" cy="97" r="19"/>
+<rect class="f-ink" x="60" y="137" width="280" height="26" rx="13"/>
+<rect class="f-paper" x="60" y="137" width="168" height="26" rx="13"/>
+<circle class="f-mid" cx="228" cy="150" r="19"/>
+<rect class="f-ink" x="60" y="190" width="280" height="26" rx="13"/>
+<rect class="f-paper" x="60" y="190" width="117.6" height="26" rx="13"/>
+<circle class="f-mid" cx="177.6" cy="203" r="19"/>
+</svg>

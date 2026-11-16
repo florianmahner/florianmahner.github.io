@@ -9,6 +9,7 @@
     "pdf": "https://arxiv.org/pdf/2605.13675",
     "html": "https://arxiv.org/abs/2605.13675",
     "code": null,
+    "art": "universal",
     "selected": true,
     "description": "We characterize universal and model-specific object dimensions across vision models and link their universality to neural and behavioral measures."
   },
@@ -22,6 +23,7 @@
     "pdf": "https://arxiv.org/pdf/2605.26921",
     "html": "https://arxiv.org/abs/2605.26921",
     "code": null,
+    "art": "factorization",
     "selected": true,
     "description": "We introduce SRF, a method for recovering interpretable dimensions from similarity data across behavior, brains, and models."
   },
@@ -35,6 +37,7 @@
     "pdf": "https://www.nature.com/articles/s42256-025-01041-7.pdf",
     "html": "https://www.nature.com/articles/s42256-025-01041-7",
     "code": null,
+    "art": "alignment",
     "selected": true,
     "description": "We identify interpretable dimensions that explain when and why deep neural network representations align with human perception."
   },
@@ -47,6 +50,7 @@
     "pdf": "https://www.nature.com/articles/s44271-025-00236-3.pdf",
     "html": "https://www.nature.com/articles/s44271-025-00236-3",
     "code": null,
+    "art": "principles",
     "selected": false,
     "description": "A practical guide to writing better research code — from project structure to testing and reproducibility."
   },
@@ -59,6 +63,7 @@
     "pdf": "https://elifesciences.org/reviewed-preprints/105394.pdf",
     "html": "https://elifesciences.org/reviewed-preprints/105394",
     "code": null,
+    "art": "similarity",
     "selected": false,
     "description": "Predicting how humans perceive similarity between objects using efficient computational methods at scale."
   },
@@ -71,6 +76,7 @@
     "pdf": "https://2025.ccneuro.org/abstract_pdf/Stoinski_2025_Quantifying_Role_Perceived_Curvature_Processing_.pdf",
     "html": "https://2025.ccneuro.org/contributed-talk/?id=64",
     "code": null,
+    "conference": true,
     "selected": false,
     "description": null
   },
@@ -83,6 +89,7 @@
     "pdf": null,
     "html": "https://repository.ubn.ru.nl/handle/2066/297725",
     "code": null,
+    "conference": true,
     "selected": false,
     "description": null
   },
@@ -95,6 +102,7 @@
     "pdf": null,
     "html": "https://repository.ubn.ru.nl/handle/2066/302838",
     "code": null,
+    "conference": true,
     "selected": false,
     "description": null
   },
@@ -107,6 +115,7 @@
     "pdf": "https://www.nature.com/articles/s41598-020-79929-0.pdf",
     "html": "https://www.nature.com/articles/s41598-020-79929-0",
     "code": null,
+    "art": "control",
     "selected": false,
     "description": null
   },
@@ -119,6 +128,7 @@
     "pdf": "https://www.researchgate.net/publication/317200656_Quasi_View-Independent_Human_Motion_Recognition_in_Subspaces",
     "html": "https://dl.acm.org/doi/abs/10.1145/3055635.3056577",
     "code": null,
+    "conference": true,
     "selected": false,
     "description": null
   }

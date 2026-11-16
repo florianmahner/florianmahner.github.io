@@ -1,0 +1,14 @@
+{# One publication for /classic/: the paper's drawing, then venue, title and
+   authors. The whole thing is one link to the paper's web page. #}
+{% macro pubCard(pub, highlight, art, extra) %}
+<article class="card plain pub-card{% if extra %} pub-extra{% endif %}">
+  <a class="pub-link" href="{{ pub.html or pub.pdf }}" target="_blank" rel="noopener noreferrer">
+    {%- if art %}
+    <div class="pub-art">{% include "art/" + art + ".svg" %}</div>
+    {%- endif %}
+    <p class="pub-venue mono">{{ pub.venue }} · {{ pub.year }}</p>
+    <h3 class="pub-title">{{ pub.title }}</h3>
+    <p class="pub-authors">{{ pub.authors | highlightAuthor(highlight) | safe }}</p>
+  </a>
+</article>
+{% endmacro %}

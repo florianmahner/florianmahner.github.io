@@ -1,0 +1,53 @@
+<svg class="art bg-mid" role="img" aria-label="Graphic: a square grid of coloured cells next to a narrow grid and three discs" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+<rect class="f-ink" x="30" y="73" width="19" height="19"/>
+<rect class="f-hot" x="52" y="73" width="19" height="19"/>
+<rect class="f-hot" x="74" y="73" width="19" height="19"/>
+<rect class="f-paper" x="118" y="73" width="19" height="19"/>
+<rect class="f-hot" x="30" y="95" width="19" height="19"/>
+<rect class="f-ink" x="52" y="95" width="19" height="19"/>
+<rect class="f-hot" x="74" y="95" width="19" height="19"/>
+<rect class="f-paper" x="96" y="95" width="19" height="19"/>
+<rect class="f-hot" x="30" y="117" width="19" height="19"/>
+<rect class="f-hot" x="52" y="117" width="19" height="19"/>
+<rect class="f-ink" x="74" y="117" width="19" height="19"/>
+<rect class="f-paper" x="118" y="117" width="19" height="19"/>
+<rect class="f-paper" x="52" y="139" width="19" height="19"/>
+<rect class="f-ink" x="96" y="139" width="19" height="19"/>
+<rect class="f-hot" x="118" y="139" width="19" height="19"/>
+<rect class="f-paper" x="140" y="139" width="19" height="19"/>
+<rect class="f-paper" x="30" y="161" width="19" height="19"/>
+<rect class="f-paper" x="74" y="161" width="19" height="19"/>
+<rect class="f-hot" x="96" y="161" width="19" height="19"/>
+<rect class="f-ink" x="118" y="161" width="19" height="19"/>
+<rect class="f-paper" x="162" y="161" width="19" height="19"/>
+<rect class="f-paper" x="96" y="183" width="19" height="19"/>
+<rect class="f-ink" x="140" y="183" width="19" height="19"/>
+<rect class="f-hot" x="162" y="183" width="19" height="19"/>
+<rect class="f-paper" x="118" y="205" width="19" height="19"/>
+<rect class="f-hot" x="140" y="205" width="19" height="19"/>
+<rect class="f-ink" x="162" y="205" width="19" height="19"/>
+<rect class="f-hot" x="226" y="73" width="19" height="19"/>
+<rect class="s-ink" x="248" y="73" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="270" y="73" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="f-hot" x="226" y="95" width="19" height="19"/>
+<rect class="s-ink" x="248" y="95" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="270" y="95" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="f-hot" x="226" y="117" width="19" height="19"/>
+<rect class="s-ink" x="248" y="117" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="270" y="117" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="226" y="139" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="f-ink" x="248" y="139" width="19" height="19"/>
+<rect class="s-ink" x="270" y="139" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="226" y="161" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="f-ink" x="248" y="161" width="19" height="19"/>
+<rect class="s-ink" x="270" y="161" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="226" y="183" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="248" y="183" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="f-paper" x="270" y="183" width="19" height="19"/>
+<rect class="s-ink" x="226" y="205" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="s-ink" x="248" y="205" width="19" height="19" fill="none" stroke-width="1.5"/>
+<rect class="f-paper" x="270" y="205" width="19" height="19"/>
+<circle class="f-hot" cx="340" cy="100" r="20"/>
+<circle class="f-ink" cx="340" cy="150" r="20"/>
+<circle class="f-paper" cx="340" cy="200" r="20"/>
+</svg>

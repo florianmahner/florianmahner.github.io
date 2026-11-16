@@ -1,0 +1,25 @@
+<svg class="art bg-hot" role="img" aria-label="Graphic: ten light bars above a line and ten dark bars below it, some of equal length" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+<g transform="translate(200 150) scale(0.8) translate(-200 -150)">
+<rect class="f-paper" x="36" y="58" width="22" height="90"/>
+<rect class="f-mid" x="36" y="152" width="22" height="90"/>
+<rect class="f-paper" x="69" y="88" width="22" height="60"/>
+<rect class="f-mid" x="69" y="152" width="22" height="60"/>
+<rect class="f-paper" x="102" y="38" width="22" height="110"/>
+<rect class="f-ink" x="102" y="152" width="22" height="70"/>
+<rect class="f-paper" x="135" y="108" width="22" height="40"/>
+<rect class="f-mid" x="135" y="152" width="22" height="40"/>
+<rect class="f-paper" x="168" y="73" width="22" height="75"/>
+<rect class="f-ink" x="168" y="152" width="22" height="100"/>
+<rect class="f-paper" x="201" y="53" width="22" height="95"/>
+<rect class="f-mid" x="201" y="152" width="22" height="95"/>
+<rect class="f-paper" x="234" y="118" width="22" height="30"/>
+<rect class="f-mid" x="234" y="152" width="22" height="30"/>
+<rect class="f-paper" x="267" y="93" width="22" height="55"/>
+<rect class="f-ink" x="267" y="152" width="22" height="20"/>
+<rect class="f-paper" x="300" y="68" width="22" height="80"/>
+<rect class="f-mid" x="300" y="152" width="22" height="80"/>
+<rect class="f-paper" x="333" y="103" width="22" height="45"/>
+<rect class="f-ink" x="333" y="152" width="22" height="60"/>
+<rect class="f-mid" x="24" y="148" width="352" height="4"/>
+</g>
+</svg>

@@ -1,0 +1,20 @@
+{# One publication card: a graphic tile, then venue, title and authors. The
+   whole card is one link to the paper's web page. A paper with an `art`
+   field gets that drawing (_includes/art/<art>.svg); the others get a year
+   tile in one of seven patterns, chosen by position. #}
+{% macro pubCard(pub, highlight, tileIndex) %}
+<li class="card">
+  <a class="card-link" href="{{ pub.html or pub.pdf }}" target="_blank" rel="noopener noreferrer">
+    {%- if pub.art %}
+    <div class="tile">{% include "art/" + pub.art + ".svg" %}</div>
+    {%- else %}
+    <div class="tile tile-year" data-tile="{{ tileIndex % 7 + 1 }}"><span class="tile-shape" aria-hidden="true"></span><p class="tile-label">{{ pub.year }}</p></div>
+    {%- endif %}
+    <div class="card-text">
+      <p class="card-venue">{{ pub.venue }}, {{ pub.year }}</p>
+      <h3 class="card-title">{{ pub.title }}</h3>
+      <p class="card-authors">{{ pub.authors | highlightAuthor(highlight) | safe }}</p>
+    </div>
+  </a>
+</li>
+{% endmacro %}

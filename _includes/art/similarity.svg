@@ -1,0 +1,53 @@
+<svg class="art bg-ink" role="img" aria-label="Graphic: stacked network layers, then a row of bars, then a square similarity matrix" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+<rect class="f-paper" x="38" y="75" width="12" height="150" rx="3"/>
+<rect class="f-mid" x="57" y="91" width="12" height="118" rx="3"/>
+<rect class="f-paper" x="76" y="107" width="12" height="86" rx="3"/>
+<rect class="f-mid" x="95" y="123" width="12" height="54" rx="3"/>
+<line class="s-mid" x1="118" y1="150" x2="140" y2="150" stroke-width="4" stroke-linecap="round"/>
+<rect class="f-hot" x="152" y="130" width="7" height="70" rx="2"/>
+<rect class="f-hot" x="163" y="160" width="7" height="40" rx="2"/>
+<rect class="f-hot" x="174" y="105" width="7" height="95" rx="2"/>
+<rect class="f-hot" x="185" y="170" width="7" height="30" rx="2"/>
+<rect class="f-hot" x="196" y="140" width="7" height="60" rx="2"/>
+<rect class="f-hot" x="207" y="115" width="7" height="85" rx="2"/>
+<rect class="f-hot" x="218" y="175" width="7" height="25" rx="2"/>
+<rect class="f-hot" x="229" y="150" width="7" height="50" rx="2"/>
+<rect class="f-hot" x="240" y="125" width="7" height="75" rx="2"/>
+<line class="s-mid" x1="256" y1="150" x2="268" y2="150" stroke-width="4" stroke-linecap="round"/>
+<rect class="f-paper" x="278" y="97" width="16" height="16"/>
+<rect class="f-mid" x="296" y="97" width="16" height="16"/>
+<rect class="f-mid" x="314" y="97" width="16" height="16"/>
+<rect class="f-mid" x="332" y="97" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="350" y="97" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="368" y="97" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="278" y="115" width="16" height="16"/>
+<rect class="f-paper" x="296" y="115" width="16" height="16"/>
+<rect class="f-mid" x="314" y="115" width="16" height="16"/>
+<rect class="f-mid" x="332" y="115" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="350" y="115" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="368" y="115" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="278" y="133" width="16" height="16"/>
+<rect class="f-mid" x="296" y="133" width="16" height="16"/>
+<rect class="f-paper" x="314" y="133" width="16" height="16"/>
+<rect class="f-mid" x="332" y="133" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="350" y="133" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="368" y="133" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="278" y="151" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="296" y="151" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="314" y="151" width="16" height="16" opacity="0.3"/>
+<rect class="f-paper" x="332" y="151" width="16" height="16"/>
+<rect class="f-mid" x="350" y="151" width="16" height="16"/>
+<rect class="f-mid" x="368" y="151" width="16" height="16"/>
+<rect class="f-mid" x="278" y="169" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="296" y="169" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="314" y="169" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="332" y="169" width="16" height="16"/>
+<rect class="f-paper" x="350" y="169" width="16" height="16"/>
+<rect class="f-mid" x="368" y="169" width="16" height="16"/>
+<rect class="f-mid" x="278" y="187" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="296" y="187" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="314" y="187" width="16" height="16" opacity="0.3"/>
+<rect class="f-mid" x="332" y="187" width="16" height="16"/>
+<rect class="f-mid" x="350" y="187" width="16" height="16"/>
+<rect class="f-paper" x="368" y="187" width="16" height="16"/>
+</svg>

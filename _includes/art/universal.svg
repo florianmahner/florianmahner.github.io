@@ -1,0 +1,26 @@
+<svg class="art bg-ink" role="img" aria-label="Graphic: three rows of circles, three columns joined by red bars" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+<line class="s-hot" x1="108" y1="80" x2="108" y2="220" stroke-width="30" stroke-linecap="round"/>
+<line class="s-hot" x1="200" y1="80" x2="200" y2="220" stroke-width="30" stroke-linecap="round"/>
+<line class="s-hot" x1="246" y1="80" x2="246" y2="220" stroke-width="30" stroke-linecap="round"/>
+<circle class="s-mid" cx="62" cy="80" r="12" fill="none" stroke-width="4"/>
+<circle class="f-paper" cx="108" cy="80" r="9"/>
+<circle class="f-paper" cx="154" cy="80" r="14"/>
+<circle class="f-paper" cx="200" cy="80" r="9"/>
+<circle class="f-paper" cx="246" cy="80" r="9"/>
+<circle class="f-mid" cx="292" cy="80" r="14"/>
+<circle class="s-paper" cx="338" cy="80" r="12" fill="none" stroke-width="4"/>
+<circle class="f-paper" cx="62" cy="150" r="14"/>
+<circle class="f-paper" cx="108" cy="150" r="9"/>
+<circle class="s-mid" cx="154" cy="150" r="12" fill="none" stroke-width="4"/>
+<circle class="f-paper" cx="200" cy="150" r="9"/>
+<circle class="f-paper" cx="246" cy="150" r="9"/>
+<circle class="s-paper" cx="292" cy="150" r="12" fill="none" stroke-width="4"/>
+<circle class="f-mid" cx="338" cy="150" r="14"/>
+<circle class="f-mid" cx="62" cy="220" r="14"/>
+<circle class="f-paper" cx="108" cy="220" r="9"/>
+<circle class="f-mid" cx="154" cy="220" r="14"/>
+<circle class="f-paper" cx="200" cy="220" r="9"/>
+<circle class="f-paper" cx="246" cy="220" r="9"/>
+<circle class="f-paper" cx="292" cy="220" r="14"/>
+<circle class="f-paper" cx="338" cy="220" r="14"/>
+</svg>
