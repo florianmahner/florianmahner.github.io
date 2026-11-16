@@ -129,7 +129,14 @@ guide before adding a UI pattern.
   `prefers-reduced-motion: no-preference`. The ring turns as the hero scrolls
   away; the bar under the publications row follows the row; the News list
   fades at its edges; a card's tile lifts on hover. No JavaScript animation.
-- **No dark theme yet**; add it as a second palette block once colours settle.
+- **No dark mode, by decision (2026-11-16).** Six rounds of dark variants
+  were drawn (canvas "Florian Mahner: Farben", rows "Dunkles Design" to
+  "Dunkel auf neutralem Grund") and none was liked: on a wine ground every
+  coloured text reads badly and the red header clashes. The site is light
+  for everyone, like the owner's reference kajetjournal.com. Don't add one
+  unless asked.
+- `html` has `overscroll-behavior-y: none` and the header's red as its
+  background, so scrolling past the ends never shows a white strip.
 - **Browser support:** newly available features are allowed when
   feature-detected and the page still reads fine without them.
 - Rejected earlier, don't bring back: cursor-driven grids, graph / cluster /

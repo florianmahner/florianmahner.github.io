@@ -55,6 +55,7 @@
     --mid: #F8BFD3;   /* rosa */
     --hot: #D9261C;   /* red */
     --ink: #4A0A14;   /* wine: all type, the News block, the footer */
+    color-scheme: light; /* one theme for everyone; there is no dark mode */
 
     /* Roles: which palette colour each part of the page uses. */
     --page-bg: var(--paper);
@@ -123,6 +124,12 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Scrolling past the top or bottom must not reveal a white strip: the
+       page does not rubber-band, and where a browser still shows the area
+       behind the page, it is the header's red, not white. (The body's
+       colour cannot fill that area because the body is a size container.) */
+    overscroll-behavior-y: none;
+    background: var(--hero-bg);
   }
 
   /* The body is the container every cqi above is measured against. */
