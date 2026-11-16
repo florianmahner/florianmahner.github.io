@@ -7,6 +7,9 @@ const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 const SECURITY_HEADERS = {
   "Content-Security-Policy": [
     "default-src 'self'",
+    // inline scripts are allowed because Cloudflare injects one of its own
+    // (bot detection) into every page; the site itself has no inline script
+    "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
     "object-src 'none'",
