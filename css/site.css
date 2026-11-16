@@ -184,7 +184,7 @@
     position: relative;
     overflow: clip;
     box-sizing: border-box;
-    min-height: calc(34 * var(--r));
+    min-height: calc(28 * var(--r)); /* the board had 34; shorter, so the name sits close under the ring */
     padding: clamp(calc(0.5 * var(--r)), 1.5cqi, calc(1.25 * var(--r))) var(--pad) var(--pad);
     display: flex;
     flex-direction: column;
