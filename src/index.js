@@ -23,9 +23,16 @@ const SECURITY_HEADERS = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
 };
 
-function withSecurityHeaders(response) {
+// Browsers may keep the fonts for a year without asking again. Without this,
+// Cloudflare's default (max-age=0) makes every visit re-check the font
+// (~300 ms) before it can be drawn. If a font file's contents ever change,
+// give it a new name, or visitors keep the old one.
+const FONT_CACHE = "public, max-age=31536000, immutable";
+
+function withHeaders(response, pathname) {
   const secured = new Response(response.body, response);
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) secured.headers.set(name, value);
+  if (pathname.startsWith("/fonts/") && response.ok) secured.headers.set("Cache-Control", FONT_CACHE);
   return secured;
 }
 
@@ -85,6 +92,6 @@ export default {
       }
     }
 
-    return withSecurityHeaders(await env.ASSETS.fetch(request));
+    return withHeaders(await env.ASSETS.fetch(request), url.pathname);
   }
 };
