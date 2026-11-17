@@ -32,7 +32,10 @@ const FONT_CACHE = "public, max-age=31536000, immutable";
 function withHeaders(response, pathname) {
   const secured = new Response(response.body, response);
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) secured.headers.set(name, value);
-  if (pathname.startsWith("/fonts/") && response.ok) secured.headers.set("Cache-Control", FONT_CACHE);
+  // also on 304: a browser that still holds the font under the old max-age=0
+  // re-checks it once, and the 304's headers replace what it has stored
+  const found = response.ok || response.status === 304;
+  if (pathname.startsWith("/fonts/") && found) secured.headers.set("Cache-Control", FONT_CACHE);
   return secured;
 }
 
